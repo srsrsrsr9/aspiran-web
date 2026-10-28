@@ -97,14 +97,12 @@ to see the preview card.
 3. **Videos.** "Akela Nahi" still has "UPSC Pods" printed inside it. Re-render it as Aspiran, then replace
    `public/media/akela-nahi.mp4` and its poster. Vocals are still to be recorded.
 4. **Analytics.** Paste your Umami website ID into `UMAMI_WEBSITE_ID` in `src/layouts/BaseLayout.astro`.
-   Every button reports where it was tapped (`cta-join`, `cta-whatsapp`, `form-submit`, `helpline-14416`).
+   Every button reports where it was tapped (`cta-join`, `cta-whatsapp`, `form-submit`).
 5. **Facts to confirm.** Plus at ₹9,999 a year, "from December 2026", "1 in 540 selected", "eligible candidates can
    try Plus free", "free forever for the community", and "Chotu is up all night" (this overrides the 23:30 to 07:00
    quiet hours in the app's CLAUDE.md). Also what you will actually do for people who join before the app is out:
    the page says "we reply with your pod batch and what to expect before the app is out".
-6. **Removed on purpose.** The footer disclaimer and the Tele-MANAS line were removed as you asked. The
-   "not affiliated with UPSC" statement is still in the FAQ and on the Terms page, and the Tele-MANAS 14416 call button
-   is in the Calm card. If a lawyer wants the disclaimer back in the footer, it is one line in `SiteFooter.astro`.
+6. **Removed on purpose.** The footer disclaimer and all Tele-MANAS mentions are gone, as you asked. The "not affiliated with UPSC" statement is still in the FAQ and on the Terms page.
 7. **Hindi pages.** Hindi is a toggle on the same page. A separate /hi/ page for search engines is a good later step.
 
 ## If you would rather use Netlify (like snpwb's README says)
