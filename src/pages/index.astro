@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Chotu from '../components/Chotu.astro';
-import { en as T, hi as H, waUrl, WA_MSG_EN, WA_MSG_HI, WA_DISPLAY } from '../i18n';
+import SiteFooter from '../components/SiteFooter.astro';
+import { en as T, hi as H, waUrl, WA_MSG_EN, WA_MSG_HI, WA_NUMBER, FORM_ENDPOINT } from '../i18n';
 
 // data-hi on an element = its Hindi text. The page ships in English; site.ts swaps text on toggle.
 const hk = (k: keyof typeof H) => ({ 'data-hi': H[k] as string });
-const ha = (k: 'nav' | 'dos' | 'donts' | 'free' | 'plus' | 'promises' | 'earlyChips' | 'cats' | 'marquee', i: number) => ({ 'data-hi': (H[k] as string[])[i] });
+const ha = (k: 'nav' | 'dos' | 'donts' | 'free' | 'plus' | 'promises' | 'earlyChips' | 'cats' | 'next' | 'o_attempt' | 'o_medium' | 'o_stage' | 'o_phone', i: number) => ({ 'data-hi': (H[k] as string[])[i] });
 const hr = (k: 'steps' | 'adda' | 'prep' | 'chips' | 'faq', i: number, j: number) => ({ 'data-hi': (H[k] as string[][])[i][j] });
 
 const WA_EN = waUrl(WA_MSG_EN);
@@ -18,20 +19,22 @@ const wa = (where: string) => ({
   'data-umami-event': 'cta-whatsapp',
   'data-umami-event-where': where,
 });
+const join = (where: string) => ({ href: '#join', 'data-umami-event': 'cta-join', 'data-umami-event-where': where });
 
 const waIcon = (s: number) =>
   `<svg aria-hidden="true" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-2-2.2-1-1 .9c-1-.4-2-1.4-2.4-2.4l.9-1-1-2.2z" fill="currentColor" stroke="none"/></svg>`;
 const star = `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 7.4L22 11l-7.4 2.6L12 21l-2.6-7.4L2 11l7.4-2.6z"/></svg>`;
+const playIcon = `<svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>`;
 
 const navIds = ['how', 'chotu', 'stories', 'plus', 'faq'];
-const ticker = [...T.marquee, ...T.marquee];
-const tickerHi = [...H.marquee, ...H.marquee];
 
 const clientData = {
+  waNum: WA_NUMBER,
+  endpoint: FORM_ENDPOINT,
   waEn: WA_EN,
   waHi: WA_HI,
-  en: { lines: T.lines, calc: T.calc, cats: T.cats },
-  hi: { lines: H.lines, calc: H.calc, cats: H.cats },
+  en: { lines: T.lines, calc: T.calc, cats: T.cats, head: T.msgHead, labels: T.msgLabels },
+  hi: { lines: H.lines, calc: H.calc, cats: H.cats, head: H.msgHead, labels: H.msgLabels },
 };
 ---
 
@@ -59,27 +62,31 @@ const clientData = {
         <button type="button" class="themebtn" id="themebtn" aria-label={T.themeBtn}>
           <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
         </button>
-        <a class="join" {...wa('nav')} {...hk('join')}>{T.join}</a>
+        <a class="join" {...join('nav')} {...hk('join')}>{T.join}</a>
       </div>
     </nav>
 
     <header class="hero" id="top">
       <div class="hero-copy">
+        <!-- Phones: Chotu leads, before the headline -->
+        <div class="m-chotu">
+          <Chotu group="hero" size={92} />
+          <div class="bubble pop" id="hero-line" aria-live="off">{T.lines[3]}</div>
+        </div>
         <span class="eyebrow" {...hk('eyebrow')}>{T.eyebrow}</span>
         <h1><span class="h1a" {...hk('h1a')} style="color:inherit">{T.h1a}</span> <span {...hk('h1b')}>{T.h1b}</span></h1>
         <p class="lede" {...hk('lede')}>{T.lede}</p>
         <div class="ctas">
-          <a class="btn p" {...wa('hero')}><Fragment set:html={waIcon(22)} /><span {...hk('cta1')}>{T.cta1}</span></a>
-          <a class="btn g" href="#how" {...hk('cta2')}>{T.cta2}</a>
+          <a class="btn p big" {...join('hero')} {...hk('cta1')}>{T.cta1}</a>
+          <a class="btn g" {...wa('hero')}><Fragment set:html={waIcon(20)} /><span {...hk('cta3')}>{T.cta3}</span></a>
         </div>
         <span class="small" {...hk('note')}>{T.note}</span>
       </div>
 
-      <figure class="stagewrap">
+      <div class="stagewrap">
         <div class="stage">
           <div class="glow" aria-hidden="true"></div>
           <div class="stk stk1 floaty" aria-hidden="true" {...hk('stk1')}>{T.stk1}</div>
-          <div class="stk stk2 floaty" aria-hidden="true" {...hk('stk2')}>{T.stk2}</div>
 
           <div class="phone">
             <div class="screen">
@@ -103,19 +110,18 @@ const clientData = {
           </div>
 
           <div class="hero-chotu">
-            <div class="bubble pop" id="hero-line" aria-live="off">{T.lines[3]}</div>
             <Chotu group="hero" size={150} />
           </div>
         </div>
-        <figcaption class="caption" {...hk('pCaption')}>{T.pCaption}</figcaption>
-      </figure>
+      </div>
     </header>
   </div>
 
   <div class="ticker-wrap" aria-hidden="true">
     <div class="ticker">
       <div class="mq">
-        {ticker.map((m, i) => <span><span data-hi={tickerHi[i]}>{m}</span><Fragment set:html={star} /></span>)}
+        {T.marquee.map((m, i) => <span><span data-hi={H.marquee[i]}>{m}</span><Fragment set:html={star} /></span>)}
+        {T.marquee.map((m, i) => <span class="dup"><span data-hi={H.marquee[i]}>{m}</span><Fragment set:html={star} /></span>)}
       </div>
     </div>
   </div>
@@ -128,10 +134,13 @@ const clientData = {
         <h2 class="h2" {...hk('v_h')}>{T.v_h}</h2>
         <p class="lede" {...hk('v_p1')}>{T.v_p1}</p>
         <p class="lede muted" {...hk('v_p2')}>{T.v_p2}</p>
-        <div><a class="btn p" {...wa('video')} {...hk('v_cta')}>{T.v_cta}</a></div>
+        <div><a class="btn p" {...join('video')} {...hk('v_cta')}>{T.v_cta}</a></div>
       </div>
       <figure class="vid r2">
-        <video src="/media/akela-nahi.mp4" poster="/media/akela-poster.jpg" controls playsinline preload="none" aria-label="Akela Nahi, a 45 second lyric video"></video>
+        <div class="vwrap">
+          <video src="/media/akela-nahi.mp4" poster="/media/akela-poster.jpg" controls playsinline preload="none" aria-label="Akela Nahi, a 45 second lyric video with captions"></video>
+          <button type="button" class="vplay" aria-label="Play video"><Fragment set:html={playIcon} /></button>
+        </div>
         <figcaption {...hk('v_cap')}>{T.v_cap}</figcaption>
       </figure>
     </section>
@@ -151,37 +160,9 @@ const clientData = {
           </div>
         ))}
       </div>
-    </section>
-
-    <!-- Adda + Prep -->
-    <section class="sec" id="spaces">
-      <div class="stack-sm">
-        <h2 class="h2" {...hk('sp_h')}>{T.sp_h}</h2>
-        <p class="lede muted" {...hk('sp_p')}>{T.sp_p}</p>
-      </div>
-      <div class="space adda" id="adda">
-        <div class="stack-sm">
-          <span class="kick" {...hk('ad_k')}>{T.ad_k}</span>
-          <h3 {...hk('ad_h')}>{T.ad_h}</h3>
-          <span class="d" style="color:var(--muted);max-width:60ch" {...hk('ad_p')}>{T.ad_p}</span>
-        </div>
-        <div class="grid3">
-          {T.adda.map((a, i) => (
-            <div class="card tilt"><span class="tagline" {...hr('adda', i, 0)}>{a[0]}</span><b {...hr('adda', i, 1)}>{a[1]}</b><span class="d" {...hr('adda', i, 2)}>{a[2]}</span></div>
-          ))}
-        </div>
-      </div>
-      <div class="space prep" id="prep">
-        <div class="stack-sm">
-          <span class="kick" {...hk('pr_k')}>{T.pr_k}</span>
-          <h3 {...hk('pr_h')}>{T.pr_h}</h3>
-          <span class="d" style="color:var(--muted);max-width:60ch" {...hk('pr_p')}>{T.pr_p}</span>
-        </div>
-        <div class="grid3">
-          {T.prep.map((a, i) => (
-            <div class="card tilt"><b {...hr('prep', i, 0)}>{a[0]}</b><span class="d" {...hr('prep', i, 1)}>{a[1]}</span></div>
-          ))}
-        </div>
+      <div class="strip">
+        <b {...hk('strip_t')}>{T.strip_t}</b>
+        <a class="btn p" {...join('after-how')} {...hk('strip_cta')}>{T.strip_cta}</a>
       </div>
     </section>
 
@@ -205,10 +186,59 @@ const clientData = {
       </div>
     </section>
 
+    <!-- Adda + Prep -->
+    <section class="sec" id="spaces">
+      <div class="stack-sm">
+        <h2 class="h2" {...hk('sp_h')}>{T.sp_h}</h2>
+        <p class="lede muted" {...hk('sp_p')}>{T.sp_p}</p>
+      </div>
+      <div class="space adda" id="adda">
+        <div class="stack-sm">
+          <span class="kick" {...hk('ad_k')}>{T.ad_k}</span>
+          <h3 {...hk('ad_h')}>{T.ad_h}</h3>
+          <span class="d lead" {...hk('ad_p')}>{T.ad_p}</span>
+        </div>
+        <div class="grid3">
+          {T.adda.map((a, i) => (
+            <div class="card tilt">
+              <span class="tagline" {...hr('adda', i, 0)}>{a[0]}</span>
+              <b {...hr('adda', i, 1)}>{a[1]}</b>
+              <span class="d" {...hr('adda', i, 2)}>{a[2]}</span>
+              {i === 2 && (
+                <a class="helpline" href="tel:14416" data-umami-event="helpline-14416">
+                  <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
+                  <span><b {...hk('helpline')}>{T.helpline}</b><small {...hk('helplineSub')}>{T.helplineSub}</small></span>
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div class="space prep" id="prep">
+        <div class="stack-sm">
+          <span class="kick" {...hk('pr_k')}>{T.pr_k}</span>
+          <h3 {...hk('pr_h')}>{T.pr_h}</h3>
+          <span class="d lead" {...hk('pr_p')}>{T.pr_p}</span>
+        </div>
+        <div class="grid3">
+          {T.prep.map((a, i) => (
+            <div class="card tilt"><b {...hr('prep', i, 0)}>{a[0]}</b><span class="d" {...hr('prep', i, 1)}>{a[1]}</span></div>
+          ))}
+        </div>
+      </div>
+      <div class="strip">
+        <b {...hk('strip_t')}>{T.strip_t}</b>
+        <a class="btn p" {...join('after-spaces')} {...hk('strip_cta')}>{T.strip_cta}</a>
+      </div>
+    </section>
+
     <!-- The Hidden Why -->
     <section class="sec row" id="stories">
       <figure class="vid rm2">
-        <video src="/media/cobra-effect.mp4" poster="/media/cobra-poster.jpg" controls playsinline preload="none" aria-label="The Cobra Effect, a 42 second picture story"></video>
+        <div class="vwrap">
+          <video src="/media/cobra-effect.mp4" poster="/media/cobra-poster.jpg" controls playsinline preload="none" aria-label="The Cobra Effect, a 42 second picture story with captions"></video>
+          <button type="button" class="vplay" aria-label="Play video"><Fragment set:html={playIcon} /></button>
+        </div>
         <figcaption {...hk('st_cap')}>{T.st_cap}</figcaption>
       </figure>
       <div class="stack">
@@ -219,8 +249,7 @@ const clientData = {
         <div class="chips">
           {T.chips.map((c, i) => <div><b {...hr('chips', i, 0)}>{c[0]}</b><span {...hr('chips', i, 1)}>{c[1]}</span></div>)}
         </div>
-        <span class="note" {...hk('st_note')}>{T.st_note}</span>
-        <div><a class="btn g" {...wa('stories')} {...hk('st_cta')}>{T.st_cta}</a></div>
+        <div><a class="btn g" {...join('stories')} {...hk('st_cta')}>{T.st_cta}</a></div>
       </div>
     </section>
 
@@ -244,7 +273,8 @@ const clientData = {
         <div class="result" aria-live="polite">
           <div class="big" id="calc-big"></div>
           <div id="calc-rows" style="display:flex;flex-direction:column;gap:12px"></div>
-          <div class="foot"><b>Aspiran</b><span {...hk('tl_foot')}>{T.tl_foot}</span></div>
+          <div class="agenote" id="calc-note" hidden></div>
+          <div class="foot-r"><b>Aspiran</b><span {...hk('tl_foot')}>{T.tl_foot}</span></div>
         </div>
         <span class="note" {...hk('tl_note')}>{T.tl_note}</span>
       </div>
@@ -260,9 +290,10 @@ const clientData = {
         <div class="card plan">
           <h3 {...hk('fr_h')}>{T.fr_h}</h3>
           <ul>{T.free.map((f, i) => <li {...ha('free', i)}>{f}</li>)}</ul>
+          <a class="btn g" {...join('free-plan')} {...hk('strip_cta')}>{T.strip_cta}</a>
         </div>
         <div class="card plan plus">
-          <span class="badge floaty" {...hk('pl_badge')}>{T.pl_badge}</span>
+          <span class="badge" {...hk('pl_badge')}>{T.pl_badge}</span>
           <h3 {...hk('pl_title')}>{T.pl_title}</h3>
           <ul>{T.plus.map((f, i) => <li {...ha('plus', i)}>{f}</li>)}</ul>
           <div class="offer">
@@ -274,23 +305,37 @@ const clientData = {
       </div>
     </section>
 
-    <!-- Early access -->
-    <section class="early" id="early">
-      <div class="stack" style="position:relative;z-index:2;flex-basis:440px">
-        <span class="kick" {...hk('ea_k')}>{T.ea_k}</span>
-        <h2 {...hk('ea_h')}>{T.ea_h}</h2>
+    <!-- Join: the conversion section -->
+    <section class="early" id="join">
+      <div class="stack" style="position:relative;z-index:2;flex-basis:400px">
+        <span class="kick" {...hk('join_k')}>{T.join_k}</span>
+        <h2 {...hk('join_h')}>{T.join_h}</h2>
         <p {...hk('ea_p')}>{T.ea_p}</p>
-        <div class="ctas">
-          <a class="btn tilt" {...wa('early')}><Fragment set:html={waIcon(24)} /><span {...hk('ea_cta')}>{T.ea_cta}</span></a>
-          <span class="num">{WA_DISPLAY}</span>
+        <div class="nexts">
+          <b {...hk('next_h')}>{T.next_h}</b>
+          <ol>{T.next.map((n, i) => <li {...ha('next', i)}>{n}</li>)}</ol>
         </div>
         <div class="echips">{T.earlyChips.map((e, i) => <span {...ha('earlyChips', i)}>{e}</span>)}</div>
       </div>
-      <div class="chat" aria-hidden="true">
-        <div class="floaty" {...hk('ea_m1')}>{T.ea_m1}</div>
-        <div class="floaty" {...hk('ea_m2')}>{T.ea_m2}</div>
-        <div class="floaty" {...hk('ea_m3')}>{T.ea_m3}</div>
-      </div>
+
+      <form class="jform" id="joinform" novalidate>
+        <label class="fl"><span {...hk('f_name')}>{T.f_name}</span><input type="text" name="name" autocomplete="given-name" maxlength="40" /></label>
+        <div class="fgrid">
+          <label class="fl"><span {...hk('f_attempt')}>{T.f_attempt}</span>
+            <select name="attempt">{T.o_attempt.map((o, i) => <option {...ha('o_attempt', i)}>{o}</option>)}</select></label>
+          <label class="fl"><span {...hk('f_medium')}>{T.f_medium}</span>
+            <select name="medium">{T.o_medium.map((o, i) => <option {...ha('o_medium', i)}>{o}</option>)}</select></label>
+          <label class="fl"><span {...hk('f_stage')}>{T.f_stage}</span>
+            <select name="stage">{T.o_stage.map((o, i) => <option {...ha('o_stage', i)}>{o}</option>)}</select></label>
+          <label class="fl"><span {...hk('f_phone')}>{T.f_phone}</span>
+            <select name="phone">{T.o_phone.map((o, i) => <option {...ha('o_phone', i)}>{o}</option>)}</select></label>
+        </div>
+        <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <button type="submit" class="btn big sendbtn"><Fragment set:html={waIcon(24)} /><span {...hk('f_submit')}>{T.f_submit}</span></button>
+        <a class="fstatus" id="fstatus" href={WA_EN} data-wa target="_blank" rel="noopener" hidden {...hk('f_status')}>{T.f_status}</a>
+        <span class="fnote" {...hk('join_note')}>{T.join_note}</span>
+        <a class="falt" {...wa('form-alt')}><span {...hk('f_alt')}>{T.f_alt}</span></a>
+      </form>
     </section>
 
     <!-- FAQ -->
@@ -301,7 +346,7 @@ const clientData = {
         <a class="btn g" {...wa('faq')} {...hk('fq_cta')}>{T.fq_cta}</a>
       </div>
       <div class="faq-r">
-        {T.faq.map((q, i) => <details><summary {...hr('faq', i, 0)}>{q[0]}</summary><p {...hr('faq', i, 1)}>{q[1]}</p></details>)}
+        {T.faq.map((q, i) => <details open={i === 0}><summary {...hr('faq', i, 0)}>{q[0]}</summary><p {...hr('faq', i, 1)}>{q[1]}</p></details>)}
       </div>
     </section>
 
@@ -310,17 +355,13 @@ const clientData = {
       <Chotu group="final" size={150} />
       <h2 class="h2" {...hk('fin_h')}>{T.fin_h}</h2>
       <p class="lede" {...hk('fin_p')}>{T.fin_p}</p>
-      <a class="btn p big" {...wa('final')}><Fragment set:html={waIcon(24)} /><span {...hk('cta1')}>{T.cta1}</span></a>
+      <a class="btn p big" {...join('final')} {...hk('cta1')}>{T.cta1}</a>
     </section>
 
-    <footer class="foot">
-      <span class="help" {...hk('ft_help')}>{T.ft_help}</span>
-      <span {...hk('ft_disc')}>{T.ft_disc}</span>
-      <span>© 2026 Aspiran · <span {...hk('formerly')}>{T.formerly}</span> · {WA_DISPLAY}</span>
-    </footer>
+    <SiteFooter home />
   </main>
 
-  <a class="wa-float pulse" {...wa('float')}><Fragment set:html={waIcon(22)} /><span {...hk('pill')}>{T.pill}</span></a>
+  <a class="wa-float pulse" id="wa-float" {...wa('float')}><Fragment set:html={waIcon(22)} /><span {...hk('pill')}>{T.pill}</span></a>
 
   <script type="application/json" id="i18n" set:html={JSON.stringify(clientData)} />
   <script>

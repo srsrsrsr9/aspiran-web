@@ -2,8 +2,10 @@
 // No cookies, nothing leaves the page.
 
 type Lang = 'en' | 'hi';
-type Strings = { lines: string[]; calc: Record<string, any>; cats: string[] };
+type Strings = { lines: string[]; calc: Record<string, any>; cats: string[]; head: string; labels: string[] };
 const data = JSON.parse(document.getElementById('i18n')!.textContent || '{}') as {
+  waNum: string;
+  endpoint: string;
   waEn: string;
   waHi: string;
   en: Strings;
@@ -70,7 +72,9 @@ function calc() {
   const C = data[lang].calc;
   const big = $('#calc-big');
   const rows = $('#calc-rows');
+  const note = $('#calc-note');
   if (!big || !rows) return;
+  if (note) note.hidden = true;
   const yob = Math.max(1980, Math.min(2010, state.yob || 1998));
   const used = Math.max(0, state.used || 0);
   const rule = { gen: [6, 32], obc: [9, 35], scst: [Infinity, 37] }[state.cat];
@@ -88,6 +92,10 @@ function calc() {
     nStr === '∞'
       ? C.unlimited.replace('{last}', String(last))
       : (nStr === '1' ? C.left1 : C.leftN).replace('{n}', nStr).replace('{last}', String(last));
+  if (note && left !== Infinity && last - first + 1 < left) {
+    note.textContent = C.ageNote;
+    note.hidden = false;
+  }
   const vals = ['CSE 2027 · 23 May', nStr === '∞' ? C.nolimit : nStr, 'CSE ' + last];
   rows.replaceChildren(
     ...C.rows.map((label: string, i: number) => {
@@ -156,6 +164,52 @@ if (!calm) {
     const a = $('#chotu-line');
     if (a) pop(a, data[lang].lines[line]);
   }, 5600);
+}
+
+// early-access form: builds a filled-in WhatsApp message (no blanks), optionally also posts to FORM_ENDPOINT
+$('#joinform')?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const f = e.target as HTMLFormElement;
+  const v = (n: string) => ((f.elements.namedItem(n) as HTMLInputElement | HTMLSelectElement)?.value || '').trim();
+  if (v('company')) return; // honeypot: bots fill this, people never see it
+  const D = data[lang];
+  const parts = [D.head];
+  const name = v('name');
+  if (name) parts.push(`${D.labels[0]}: ${name}.`);
+  parts.push(`${D.labels[1]}: ${v('attempt')}.`, `${D.labels[2]}: ${v('medium')}.`, `${D.labels[3]}: ${v('stage')}.`, `${D.labels[4]}: ${v('phone')}.`);
+  const text = parts.join(' ');
+  const url = `https://wa.me/${data.waNum}?text=${encodeURIComponent(text)}`;
+  const w = window.open(url, '_blank', 'noopener');
+  const st = $<HTMLAnchorElement>('#fstatus');
+  if (st) { st.href = url; st.hidden = false; st.removeAttribute('data-wa'); if (w) st.hidden = false; }
+  const um = (window as any).umami;
+  if (um) um.track('form-submit', { attempt: v('attempt'), medium: v('medium'), stage: v('stage'), phone: v('phone') });
+  if (data.endpoint) {
+    try {
+      fetch(data.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ name, attempt: v('attempt'), medium: v('medium'), stage: v('stage'), phone: v('phone'), lang }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {}
+  }
+});
+
+// video: big play button on the poster, hidden once playing
+$$('.vwrap').forEach((w) => {
+  const vid = w.querySelector('video')!;
+  const btn = w.querySelector<HTMLButtonElement>('.vplay')!;
+  btn.addEventListener('click', () => { vid.play(); vid.focus(); });
+  vid.addEventListener('play', () => w.classList.add('playing'));
+  vid.addEventListener('ended', () => w.classList.remove('playing'));
+});
+
+// hide the floating WhatsApp button while the form is on screen
+const joinEl = document.getElementById('join');
+const pillEl = document.getElementById('wa-float');
+if (joinEl && pillEl && 'IntersectionObserver' in window) {
+  new IntersectionObserver((es) => es.forEach((en) => pillEl.classList.toggle('hide', en.isIntersecting)), { threshold: 0.15 }).observe(joinEl);
 }
 
 applyLang();

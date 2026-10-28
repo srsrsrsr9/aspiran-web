@@ -87,17 +87,25 @@ to see the preview card.
 
 ## Before you share it widely (open items)
 
-1. **Videos.** "Akela Nahi" still has "UPSC Pods" printed inside it. Re-render it as Aspiran, then replace
-   `public/media/akela-nahi.mp4` and `akela-poster.jpg`. The vocals are also still to be recorded.
-2. **Legal.** There are no Privacy, Terms or Refund pages yet, and no legal entity name in the footer.
-   Add them before taking payments or collecting data.
-3. **Analytics.** Paste your Umami website ID into `UMAMI_WEBSITE_ID` in `src/layouts/BaseLayout.astro`.
-   Every WhatsApp button is already tagged `cta-whatsapp` with where it was clicked.
-4. **Facts to confirm.** Plus at ₹9,999 a year, "from December 2026", "1 in 540 selected",
-   "eligible candidates can try Plus free", and the "Is Chotu up all night?" change (this overrides the old
-   23:30 to 07:00 quiet hours).
-5. **Stories.** The page says stories are drafts until editors approve them. Keep it that way until true.
-6. **Fonts.** The page loads Yatra One, Mukta and Martel from Google Fonts. Nothing to do.
+1. **Fill the legal placeholders.** `/privacy` and `/terms` are drafts. Search `src/pages/privacy.astro` and
+   `terms.astro` for text in [square brackets] (legal entity name, address, grievance contact, retention period,
+   governing law) and have a lawyer read them. The site shows a "Draft for legal review" bar on both pages until you
+   delete `<div class="draftbar">` in `src/layouts/LegalLayout.astro`.
+2. **Save the form answers somewhere.** Right now the form opens WhatsApp with the answers filled in, so you see them
+   in the chat. To also keep a list, make a free Formspree or Web3Forms form and paste its URL into `FORM_ENDPOINT`
+   in `src/i18n.ts`. If you do, name the service on the Privacy page.
+3. **Videos.** "Akela Nahi" still has "UPSC Pods" printed inside it. Re-render it as Aspiran, then replace
+   `public/media/akela-nahi.mp4` and its poster. Vocals are still to be recorded.
+4. **Analytics.** Paste your Umami website ID into `UMAMI_WEBSITE_ID` in `src/layouts/BaseLayout.astro`.
+   Every button reports where it was tapped (`cta-join`, `cta-whatsapp`, `form-submit`, `helpline-14416`).
+5. **Facts to confirm.** Plus at ₹9,999 a year, "from December 2026", "1 in 540 selected", "eligible candidates can
+   try Plus free", "free forever for the community", and "Chotu is up all night" (this overrides the 23:30 to 07:00
+   quiet hours in the app's CLAUDE.md). Also what you will actually do for people who join before the app is out:
+   the page says "we reply with your pod batch and what to expect before the app is out".
+6. **Removed on purpose.** The footer disclaimer and the Tele-MANAS line were removed as you asked. The
+   "not affiliated with UPSC" statement is still in the FAQ and on the Terms page, and the Tele-MANAS 14416 call button
+   is in the Calm card. If a lawyer wants the disclaimer back in the footer, it is one line in `SiteFooter.astro`.
+7. **Hindi pages.** Hindi is a toggle on the same page. A separate /hi/ page for search engines is a good later step.
 
 ## If you would rather use Netlify (like snpwb's README says)
 
