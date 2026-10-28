@@ -1,0 +1,14 @@
+---
+import { en as T, hi as H, waUrl, WA_MSG_EN } from '../i18n';
+const { home = false } = Astro.props;
+const prefix = home ? '' : '/';
+---
+
+<footer class="foot">
+  <a class="brand" href={`${prefix}#top`} aria-label="Aspiran"><b>Aspiran</b></a>
+  <nav class="foot-links" aria-label="Footer">
+    <a href="/privacy" data-hi={H.ft_privacy}>{T.ft_privacy}</a>
+    <a href="/terms" data-hi={H.ft_terms}>{T.ft_terms}</a>
+    <a href={waUrl(WA_MSG_EN)} data-wa target="_blank" rel="noopener" data-umami-event="cta-whatsapp" data-umami-event-where="footer" data-hi={H.ft_wa}>{T.ft_wa}</a>
+  </nav>
+</footer>
