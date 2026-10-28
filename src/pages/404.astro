@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Chotu from '../components/Chotu.astro';
+import { en as T } from '../i18n';
+---
+
+<BaseLayout title="Page not found | Aspiran" description={T.nf_p}>
+  <main class="nf">
+    <Chotu group="nf" size={160} label="Chotu, confused" />
+    <h1 class="h2">{T.nf_h}</h1>
+    <p class="lede muted">{T.nf_p}</p>
+    <a class="btn p" href="/">{T.nf_cta}</a>
+  </main>
+</BaseLayout>

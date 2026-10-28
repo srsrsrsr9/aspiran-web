@@ -1,0 +1,329 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Chotu from '../components/Chotu.astro';
+import { en as T, hi as H, waUrl, WA_MSG_EN, WA_MSG_HI, WA_DISPLAY } from '../i18n';
+
+// data-hi on an element = its Hindi text. The page ships in English; site.ts swaps text on toggle.
+const hk = (k: keyof typeof H) => ({ 'data-hi': H[k] as string });
+const ha = (k: 'nav' | 'dos' | 'donts' | 'free' | 'plus' | 'promises' | 'earlyChips' | 'cats' | 'marquee', i: number) => ({ 'data-hi': (H[k] as string[])[i] });
+const hr = (k: 'steps' | 'adda' | 'prep' | 'chips' | 'faq', i: number, j: number) => ({ 'data-hi': (H[k] as string[][])[i][j] });
+
+const WA_EN = waUrl(WA_MSG_EN);
+const WA_HI = waUrl(WA_MSG_HI);
+const wa = (where: string) => ({
+  href: WA_EN,
+  target: '_blank',
+  rel: 'noopener',
+  'data-wa': '',
+  'data-umami-event': 'cta-whatsapp',
+  'data-umami-event-where': where,
+});
+
+const waIcon = (s: number) =>
+  `<svg aria-hidden="true" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-2-2.2-1-1 .9c-1-.4-2-1.4-2.4-2.4l.9-1-1-2.2z" fill="currentColor" stroke="none"/></svg>`;
+const star = `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 7.4L22 11l-7.4 2.6L12 21l-2.6-7.4L2 11l7.4-2.6z"/></svg>`;
+
+const navIds = ['how', 'chotu', 'stories', 'plus', 'faq'];
+const ticker = [...T.marquee, ...T.marquee];
+const tickerHi = [...H.marquee, ...H.marquee];
+
+const clientData = {
+  waEn: WA_EN,
+  waHi: WA_HI,
+  en: { lines: T.lines, calc: T.calc, cats: T.cats },
+  hi: { lines: H.lines, calc: H.calc, cats: H.cats },
+};
+---
+
+<BaseLayout title={T.title} description={T.description}>
+  <a class="skip" href="#main" {...hk('skip')}>{T.skip}</a>
+
+  <div class="wrap">
+    <nav class="nav" aria-label="Site">
+      <a class="brand" href="#top" aria-label="Aspiran">
+        <svg aria-hidden="true" width="40" height="40" viewBox="0 0 40 40">
+          <path d="M14 3c-2 3 2 4 0 7M20 2c-2 3 2 4 0 8M26 3c-2 3 2 4 0 7" fill="none" stroke="#D9822B" stroke-width="2" stroke-linecap="round"></path>
+          <path d="M5 15h30l-4.5 20.5a3 3 0 0 1-3 2.5H12.5a3 3 0 0 1-3-2.5z" fill="#C8693A"></path>
+          <rect x="4" y="13" width="32" height="4.5" rx="2.2" fill="#E08A55"></rect>
+          <rect x="14" y="22" width="3.2" height="5" rx="1.6" fill="#2A1B12"></rect>
+          <rect x="22.8" y="22" width="3.2" height="5" rx="1.6" fill="#2A1B12"></rect>
+        </svg>
+        <span><b>Aspiran</b><small {...hk('formerly')}>{T.formerly}</small></span>
+      </a>
+      <div class="navr">
+        {T.nav.map((label, i) => <a href={`#${navIds[i]}`} {...ha('nav', i)}>{label}</a>)}
+        <div class="seg" role="group" aria-label="Language">
+          <button type="button" data-lang="en" aria-pressed="true">English</button>
+          <button type="button" data-lang="hi" aria-pressed="false">हिंदी</button>
+        </div>
+        <button type="button" class="themebtn" id="themebtn" aria-label={T.themeBtn}>
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+        </button>
+        <a class="join" {...wa('nav')} {...hk('join')}>{T.join}</a>
+      </div>
+    </nav>
+
+    <header class="hero" id="top">
+      <div class="hero-copy">
+        <span class="eyebrow" {...hk('eyebrow')}>{T.eyebrow}</span>
+        <h1><span class="h1a" {...hk('h1a')} style="color:inherit">{T.h1a}</span> <span {...hk('h1b')}>{T.h1b}</span></h1>
+        <p class="lede" {...hk('lede')}>{T.lede}</p>
+        <div class="ctas">
+          <a class="btn p" {...wa('hero')}><Fragment set:html={waIcon(22)} /><span {...hk('cta1')}>{T.cta1}</span></a>
+          <a class="btn g" href="#how" {...hk('cta2')}>{T.cta2}</a>
+        </div>
+        <span class="small" {...hk('note')}>{T.note}</span>
+      </div>
+
+      <figure class="stagewrap">
+        <div class="stage">
+          <div class="glow" aria-hidden="true"></div>
+          <div class="stk stk1 floaty" aria-hidden="true" {...hk('stk1')}>{T.stk1}</div>
+          <div class="stk stk2 floaty" aria-hidden="true" {...hk('stk2')}>{T.stk2}</div>
+
+          <div class="phone">
+            <div class="screen">
+              <div class="sc-head"><b {...hk('pAdda')}>{T.pAdda}</b><span {...hk('pBatch')}>{T.pBatch}</span></div>
+              <div class="pod">
+                <span {...hk('pPod')}>{T.pPod}</span>
+                <div class="avs" aria-hidden="true">
+                  <span class="av" style="background:#A85A1F">R</span><span class="av" style="background:#4F6B3E">M</span><span class="av" style="background:#3D2A4A">S</span><span class="av" style="background:#6B3A1F">A</span><span class="av" style="background:#6E5A4C;font-size:12px">+3</span>
+                </div>
+              </div>
+              <div class="msgs">
+                <div class="msg a"><i {...hk('pN1')}>{T.pN1}</i><span {...hk('pM1')}>{T.pM1}</span></div>
+                <div class="msg b"><i {...hk('pN2')}>{T.pN2}</i><span {...hk('pM2')}>{T.pM2}</span></div>
+                <div class="msg c"><i>Chotu <span class="aitag">AI</span> · 01:48</i><span {...hk('pM3')}>{T.pM3}</span></div>
+              </div>
+              <div class="sc-foot">
+                <div class="commons"><span class="dot" aria-hidden="true"></span><span><b {...hk('pCommons')}>{T.pCommons}</b><small {...hk('pCommons2')}>{T.pCommons2}</small></span></div>
+                <div class="stamp" {...hk('pStamp')}>{T.pStamp}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-chotu">
+            <div class="bubble pop" id="hero-line" aria-live="off">{T.lines[3]}</div>
+            <Chotu group="hero" size={150} />
+          </div>
+        </div>
+        <figcaption class="caption" {...hk('pCaption')}>{T.pCaption}</figcaption>
+      </figure>
+    </header>
+  </div>
+
+  <div class="ticker-wrap" aria-hidden="true">
+    <div class="ticker">
+      <div class="mq">
+        {ticker.map((m, i) => <span><span data-hi={tickerHi[i]}>{m}</span><Fragment set:html={star} /></span>)}
+      </div>
+    </div>
+  </div>
+
+  <main id="main" class="wrap main">
+    <!-- Akela Nahi -->
+    <section class="sec row" id="akela">
+      <div class="stack">
+        <span class="kick" {...hk('v_k')}>{T.v_k}</span>
+        <h2 class="h2" {...hk('v_h')}>{T.v_h}</h2>
+        <p class="lede" {...hk('v_p1')}>{T.v_p1}</p>
+        <p class="lede muted" {...hk('v_p2')}>{T.v_p2}</p>
+        <div><a class="btn p" {...wa('video')} {...hk('v_cta')}>{T.v_cta}</a></div>
+      </div>
+      <figure class="vid r2">
+        <video src="/media/akela-nahi.mp4" poster="/media/akela-poster.jpg" controls playsinline preload="none" aria-label="Akela Nahi, a 45 second lyric video"></video>
+        <figcaption {...hk('v_cap')}>{T.v_cap}</figcaption>
+      </figure>
+    </section>
+
+    <!-- How pods work -->
+    <section class="sec" id="how">
+      <div class="stack-sm">
+        <span class="kick" {...hk('how_k')}>{T.how_k}</span>
+        <h2 class="h2" {...hk('how_h')}>{T.how_h}</h2>
+      </div>
+      <div class="grid3">
+        {T.steps.map((s, i) => (
+          <div class="card step tilt">
+            <span class="n" aria-hidden="true">{s[0]}</span>
+            <b {...hr('steps', i, 1)}>{s[1]}</b>
+            <span class="t" {...hr('steps', i, 2)}>{s[2]}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Adda + Prep -->
+    <section class="sec" id="spaces">
+      <div class="stack-sm">
+        <h2 class="h2" {...hk('sp_h')}>{T.sp_h}</h2>
+        <p class="lede muted" {...hk('sp_p')}>{T.sp_p}</p>
+      </div>
+      <div class="space adda" id="adda">
+        <div class="stack-sm">
+          <span class="kick" {...hk('ad_k')}>{T.ad_k}</span>
+          <h3 {...hk('ad_h')}>{T.ad_h}</h3>
+          <span class="d" style="color:var(--muted);max-width:60ch" {...hk('ad_p')}>{T.ad_p}</span>
+        </div>
+        <div class="grid3">
+          {T.adda.map((a, i) => (
+            <div class="card tilt"><span class="tagline" {...hr('adda', i, 0)}>{a[0]}</span><b {...hr('adda', i, 1)}>{a[1]}</b><span class="d" {...hr('adda', i, 2)}>{a[2]}</span></div>
+          ))}
+        </div>
+      </div>
+      <div class="space prep" id="prep">
+        <div class="stack-sm">
+          <span class="kick" {...hk('pr_k')}>{T.pr_k}</span>
+          <h3 {...hk('pr_h')}>{T.pr_h}</h3>
+          <span class="d" style="color:var(--muted);max-width:60ch" {...hk('pr_p')}>{T.pr_p}</span>
+        </div>
+        <div class="grid3">
+          {T.prep.map((a, i) => (
+            <div class="card tilt"><b {...hr('prep', i, 0)}>{a[0]}</b><span class="d" {...hr('prep', i, 1)}>{a[1]}</span></div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Chotu -->
+    <section class="chotu-sec" id="chotu">
+      <div class="chotu-stage">
+        <div class="bubble pop" id="chotu-line" aria-live="off">{T.lines[0]}</div>
+        <button type="button" class="chotu-btn" id="chotu-tap" aria-label={T.ch_aria} data-hi-aria={H.ch_aria}>
+          <Chotu group="chotu" size={260} />
+        </button>
+        <span class="chotu-hint" {...hk('ch_tap')}>{T.ch_tap}</span>
+      </div>
+      <div class="stack">
+        <span class="kick" {...hk('ch_k')}>{T.ch_k}</span>
+        <h2 class="h2" {...hk('ch_h')}>{T.ch_h}</h2>
+        <p class="lede" {...hk('ch_p')}>{T.ch_p}</p>
+        <div class="dd">
+          <div class="do"><b {...hk('do_h')}>{T.do_h}</b>{T.dos.map((d, i) => <span {...ha('dos', i)}>{d}</span>)}</div>
+          <div class="dont"><b {...hk('dont_h')}>{T.dont_h}</b>{T.donts.map((d, i) => <span {...ha('donts', i)}>{d}</span>)}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The Hidden Why -->
+    <section class="sec row" id="stories">
+      <figure class="vid rm2">
+        <video src="/media/cobra-effect.mp4" poster="/media/cobra-poster.jpg" controls playsinline preload="none" aria-label="The Cobra Effect, a 42 second picture story"></video>
+        <figcaption {...hk('st_cap')}>{T.st_cap}</figcaption>
+      </figure>
+      <div class="stack">
+        <span class="kick" {...hk('st_k')}>{T.st_k}</span>
+        <h2 class="h2" {...hk('st_h')}>{T.st_h}</h2>
+        <p class="lede" {...hk('st_p1')}>{T.st_p1}</p>
+        <p class="lede muted" {...hk('st_p2')}>{T.st_p2}</p>
+        <div class="chips">
+          {T.chips.map((c, i) => <div><b {...hr('chips', i, 0)}>{c[0]}</b><span {...hr('chips', i, 1)}>{c[1]}</span></div>)}
+        </div>
+        <span class="note" {...hk('st_note')}>{T.st_note}</span>
+        <div><a class="btn g" {...wa('stories')} {...hk('st_cta')}>{T.st_cta}</a></div>
+      </div>
+    </section>
+
+    <!-- Free tool -->
+    <section class="tool-sec" id="tools">
+      <div class="stack" style="justify-content:center;flex-basis:380px">
+        <span class="kick" {...hk('tl_k')}>{T.tl_k}</span>
+        <h2 class="h2" {...hk('tl_h')}>{T.tl_h}</h2>
+        <p class="lede muted" {...hk('tl_p')}>{T.tl_p}</p>
+        <div><a class="btn g" {...wa('tools')} {...hk('tl_cta')}>{T.tl_cta}</a></div>
+      </div>
+      <div class="card tool">
+        <b {...hk('tl_title')}>{T.tl_title}</b>
+        <div class="fields">
+          <label><span {...hk('tl_yob')}>{T.tl_yob}</span><input id="yob" type="number" min="1985" max="2008" value="1998" inputmode="numeric" /></label>
+          <label><span {...hk('tl_used')}>{T.tl_used}</span><input id="used" type="number" min="0" max="9" value="2" inputmode="numeric" /></label>
+        </div>
+        <div class="pills" role="group" aria-label={T.tl_cat}>
+          {T.cats.map((c, i) => <button type="button" data-cat={['gen', 'obc', 'scst'][i]} aria-pressed={i === 0 ? 'true' : 'false'} {...ha('cats', i)}>{c}</button>)}
+        </div>
+        <div class="result" aria-live="polite">
+          <div class="big" id="calc-big"></div>
+          <div id="calc-rows" style="display:flex;flex-direction:column;gap:12px"></div>
+          <div class="foot"><b>Aspiran</b><span {...hk('tl_foot')}>{T.tl_foot}</span></div>
+        </div>
+        <span class="note" {...hk('tl_note')}>{T.tl_note}</span>
+      </div>
+    </section>
+
+    <!-- Plans -->
+    <section class="sec" id="plus">
+      <div class="stack-sm">
+        <h2 class="h2" {...hk('pl_h')}>{T.pl_h}</h2>
+        <p class="lede muted" {...hk('pl_p')}>{T.pl_p}</p>
+      </div>
+      <div class="plans">
+        <div class="card plan">
+          <h3 {...hk('fr_h')}>{T.fr_h}</h3>
+          <ul>{T.free.map((f, i) => <li {...ha('free', i)}>{f}</li>)}</ul>
+        </div>
+        <div class="card plan plus">
+          <span class="badge floaty" {...hk('pl_badge')}>{T.pl_badge}</span>
+          <h3 {...hk('pl_title')}>{T.pl_title}</h3>
+          <ul>{T.plus.map((f, i) => <li {...ha('plus', i)}>{f}</li>)}</ul>
+          <div class="offer">
+            <span {...hk('pl_offer')}>{T.pl_offer}</span>
+            <a class="btn p" {...wa('plus')} {...hk('pl_cta')}>{T.pl_cta}</a>
+          </div>
+          <div class="pr">{T.promises.map((p, i) => <span {...ha('promises', i)}>{p}</span>)}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Early access -->
+    <section class="early" id="early">
+      <div class="stack" style="position:relative;z-index:2;flex-basis:440px">
+        <span class="kick" {...hk('ea_k')}>{T.ea_k}</span>
+        <h2 {...hk('ea_h')}>{T.ea_h}</h2>
+        <p {...hk('ea_p')}>{T.ea_p}</p>
+        <div class="ctas">
+          <a class="btn tilt" {...wa('early')}><Fragment set:html={waIcon(24)} /><span {...hk('ea_cta')}>{T.ea_cta}</span></a>
+          <span class="num">{WA_DISPLAY}</span>
+        </div>
+        <div class="echips">{T.earlyChips.map((e, i) => <span {...ha('earlyChips', i)}>{e}</span>)}</div>
+      </div>
+      <div class="chat" aria-hidden="true">
+        <div class="floaty" {...hk('ea_m1')}>{T.ea_m1}</div>
+        <div class="floaty" {...hk('ea_m2')}>{T.ea_m2}</div>
+        <div class="floaty" {...hk('ea_m3')}>{T.ea_m3}</div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+      <div class="faq-l">
+        <h2 class="h2" {...hk('fq_h')}>{T.fq_h}</h2>
+        <p {...hk('fq_p')}>{T.fq_p}</p>
+        <a class="btn g" {...wa('faq')} {...hk('fq_cta')}>{T.fq_cta}</a>
+      </div>
+      <div class="faq-r">
+        {T.faq.map((q, i) => <details><summary {...hr('faq', i, 0)}>{q[0]}</summary><p {...hr('faq', i, 1)}>{q[1]}</p></details>)}
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final">
+      <Chotu group="final" size={150} />
+      <h2 class="h2" {...hk('fin_h')}>{T.fin_h}</h2>
+      <p class="lede" {...hk('fin_p')}>{T.fin_p}</p>
+      <a class="btn p big" {...wa('final')}><Fragment set:html={waIcon(24)} /><span {...hk('cta1')}>{T.cta1}</span></a>
+    </section>
+
+    <footer class="foot">
+      <span class="help" {...hk('ft_help')}>{T.ft_help}</span>
+      <span {...hk('ft_disc')}>{T.ft_disc}</span>
+      <span>© 2026 Aspiran · <span {...hk('formerly')}>{T.formerly}</span> · {WA_DISPLAY}</span>
+    </footer>
+  </main>
+
+  <a class="wa-float pulse" {...wa('float')}><Fragment set:html={waIcon(22)} /><span {...hk('pill')}>{T.pill}</span></a>
+
+  <script type="application/json" id="i18n" set:html={JSON.stringify(clientData)} />
+  <script>
+    import '../scripts/site.ts';
+  </script>
+</BaseLayout>
