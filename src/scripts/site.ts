@@ -1,6 +1,8 @@
 // Client behaviour: language toggle, theme toggle, Chotu's moves, attempts calculator.
 // No cookies, nothing leaves the page.
 
+import hindiCss from '../styles/hindi.css?url';
+
 type Lang = 'en' | 'hi';
 type Strings = { lines: string[]; calc: Record<string, any>; cats: string[]; head: string; labels: string[] };
 const data = JSON.parse(document.getElementById('i18n')!.textContent || '{}') as {
@@ -29,8 +31,26 @@ let heroLine = 3;
 
 const state = { yob: 1998, used: 2, cat: 'gen' as 'gen' | 'obc' | 'scst' };
 
-function applyLang() {
+let hindiLoaded = false;
+function loadHindiFonts() {
+  if (hindiLoaded) return;
+  hindiLoaded = true;
+  const l = document.createElement('link');
+  l.rel = 'stylesheet';
+  l.href = hindiCss;
+  document.head.appendChild(l);
+}
+
+function applyLang(initial = false) {
   document.documentElement.lang = lang;
+  if (lang === 'hi') loadHindiFonts(); // Hindi fonts load only for Hindi readers
+  if (initial && lang === 'en') {
+    // English is already in the HTML: skip the big text swap on first load
+    $$('[data-lang]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+    setLines(true);
+    calc();
+    return;
+  }
   $$('[data-hi]').forEach((el) => {
     if (el.dataset.en === undefined) el.dataset.en = el.textContent || '';
     el.textContent = lang === 'hi' ? el.dataset.hi! : el.dataset.en!;
@@ -45,20 +65,19 @@ function applyLang() {
   calc();
 }
 
-function setLines() {
+function setLines(quiet = false) {
   const L = data[lang].lines;
   const a = $('#chotu-line');
   const b = $('#hero-line');
-  if (a) pop(a, L[line % L.length]);
-  if (b) pop(b, L[heroLine % L.length]);
+  if (a) pop(a, L[line % L.length], quiet);
+  if (b) pop(b, L[heroLine % L.length], quiet);
 }
 
-function pop(el: HTMLElement, text: string) {
+function pop(el: HTMLElement, text: string, quiet = false) {
   el.textContent = text;
-  if (calm) return;
+  if (calm || quiet) return;
   el.classList.remove('pop');
-  void el.offsetWidth;
-  el.classList.add('pop');
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('pop')));
 }
 
 function move(group: string, n: number) {
@@ -148,7 +167,7 @@ document.addEventListener('click', (e) => {
 $('#yob')?.addEventListener('input', (e) => { state.yob = parseInt((e.target as HTMLInputElement).value, 10); calc(); });
 $('#used')?.addEventListener('input', (e) => { state.used = parseInt((e.target as HTMLInputElement).value, 10); calc(); });
 
-if (!calm) {
+function startMoves() {
   setInterval(() => {
     g = (g + 1) % 7;
     heroLine = (heroLine + 1) % data[lang].lines.length;
@@ -165,6 +184,7 @@ if (!calm) {
     if (a) pop(a, data[lang].lines[line]);
   }, 5600);
 }
+if (!calm) window.addEventListener('load', () => setTimeout(startMoves, 1200));
 
 // early-access form: builds a filled-in WhatsApp message (no blanks), optionally also posts to FORM_ENDPOINT
 $('#joinform')?.addEventListener('submit', (e) => {
@@ -196,6 +216,18 @@ $('#joinform')?.addEventListener('submit', (e) => {
   }
 });
 
+// video posters load only when the video is near the screen (keeps the first paint light)
+{
+  const vids = $$<HTMLVideoElement>('video[data-poster]');
+  const give = (v: HTMLVideoElement) => { v.poster = v.dataset.poster!; };
+  if ('IntersectionObserver' in window) {
+    const po = new IntersectionObserver((es) => es.forEach((en) => {
+      if (en.isIntersecting) { give(en.target as HTMLVideoElement); po.unobserve(en.target); }
+    }), { rootMargin: '600px' });
+    vids.forEach((v) => po.observe(v));
+  } else vids.forEach(give);
+}
+
 // video: big play button on the poster, hidden once playing
 $$('.vwrap').forEach((w) => {
   const vid = w.querySelector('video')!;
@@ -212,4 +244,10 @@ if (joinEl && pillEl && 'IntersectionObserver' in window) {
   new IntersectionObserver((es) => es.forEach((en) => pillEl.classList.toggle('hide', en.isIntersecting)), { threshold: 0.15 }).observe(joinEl);
 }
 
-applyLang();
+// pause Chotu and the ticker while they are off screen
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver((es) => es.forEach((en) => en.target.classList.toggle('off', !en.isIntersecting)), { rootMargin: '80px' });
+  $$('.chotu, .ticker-wrap').forEach((el) => io.observe(el));
+}
+
+applyLang(true);

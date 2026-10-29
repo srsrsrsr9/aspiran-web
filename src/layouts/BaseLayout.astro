@@ -1,5 +1,17 @@
 ---
 import '../styles/global.css';
+import '@fontsource/yatra-one/latin-400.css';
+import '@fontsource/mukta/latin-400.css';
+import '@fontsource/mukta/latin-500.css';
+import '@fontsource/mukta/latin-700.css';
+import '@fontsource/martel/latin-400.css';
+import '@fontsource/martel/latin-700.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/ibm-plex-mono/latin-500.css';
+import '@fontsource/ibm-plex-mono/latin-700.css';
+import yatraUrl from '@fontsource/yatra-one/files/yatra-one-latin-400-normal.woff2?url';
+import martelUrl from '@fontsource/martel/files/martel-latin-400-normal.woff2?url';
+import muktaUrl from '@fontsource/mukta/files/mukta-latin-400-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -35,12 +47,9 @@ const UMAMI_WEBSITE_ID = '';
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Mukta:wght@400;500;700&family=Martel:wght@400;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap"
-    />
+    <link rel="preload" as="font" type="font/woff2" href={yatraUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={martelUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={muktaUrl} crossorigin />
 
     <!-- Set theme before paint so there is no flash. -->
     <script is:inline>

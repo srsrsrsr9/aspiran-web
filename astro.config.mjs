@@ -5,5 +5,5 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://aspiran.in',
   integrations: [sitemap()],
-  build: { assets: 'assets' },
+  build: { assets: 'assets', inlineStylesheets: 'always' },
 });

@@ -1,7 +1,7 @@
 /* Aspiran. Chai palette carried over from UPSC Pods. Light by default, dark by system or toggle. */
 :root {
   --bg: #F7F2EA; --surface: #FFFDF9; --ink: #2A1B12; --muted: #6E5A4C; --line: #E4D8C8;
-  --chai: #6B3A1F; --saffron: #D9822B; --saffronText: #B05A12; --cardamom: #4F6B3E;
+  --chai: #6B3A1F; --saffron: #D9822B; --saffronText: #9A4E0E; --cardamom: #4F6B3E;
   --saffronSoft: #F6E2C9; --cardamomSoft: #E3EAD9; --band: #2A1B12; --bandInk: #FFF6EA;
   --display: "Yatra One", "Mukta", system-ui, sans-serif;
   --body: "Mukta", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -348,3 +348,7 @@ details { padding: 20px 0; }
 .legal-body h2 { font-family: var(--display); font-weight: 400; font-size: 26px; color: var(--chai); margin: 18px 0 0; }
 .legal-body p, .legal-body ul { margin: 0; }
 .legal-body ul { padding-left: 22px; display: flex; flex-direction: column; gap: 8px; }
+
+/* Speed: pause animations while off screen */
+.chotu.off *, .ticker-wrap.off .mq { animation-play-state: paused !important; }
+[data-lang="hi"] { font-family: "Noto Sans Devanagari", "Nirmala UI", "Kohinoor Devanagari", system-ui, sans-serif; }

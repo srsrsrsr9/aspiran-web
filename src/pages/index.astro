@@ -43,7 +43,7 @@ const clientData = {
 
   <div class="wrap">
     <nav class="nav" aria-label="Site">
-      <a class="brand" href="#top" aria-label="Aspiran">
+      <a class="brand" href="#top">
         <svg aria-hidden="true" width="40" height="40" viewBox="0 0 40 40">
           <path d="M14 3c-2 3 2 4 0 7M20 2c-2 3 2 4 0 8M26 3c-2 3 2 4 0 7" fill="none" stroke="#D9822B" stroke-width="2" stroke-linecap="round"></path>
           <path d="M5 15h30l-4.5 20.5a3 3 0 0 1-3 2.5H12.5a3 3 0 0 1-3-2.5z" fill="#C8693A"></path>
@@ -138,7 +138,7 @@ const clientData = {
       </div>
       <figure class="vid r2">
         <div class="vwrap">
-          <video src="/media/akela-nahi.mp4" poster="/media/akela-poster.jpg" controls playsinline preload="none" aria-label="Akela Nahi, a 45 second lyric video with captions"></video>
+          <video src="/media/akela-nahi.mp4" data-poster="/media/akela-poster.jpg" controls playsinline preload="none" aria-label="Akela Nahi, a 45 second lyric video with captions"></video>
           <button type="button" class="vplay" aria-label="Play video"><Fragment set:html={playIcon} /></button>
         </div>
         <figcaption {...hk('v_cap')}>{T.v_cap}</figcaption>
@@ -230,7 +230,7 @@ const clientData = {
     <section class="sec row" id="stories">
       <figure class="vid rm2">
         <div class="vwrap">
-          <video src="/media/cobra-effect.mp4" poster="/media/cobra-poster.jpg" controls playsinline preload="none" aria-label="The Cobra Effect, a 42 second picture story with captions"></video>
+          <video src="/media/cobra-effect.mp4" data-poster="/media/cobra-poster.jpg" controls playsinline preload="none" aria-label="The Cobra Effect, a 42 second picture story with captions"></video>
           <button type="button" class="vplay" aria-label="Play video"><Fragment set:html={playIcon} /></button>
         </div>
         <figcaption {...hk('st_cap')}>{T.st_cap}</figcaption>
