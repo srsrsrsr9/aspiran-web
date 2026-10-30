@@ -1,6 +1,6 @@
 # Aspiran web
 
-The home page for aspiran.in (formerly UPSC Pods). Astro, static, one page plus a 404.
+The home page for aspiran.in. Astro, static, one page plus a 404.
 
 ```
 npm install

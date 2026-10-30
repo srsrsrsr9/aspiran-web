@@ -94,8 +94,7 @@ to see the preview card.
 2. **Save the form answers somewhere.** Right now the form opens WhatsApp with the answers filled in, so you see them
    in the chat. To also keep a list, make a free Formspree or Web3Forms form and paste its URL into `FORM_ENDPOINT`
    in `src/i18n.ts`. If you do, name the service on the Privacy page.
-3. **Videos.** "Akela Nahi" still has "UPSC Pods" printed inside it. Re-render it as Aspiran, then replace
-   `public/media/akela-nahi.mp4` and its poster. Vocals are still to be recorded.
+3. **Videos.** "Akela Nahi" is now branded Aspiran. Vocals are still to be recorded.
 4. **Analytics.** Paste your Umami website ID into `UMAMI_WEBSITE_ID` in `src/layouts/BaseLayout.astro`.
    Every button reports where it was tapped (`cta-join`, `cta-whatsapp`, `form-submit`).
 5. **Facts to confirm.** Plus at ₹9,999 a year, "from December 2026", "1 in 540 selected", "eligible candidates can
