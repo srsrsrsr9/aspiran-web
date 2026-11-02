@@ -1,7 +1,7 @@
 // The long home page: the star field, the rooms' interactions, and Chotu walking down the page with the visitor.
-// Chotu's scripted lines and questions are below (SCRIPT). Free-text questions go to the Worker's /web/chotu;
-// answers are saved to /web/lead as they come in. If the server can't be reached, the page still works and the
-// seat form falls back to WhatsApp.
+// Chotu's scripted lines and questions are below (SCRIPT). Free-text questions go to the Worker's /web/chotu.
+// Answers stay in this browser until the visitor ticks the consent box and presses Save my seat; only then do they go
+// to /web/lead. If the server can't be reached, the page still works and the seat form falls back to WhatsApp.
 
 const API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
   ? 'http://localhost:8788'
@@ -29,13 +29,11 @@ const source = (() => {
   return utm || (document.referrer ? new URL(document.referrer).hostname : 'direct');
 })();
 
-let saveTimer = 0;
+// Kept on this device only; nothing is sent until Save my seat.
 function setDetail(k: string, v: string) {
   details[k] = v;
   store.set('aspiran-details', JSON.stringify(details));
   renderSummary();
-  clearTimeout(saveTimer);
-  saveTimer = window.setTimeout(() => postLead().catch(() => {}), 1200);
 }
 async function postLead(extra: Record<string, unknown> = {}) {
   const r = await fetch(`${API}/web/lead`, {
@@ -151,7 +149,8 @@ $$('#strike li').forEach((li) => strikeIo.observe(li));
     if (best >= 0 && !links.some(([a, b]) => (a === best && b === i))) links.push([i, best]);
   });
   lines.innerHTML = links.map(([a, b]) => `<line x1="${stars[a].x}" y1="${stars[a].y}" x2="${stars[b].x}" y2="${stars[b].y}" data-a="${a}" data-b="${b}"/>`).join('');
-  $('#sky-labels').innerHTML = Object.entries(centres).map(([k, [x, y]]) => `<text x="${x}" y="${y - 108}" text-anchor="middle">${k.toUpperCase()}</text>`).join('');
+  const skyName: Record<string, string> = HI ? { Essay: 'निबंध', CSAT: 'CSAT', Optional: 'वैकल्पिक' } : {};
+  $('#sky-labels').innerHTML = Object.entries(centres).map(([k, [x, y]]) => `<text x="${x}" y="${y - 108}" text-anchor="middle">${skyName[k] ?? k.toUpperCase()}</text>`).join('');
   const lineEls = $$<SVGLineElement>('#sky-lines line');
   const label = (HI ? { '': 'अभी शुरू नहीं', met: 'पढ़ लिया', recall: 'याद से बता सकते हैं', use: 'उत्तर में लिख सकते हैं' } : { '': 'not started', met: 'met', recall: 'can recall', use: 'can use' }) as Record<string, string>;
 
@@ -221,7 +220,7 @@ $$('#recall-opts button').forEach((b) => b.addEventListener('click', () => {
       const row = box.querySelector(`[data-r="${i}"]`)!;
       row.querySelector(`button[data-v="${ai}"]`)!.classList.add('ai');
       const d = (mine[i] ?? 0) - ai; gap += Math.abs(d);
-      row.querySelector('.gap')!.textContent = `AI: ${ai}. ${d === 0 ? 'Same as yours.' : d > 0 ? `You were ${d} kinder.` : `You were ${-d} harsher.`} ${why}`;
+      row.querySelector('.gap')!.textContent = `AI: ${ai}. ${d === 0 ? t('Same as yours.', 'आपके जितने ही।') : d > 0 ? t(`You were ${d} kinder.`, `आपने ${d} ज़्यादा दिए।`) : t(`You were ${-d} harsher.`, `आपने ${-d} कम दिए।`)} ${why}`;
     });
     const out = $('#mark-out'); out.hidden = false;
     out.textContent = gap <= 3
@@ -266,7 +265,7 @@ $$('#recall-opts button').forEach((b) => b.addEventListener('click', () => {
 // ---------------------------------------------------------------- Room 07: keep for Mains
 $('#keep').addEventListener('click', (e) => {
   const b = e.currentTarget as HTMLButtonElement;
-  b.disabled = true; b.textContent = 'Kept ✓';
+  b.disabled = true; b.textContent = t('Kept ✓', 'रख लिया ✓');
   $('#chai-card').classList.add('kept');
   $('#case-list').innerHTML = t('<li class="new">Example: ward-level heat plans. Shows that adaptation works best at the smallest level that can act.</li><li class="dim">Three more slots for this topic.</li>', '<li class="new">उदाहरण: वार्ड-स्तर की हीट योजनाएँ। दिखाती हैं कि अनुकूलन सबसे छोटे सक्षम स्तर पर सबसे अच्छा काम करता है।</li><li class="dim">इस विषय के लिए तीन जगहें और।</li>');
   setDetail('chai', 'kept');
@@ -284,7 +283,7 @@ $('#keep').addEventListener('click', (e) => {
   const box = $('#cal');
   box.innerHTML = qs.map((q, i) => `<div class="calq" data-q="${i}"><p>${q.s}</p><div class="row">
     <button type="button" data-tf="1" aria-pressed="false">${t('True', 'सत्य')}</button><button type="button" data-tf="0" aria-pressed="false">${t('False', 'असत्य')}</button>
-    <span class="sep">AND</span>
+    <span class="sep">${t('AND', 'और')}</span>
     <button type="button" data-sure="1" aria-pressed="false">${t("I'm sure", 'पक्का पता है')}</button><button type="button" data-sure="0" aria-pressed="false">${t('Not sure', 'पक्का नहीं')}</button>
     </div><p class="why" hidden></p></div>`).join('');
   box.addEventListener('click', (e) => {
@@ -373,7 +372,7 @@ const SCRIPT: Record<string, Beat> = {
   write: {
     ask: {
       key: 'optional', q: t('Picked your optional yet?', 'वैकल्पिक विषय चुन लिया?'), chips: [t('Not yet', 'अभी नहीं'), t('Yes', 'हाँ')],
-      then: (v) => v === 'Yes'
+      then: (v) => v === t('Yes', 'हाँ')
         ? { key: 'optional', q: t('Which one?', 'कौन-सा?'), text: true, then: (o) => t(`${o}. Good. Optional repeats its themes a lot, so we start from its past papers.`, `${o}। अच्छा। वैकल्पिक विषय अपने विषय बार-बार दोहराता है, इसलिए पिछले प्रश्नपत्रों से शुरू करेंगे।`) }
         : t('No rush. Pick it from its past papers, not from what is popular.', 'कोई जल्दी नहीं। पिछले प्रश्नपत्र देखकर चुनिए, जो लोकप्रिय है उसे देखकर नहीं।'),
     },
@@ -418,8 +417,10 @@ let pending: Ask | null = null;
 const chat: { role: 'user' | 'assistant'; content: string }[] = [];
 
 const openDock = (v: boolean) => {
+  const was = dock.dataset.open === 'true';
   dock.dataset.open = String(v); cup.setAttribute('aria-expanded', String(v));
   if (v) { bubble.hidden = true; log.scrollTop = log.scrollHeight; setTimeout(() => input.focus({ preventScroll: true }), 50); }
+  else if (was) cup.focus({ preventScroll: true }); // closing hands focus back to the cup
 };
 cup.addEventListener('click', () => openDock(dock.dataset.open !== 'true'));
 $('#dock-x').addEventListener('click', () => openDock(false));
@@ -437,21 +438,34 @@ function gesture() {
 }
 let bubbleTimer = 0;
 const narrow = () => innerWidth < 600;
+// Chotu steps aside while the price and the seat form are on screen, so nothing covers them.
+let aside = false;
+const asideIo = new IntersectionObserver((es) => {
+  es.forEach((e) => (e.target as HTMLElement).dataset.inView = String(e.isIntersecting));
+  aside = $$('#price, #seat').some((el) => el.dataset.inView === 'true');
+  dock.dataset.aside = String(aside);
+  if (aside) bubble.hidden = true;
+});
+$$('#price, #seat').forEach((el) => asideIo.observe(el));
 function chotuSays(text: string, ask?: Ask) {
   add("c", text);
   ask ??= pending ?? undefined; // a question still open keeps its buttons under any new line
   clearTimeout(bubbleTimer);
-  // On phones the bubble steps aside after a few seconds; a dot on the cup says a question is waiting.
-  if (!ask || narrow()) bubbleTimer = window.setTimeout(() => { bubble.hidden = true; }, ask ? 7000 : narrow() ? 5000 : 9000);
-  if (dock.dataset.open !== 'true') {
+  // Every bubble steps aside after a few seconds, so it never sits on the page; a dot on the cup says a question is waiting.
+  bubbleTimer = window.setTimeout(() => { bubble.hidden = true; }, narrow() ? (ask ? 7000 : 5000) : (ask ? 10000 : 8000));
+  if (dock.dataset.open !== 'true' && !aside) {
     bubble.hidden = false;
     bubble.innerHTML = '';
+    const x = document.createElement('button'); x.type = 'button'; x.className = 'bubble-x'; x.textContent = '×';
+    x.setAttribute('aria-label', t('Hide this', 'इसे छिपाइए'));
+    x.onclick = () => { clearTimeout(bubbleTimer); bubble.hidden = true; };
+    bubble.appendChild(x);
     const p = document.createElement('div'); p.textContent = text; bubble.appendChild(p);
     if (ask && ask.q !== text) { const q = document.createElement("div"); q.style.marginTop = "6px"; q.style.fontWeight = "600"; q.textContent = ask.q; bubble.appendChild(q); }
     if (ask?.chips) {
       const row = document.createElement('div'); row.className = 'dock-chips'; row.style.padding = '8px 0 0';
       ask.chips.forEach((c) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = c; b.onclick = () => answer(c); row.appendChild(b); });
-      if (ask.text) { const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Type…'; b.onclick = () => openDock(true); row.appendChild(b); }
+      if (ask.text) { const b = document.createElement('button'); b.type = 'button'; b.textContent = t('Type…', 'लिखिए…'); b.onclick = () => openDock(true); row.appendChild(b); }
       bubble.appendChild(row);
     }
   }
@@ -477,7 +491,7 @@ function next() {
 function answer(v: string) {
   const a = pending; if (!a) return;
   add('u', v);
-  if (v !== 'Skip') setDetail(a.key, v);
+  if (v !== t('Skip', 'रहने दीजिए')) setDetail(a.key, v);
   const r = a.then?.(v);
   if (r && typeof r === 'object') { setTimeout(() => askNow(r), 600); pending = null; renderChips(null); dock.dataset.waiting = 'false'; return; }
   if (typeof r === 'string') setTimeout(() => chotuSays(r), 500);
@@ -496,7 +510,8 @@ function beat(scene: string) {
     if (pending) queue.push(fresh); else setTimeout(() => askNow(fresh), b.say ? 1100 : 0);
   }
 }
-const sceneIo = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) beat((e.target as HTMLElement).dataset.scene!); }), { threshold: 0.35 });
+// A room counts as reached when it crosses the middle of the screen, however tall it is (room 5 is 3,000px on a phone).
+const sceneIo = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) beat((e.target as HTMLElement).dataset.scene!); }), { rootMargin: '-35% 0px -35% 0px' });
 // Chotu always says hello first, even when the page opens part-way down (a reload, a shared link).
 setTimeout(() => { beat('hero'); $$('[data-scene]').forEach((s) => sceneIo.observe(s)); }, 700);
 
@@ -509,7 +524,7 @@ $('#dock-form').addEventListener('submit', async (e) => {
   if (pending?.text && !looksLikeQuestion) { answer(v); return; }
   add('u', v);
   chat.push({ role: 'user', content: v });
-  const t = add('c', t('Chotu is thinking…', 'चोटू सोच रहा है…')); t.classList.add('typing');
+  const thinking = add('c', t('Chotu is thinking…', 'चोटू सोच रहा है…')); thinking.classList.add('typing');
   try {
     const r = await fetch(`${API}/web/chotu`, {
       signal: AbortSignal.timeout(35_000),
@@ -517,7 +532,7 @@ $('#dock-form').addEventListener('submit', async (e) => {
       body: JSON.stringify({ visitorId, messages: chat.slice(-8), details, lang: /[ऀ-ॿ]/.test(v) ? 'hi' : 'en' }),
     });
     const j = await r.json().catch(() => ({}));
-    t.remove();
+    thinking.remove();
     if (j.care) {
       add('c', t("I'm an AI, and this matters too much for me to get wrong. Please talk to someone now: Tele-MANAS, 14416 (free, 24 hours). If you're in danger, call 112.", 'मैं AI हूँ, और यह बात इतनी ज़रूरी है कि मैं गलती नहीं कर सकता। कृपया अभी किसी से बात कीजिए: Tele-MANAS, 14416 (मुफ़्त, 24 घंटे)। ख़तरे में हों तो 112 पर कॉल कीजिए।'));
       return;
@@ -526,7 +541,7 @@ $('#dock-form').addEventListener('submit', async (e) => {
     add('c', reply);
     if (j.reply) chat.push({ role: 'assistant', content: j.reply });
   } catch {
-    t.remove();
+    thinking.remove();
     add('c', t("I can't reach my brain right now. The page still works, and you can leave your details at the end.", 'अभी मेरा दिमाग़ जुड़ नहीं पा रहा। पेज फिर भी चलता है, और आख़िर में अपनी जानकारी छोड़ सकते हैं।'));
   }
   if (!reduced) gesture();

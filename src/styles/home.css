@@ -3,7 +3,7 @@
 :root:has(.night) { background: #06070F; color-scheme: dark; }
 .night {
   --void: #06070F; --deep: #0B0E1C; --panel: rgba(18, 22, 42, .78); --panel2: rgba(28, 33, 60, .9);
-  --line: rgba(170, 180, 255, .16); --ink: #EEEAF6; --muted: #A3A8C6; --dim: #7C82A3;
+  --line: rgba(170, 180, 255, .16); --ink: #EEEAF6; --muted: #A3A8C6; --dim: #9097B8;
   --saffron: #F0A04B; --saffronHi: #FFC27A; --chai: #C8693A; --met: #C9CCE0; --recall: #7FE3F0; --use: #FFC56B;
   --good: #9DDB9A; --warn: #FF9A8A;
   --serif: "Martel", Georgia, serif; --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -50,6 +50,7 @@
 .glow-text { background: linear-gradient(90deg, var(--saffronHi), var(--use) 40%, var(--recall)); -webkit-background-clip: text; background-clip: text; color: transparent;
   filter: drop-shadow(0 0 28px rgba(240,160,75,.35)); }
 .hero .lede { max-width: 60ch; }
+.hero .what { margin: 14px 0 0; font-weight: 600; color: var(--ink); max-width: 60ch; }
 .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
 .scroll-cue { margin-top: 4vh; animation: bob 2.4s ease-in-out infinite; }
 @keyframes bob { 50% { transform: translateY(6px); } }
@@ -328,3 +329,20 @@
 .dock[data-waiting="true"] .dock-cup::after { content: ""; position: absolute; top: 4px; right: 4px; width: 14px; height: 14px; border-radius: 50%; background: var(--recall); box-shadow: 0 0 10px var(--recall); }
 .dock-cup { position: relative; }
 @media (max-width: 600px) { .dock-bubble { font-size: 14.5px; padding: 10px 12px; max-width: min(280px, calc(100vw - 100px)); } }
+/* The bubble's own close button; the bubble steps aside on its own too. */
+.dock-bubble { position: relative; padding-right: 34px; }
+.bubble-x { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border-radius: 8px; border: 0; background: none; color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; }
+.bubble-x:hover, .bubble-x:focus-visible { background: rgba(255,255,255,.08); color: var(--ink); }
+/* Mid-size screens: a narrower bubble that stays in the corner. */
+@media (max-width: 1100px) { .dock-bubble { max-width: 240px; font-size: 14.5px; } .dock-cup { width: 68px; height: 68px; } .dock-cup .chotu { width: 48px; } }
+/* Phones: a small launcher with no glow ring, so it hides as little text as possible. */
+@media (max-width: 767px) {
+  .dock-cup { width: 52px; height: 52px; padding-top: 4px; box-shadow: 0 6px 20px rgba(0,0,0,.55); }
+  .dock-cup .chotu { width: 36px; }
+  .dock[data-waiting="true"] .dock-cup::after { top: 0; right: 0; width: 11px; height: 11px; }
+}
+/* While the price and seat sections are on screen, Chotu steps aside (the chat still opens from the buttons). */
+.dock { transition: opacity .25s, transform .25s; }
+.dock[data-aside="true"]:not([data-open="true"]) { opacity: 0; transform: translateY(16px); pointer-events: none; }
+/* Tablets and small laptops have no side margin, so keep a strip on the right for Chotu's cup. */
+@media (min-width: 768px) and (max-width: 1279px) { .scene, .hero, .foot { padding-right: 104px; } }

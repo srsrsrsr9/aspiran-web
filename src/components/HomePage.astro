@@ -95,7 +95,6 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
       </a>
       <div class="hud-r">
         {hi ? <a class="lang-link" href="/" hreflang="en" lang="en">English</a> : <a class="lang-link" href="/hi/" hreflang="hi" lang="hi">हिंदी</a>}
-        <span class="hud-tag" aria-hidden="true">● ONLINE</span>
         <a class="btn ghost sm" href="#seat" data-umami-event="cta-seat" data-umami-event-where="nav">{hi ? 'मेरी सीट रखें' : 'Save my seat'}</a>
       </div>
     </nav>
@@ -111,6 +110,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
         A study space where what you read in October is still there in March. Where your answers get better because you
         rewrote them, not because you read a topper's copy. Where nobody counts your hours, and nobody ranks you.
       </>}</p>
+      <p class="what">{hi ? 'Aspiran: UPSC सिविल सेवा अभ्यर्थियों के लिए पढ़ाई का ऐप, हिंदी और अंग्रेज़ी में।' : 'Aspiran is a study app for UPSC Civil Services aspirants, in English and Hindi.'}</p>
       <div class="ctas">
         <button class="btn primary" type="button" data-open-chotu data-umami-event="cta-chotu" data-umami-event-where="hero">{hi ? 'चोटू को नमस्ते कहिए' : 'Say hi to Chotu'}</button>
         <a class="btn ghost" href="#plant">{hi ? 'स्क्रॉल कीजिए। कुछ होगा।' : 'Scroll. Things happen.'}</a>
@@ -260,7 +260,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
           Then you rewrite only the weakest part, in five minutes. Feedback you don't act on is just reading.</>}</p>
       </section>
 
-      <aside class="pause" data-scene="q2" aria-label="A pause">
+      <aside class="pause" data-scene="q2" aria-label={hi ? 'एक ठहराव' : 'A pause'}>
         <blockquote>{hi ? <>"परीक्षा यह नहीं पूछती कि आपने क्या पढ़ा।<br />यह पूछती है कि आप अब भी क्या ढूँढ़ सकते हैं।"</> : <>"The exam doesn't ask what you read.<br />It asks what you can still find."</>}</blockquote>
         <cite>{hi ? '— चोटू · AI, शायद रात 2 बजे' : '— Chotu · AI, at 2 a.m., probably'}</cite>
       </aside>
@@ -323,7 +323,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
           And it shows your confident mistakes first, because those are the ones you'll fix for good.</>}</p>
       </section>
 
-      <aside class="pause" data-scene="q3" aria-label="A pause">
+      <aside class="pause" data-scene="q3" aria-label={hi ? 'एक ठहराव' : 'A pause'}>
         <blockquote>{hi ? <>"यह परीक्षा कोई अकेले पास नहीं करता।<br />और आपका उत्तर कोई और लिख भी नहीं सकता।"</> : <>"Nobody clears this alone.<br />Nobody can write your answer for you either."</>}</blockquote>
         <cite>{hi ? '— पॉड का नियम' : '— the pod rule'}</cite>
       </aside>
@@ -357,6 +357,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
         <p class="effect">{hi ? <>पॉड कभी-कभी चुप हो जाते हैं: नौकरी, परीक्षा, ज़िंदगी। जब आपका हो, हम उसे चुपचाप दूसरे से जोड़ देते हैं (और आप चाहें तो वहीं रह सकते हैं)।
           कोई ख़ाली कमरे में नहीं छूटता।</> : <>Pods go quiet sometimes: jobs, exams, life. When yours does, we join it with another (you can choose to stay).
           Nobody is left in an empty room.</>}</p>
+        <p class="ctas"><a class="btn primary" href="#seat" data-umami-event="cta-seat" data-umami-event-where="pod">{hi ? 'पहले पॉड बैच में मेरी सीट रखें' : 'Save my seat in the first pod batch'}</a></p>
       </section>
 
       <!-- 11. Your room -->
@@ -424,7 +425,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
         <p class="dim small center">{hi ? 'आप क्या देखेंगे, उसका एक उदाहरण। आपकी अपनी संख्याएँ, किसी और की नहीं।' : 'An example of what you\'d see. Your own numbers, nobody else\'s.'}</p>
       </section>
 
-      <aside class="pause" data-scene="q4" aria-label="A pause">
+      <aside class="pause" data-scene="q4" aria-label={hi ? 'एक ठहराव' : 'A pause'}>
         <blockquote>{hi ? <>"आप पीछे नहीं हैं।<br />आपकी तुलना सिर्फ़ बीते कल से होती है।"</> : <>"You're not behind.<br />You're only ever measured against yesterday."</>}</blockquote>
         <cite>— Aspiran</cite>
       </aside>
@@ -474,13 +475,13 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
           <dl id="seat-summary"><dt class="dim">{hi ? 'अभी कुछ नहीं।' : 'Nothing yet.'}</dt><dd class="dim">{hi ? 'स्क्रॉल करते हुए चोटू से बात कीजिए, या बस नंबर छोड़ दीजिए।' : 'Talk to Chotu as you scroll, or just leave a number.'}</dd></dl>
           <form id="seat-form" novalidate>
             <label for="seat-contact">{hi ? 'WhatsApp नंबर या ईमेल' : 'WhatsApp number or email'}</label>
-            <input id="seat-contact" name="contact" type="text" autocomplete="tel" placeholder="98765 43210" />
+            <input id="seat-contact" name="contact" type="text" inputmode="email" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder={hi ? '98765 43210 या aap@mail.com' : '98765 43210 or you@mail.com'} />
             <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" />
             <label class="tick"><input type="checkbox" id="seat-ok" /> {hi ? 'Aspiran मेरी सीट और ऐप के बारे में मुझे मैसेज कर सकता है।' : 'Aspiran can message me about my seat and the app.'}</label>
             <button class="btn primary" type="submit" data-umami-event="seat-submit">{hi ? 'मेरी सीट रखें' : 'Save my seat'}</button>
             <p class="form-out" id="seat-out" aria-live="polite"></p>
-            <p class="small dim">{hi ? <>इस पेज पर आपने चोटू को जो बताया, उसे हम आपका पॉड बनाने और Aspiran को बेहतर करने के लिए रखते हैं।
-              <a href="/privacy">प्राइवेसी</a>। बात करना पसंद है? <a href={WA} target="_blank" rel="noopener" id="seat-wa">WhatsApp कीजिए</a>।</> : <>We keep what you told Chotu on this page to set up your pod and to make Aspiran better.
+            <p class="small dim">{hi ? <>इस पेज पर आपने चोटू को जो बताया, वह "मेरी सीट रखें" दबाने पर ही हमें मिलता है, और हम उसे आपका पॉड बनाने और Aspiran को बेहतर करने के लिए रखते हैं।
+              <a href="/privacy">प्राइवेसी</a>। बात करना पसंद है? <a href={WA} target="_blank" rel="noopener" id="seat-wa">WhatsApp कीजिए</a>।</> : <>What you told Chotu on this page reaches us only when you press Save my seat. We keep it to set up your pod and to make Aspiran better.
               <a href="/privacy">Privacy</a>. Rather talk? <a href={WA} target="_blank" rel="noopener" id="seat-wa">WhatsApp us</a>.</>}</p>
           </form>
         </div>
@@ -506,7 +507,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
         <Chotu group="dock" size={66} />
       </button>
       <div class="dock-panel" id="dock-panel">
-        <div class="dock-head"><b>Chotu</b><span class="ai">AI</span><span class="dim small" id="dock-status">{hi ? 'आपके साथ चल रहा है' : 'walking with you'}</span>
+        <div class="dock-head"><b>{hi ? 'चोटू' : 'Chotu'}</b><span class="ai">AI</span><span class="dim small" id="dock-status">{hi ? 'आपके साथ चल रहा है' : 'walking with you'}</span>
           <button type="button" class="dock-x" id="dock-x" aria-label={hi ? 'चैट छोटी कीजिए' : 'Minimise the chat'}>–</button></div>
         <div class="dock-log" id="dock-log" aria-live="polite"></div>
         <div class="dock-chips" id="dock-chips"></div>
@@ -514,7 +515,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
           <input id="dock-in" type="text" maxlength="500" autocomplete="off" placeholder={hi ? 'चोटू से कुछ भी पूछिए' : 'Ask Chotu anything'} aria-label={hi ? 'चोटू को मैसेज' : 'Message Chotu'} />
           <button type="submit" class="btn primary sm">{hi ? 'भेजें' : 'Send'}</button>
         </form>
-        <p class="dock-note">{hi ? <>चोटू AI है और ग़लत हो सकता है। यहाँ आप जो बताते हैं, वह आपका पॉड बनाने के लिए सेव होता है। <a href="/privacy">प्राइवेसी</a></> : <>Chotu is AI and can be wrong. What you tell it here is saved to set up your pod. <a href="/privacy">Privacy</a></>}</p>
+        <p class="dock-note">{hi ? <>चोटू AI है और ग़लत हो सकता है। आपके जवाब इसी ब्राउज़र में रहते हैं, जब तक आप "मेरी सीट रखें" न दबाएँ। यहाँ लिखी बात जवाब के लिए AI को जाती है। <a href="/privacy">प्राइवेसी</a></> : <>Chotu is AI and can be wrong. Your answers stay in this browser until you press Save my seat. What you type here goes to an AI to get a reply. <a href="/privacy">Privacy</a></>}</p>
       </div>
     </aside>
   </div>
