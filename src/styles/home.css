@@ -40,6 +40,7 @@
 .hud-nav .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: 20px;  text-decoration: none; }
 .hud-nav .brand span, .hud-nav .brand b { color: var(--ink); }
 .hud-r { display: flex; align-items: center; gap: 16px; }
+.lang-link { color: inherit; font-size: 0.95rem; text-decoration: underline; text-underline-offset: 3px; }
 .hud-tag { font-family: var(--mono); font-size: 11.5px; letter-spacing: .14em; color: var(--good); }
 @media (max-width: 520px) { .hud-tag { display: none; } }
 

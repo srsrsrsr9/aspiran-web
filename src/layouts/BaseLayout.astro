@@ -16,8 +16,11 @@ interface Props {
   title: string;
   description: string;
   themeColor?: string;
+  lang?: 'en' | 'hi';
 }
-const { title, description, themeColor = '#F7F2EA' } = Astro.props;
+const { title, description, themeColor = '#F7F2EA', lang = 'en' } = Astro.props;
+// The home page exists in English (/) and Hindi (/hi/): each names the other for search engines.
+const home = Astro.url.pathname === '/' || Astro.url.pathname.replace(/\/$/, '') === '/hi';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL('/og.png', Astro.site);
 
@@ -27,13 +30,16 @@ const UMAMI_WEBSITE_ID = '';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {home && <link rel="alternate" hreflang="en" href={new URL('/', Astro.site)} />}
+    {home && <link rel="alternate" hreflang="hi" href={new URL('/hi/', Astro.site)} />}
+    {home && <link rel="alternate" hreflang="x-default" href={new URL('/', Astro.site)} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content={themeColor} />
 
