@@ -1,5 +1,4 @@
 ---
-import '../styles/global.css';
 import '@fontsource/yatra-one/latin-400.css';
 import '@fontsource/mukta/latin-400.css';
 import '@fontsource/mukta/latin-500.css';
@@ -16,8 +15,9 @@ import muktaUrl from '@fontsource/mukta/files/mukta-latin-400-normal.woff2?url';
 interface Props {
   title: string;
   description: string;
+  themeColor?: string;
 }
-const { title, description } = Astro.props;
+const { title, description, themeColor = '#F7F2EA' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL('/og.png', Astro.site);
 
@@ -35,7 +35,7 @@ const UMAMI_WEBSITE_ID = '';
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="theme-color" content="#F7F2EA" />
+    <meta name="theme-color" content={themeColor} />
 
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
