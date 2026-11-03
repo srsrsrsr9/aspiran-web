@@ -17,10 +17,10 @@ interface Props { lang?: 'en' | 'hi' }
 const { lang = 'en' } = Astro.props;
 const hi = lang === 'hi';
 
-const title = hi ? 'Aspiran: UPSC का सिलेबस रोशन कीजिए' : 'Aspiran: light up the UPSC syllabus';
+const title = hi ? 'Aspiran: UPSC की तैयारी, अकेले नहीं' : 'Aspiran: never prep alone for UPSC';
 const description = hi
-  ? 'UPSC की पढ़ाई की ऐसी जगह, जहाँ अक्टूबर में पढ़ा मार्च में भी याद रहे। छोटे पॉड, रोज़ का रिव्यू जो ख़त्म होता है, मेन्स के उत्तर जिन्हें आप दोबारा लिखते हैं, और चोटू, AI चाय का कप जो साथ चलता है। न स्ट्रीक, न लीडरबोर्ड, न रैंक की भविष्यवाणी।'
-  : 'A UPSC study space where what you read in October is still there in March. Small pods, a daily review that ends, Mains answers you rewrite, and Chotu, an AI chai cup that walks with you. No streaks, no leaderboards, no rank predictions.';
+  ? 'अकेले तैयारी मत कीजिए। UPSC की पढ़ाई की ऐसी जगह, जहाँ अक्टूबर में पढ़ा मार्च में भी याद रहे। छोटे पॉड, रोज़ का रिव्यू जो ख़त्म होता है, मेन्स के उत्तर जिन्हें आप दोबारा लिखते हैं, और चोटू, AI चाय का कप जो साथ चलता है। न स्ट्रीक, न लीडरबोर्ड, न रैंक की भविष्यवाणी।'
+  : 'Never prep alone. A UPSC study space where what you read in October is still there in March. Small pods, a daily review that ends, Mains answers you rewrite, and Chotu, an AI chai cup that walks with you. No streaks, no leaderboards, no rank predictions.';
 
 // The syllabus sky: [paper, topic]. Positions are generated in the script, clustered by paper.
 const sky: [string, string][] = [
@@ -102,20 +102,22 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
     <!-- 1. Hero -->
     <header class="hero" data-scene="hero">
       <p class="hud">{hi ? 'आपका UPSC अड्डा। चाय हमारी तरफ़ से।' : 'YOUR UPSC ADDA. CHAI\'S ON US.'}</p>
-      <h1>{hi ? <>सिलेबस को<br /><span class="glow-text">रोशन कीजिए।</span></> : <>Light up<br /><span class="glow-text">the syllabus.</span></>}</h1>
+      <h1>{hi ? <>अकेले तैयारी<br /><span class="glow-text">मत कीजिए।</span></> : <>Never prep<br /><span class="glow-text">alone.</span></>}</h1>
       <p class="lede">{hi ? <>
-        पढ़ाई की ऐसी जगह, जहाँ अक्टूबर में पढ़ा मार्च में भी याद रहे। जहाँ आपके उत्तर इसलिए बेहतर हों कि आपने उन्हें दोबारा
-        लिखा, इसलिए नहीं कि टॉपर की कॉपी पढ़ी। जहाँ कोई आपके घंटे नहीं गिनता, और कोई आपको रैंक नहीं करता।
+        आपके लोग, आपका पॉड, और पढ़ाई की ऐसी जगह जहाँ अक्टूबर में पढ़ा मार्च में भी याद रहे। आपकी अवस्था के 6 से 8
+        अभ्यर्थियों का छोटा पॉड आपका हाल पूछता है और भारी दिनों में साथ बैठता है। बाक़ी समय के लिए चोटू है, आपका AI चाय
+        का कप, जो रात भर जागता है।
       </> : <>
-        A study space where what you read in October is still there in March. Where your answers get better because you
-        rewrote them, not because you read a topper's copy. Where nobody counts your hours, and nobody ranks you.
+        Your people, your pod, and a study space where what you read in October is still there in March. A small pod of
+        6 to 8 aspirants at your stage checks on you and sits with you on the heavy days. Chotu, your AI chai cup, is up
+        all night for the rest.
       </>}</p>
       <p class="what">{hi ? 'Aspiran: UPSC सिविल सेवा अभ्यर्थियों के लिए पढ़ाई का ऐप, हिंदी और अंग्रेज़ी में।' : 'Aspiran is a study app for UPSC Civil Services aspirants, in English and Hindi.'}</p>
       <div class="ctas">
-        <button class="btn primary" type="button" data-open-chotu data-umami-event="cta-chotu" data-umami-event-where="hero">{hi ? 'चोटू को नमस्ते कहिए' : 'Say hi to Chotu'}</button>
-        <a class="btn ghost" href="#plant">{hi ? 'स्क्रॉल कीजिए। कुछ होगा।' : 'Scroll. Things happen.'}</a>
+        <a class="btn primary" href="#seat" data-umami-event="cta-seat" data-umami-event-where="hero">{hi ? 'पहले पॉड बैच में सीट रखें' : 'Save my seat in the first pod'}</a>
+        <button class="btn ghost" type="button" data-open-chotu data-umami-event="cta-chotu" data-umami-event-where="hero">{hi ? 'चोटू को नमस्ते कहिए' : 'Say hi to Chotu'}</button>
       </div>
-      <p class="hud dim scroll-cue" aria-hidden="true">{hi ? '↓ नीचे 17 कमरे। हर एक छोटा है।' : '↓ 17 rooms below. Each one is short.'}</p>
+      <p class="hud dim scroll-cue" aria-hidden="true">{hi ? '↓ यह कैसे काम करता है, छोटे-छोटे कमरों में। चोटू साथ चलेगा।' : '↓ How it works, in short rooms. Chotu walks with you.'}</p>
     </header>
 
     <main id="main">
@@ -328,12 +330,14 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
         <cite>{hi ? '— पॉड का नियम' : '— the pod rule'}</cite>
       </aside>
 
+      <!-- From the pod down, the page lands on earth: the people half of Aspiran, in the app's Adda colours. -->
+      <div class="earth">
       <!-- 10. Pods -->
       <section class="scene pod" id="pod" data-scene="pod">
         <p class="hud">{hi ? 'कमरा 09 · आपका पॉड' : 'ROOM 09 · YOUR POD'}</p>
-        <h2>{hi ? <>पहले अकेले।<br />फिर साथ।</> : <>Alone first.<br />Then together.</>}</h2>
-        <p class="lede">{hi ? <>आपकी अवस्था के छह से आठ अभ्यर्थी। सब एक ही प्रश्न अकेले लिखते हैं। फिर पॉड दो उत्तर आमने-सामने देखता है
-          और बताता है कि कौन ज़्यादा मज़बूत है, और क्यों। कोई अंक नहीं। बस "यह वाला, क्योंकि"।</> : <>Six to eight aspirants at your stage. Everyone writes the same question alone. Then the pod sees two answers
+        <h2>{hi ? <>फ़ीड कहती है सब आगे निकल गए।<br />आपका पॉड सच जानता है।</> : <>Your feed says everyone's ahead.<br />Your pod knows better.</>}</h2>
+        <p class="lede">{hi ? <>आपकी अवस्था के छह से आठ अभ्यर्थी। कोई रैंकिंग नहीं, कोई दिखावा नहीं। पहले अकेले, फिर साथ: सब एक ही प्रश्न अकेले लिखते हैं। फिर पॉड दो उत्तर आमने-सामने देखता है
+          और बताता है कि कौन ज़्यादा मज़बूत है, और क्यों। कोई अंक नहीं। बस "यह वाला, क्योंकि"।</> : <>Six to eight aspirants at your stage. No rankings, no performing. Alone first, then together: everyone writes the same question alone. Then the pod sees two answers
           side by side and says which is stronger, and why. No marks. Just "this one, because".</>}</p>
         <div class="podviz" data-reveal aria-hidden="true">
           <div class="orbit">
@@ -489,7 +493,8 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
 
       <section class="scene end" data-scene="end">
         <Chotu group="final" size={130} />
-        <h2>{hi ? <>कहीं और तैयारी कीजिए<br />तो तारे छूट जाएँगे।</> : <>Prep anywhere else<br />and you'll miss the stars.</>}</h2>
+        <h2>{hi ? 'चाय ठंडी हो रही है।' : "Chai's getting cold."}</h2>
+        <p class="lede">{hi ? 'पहला पॉड बैच बन रहा है। आकर नमस्ते कहिए।' : 'The first pod batch is forming. Come say hi.'}</p>
         <p class="hud dim">{hi ? 'पेज का अंत। यहाँ सब कुछ की तरह, यह भी ख़त्म होता है।' : 'END OF THE PAGE. LIKE EVERYTHING HERE, IT ENDS.'}</p>
       </section>
 
@@ -498,6 +503,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
         <nav aria-label="Footer"><a href="/privacy">{hi ? 'प्राइवेसी' : 'Privacy'}</a><a href="/terms">{hi ? 'शर्तें' : 'Terms'}</a><a href={WA} target="_blank" rel="noopener">WhatsApp</a>{hi ? <a href="/" hreflang="en" lang="en">English</a> : <a href="/hi/" hreflang="hi" lang="hi">हिंदी</a>}</nav>
         <p class="small dim">{hi ? 'UPSC से संबद्ध नहीं। चोटू AI है और ग़लत हो सकता है। पढ़ाई की सामग्री तब तक ड्राफ़्ट है जब तक हमारे संपादक उसे जाँच न लें।' : 'Not affiliated with UPSC. Chotu is an AI and can be wrong. Study content is a draft until our editors check it.'}</p>
       </footer>
+      </div>
     </main>
 
     <!-- Chotu's dock: walks down the page with the visitor -->

@@ -346,3 +346,17 @@
 .dock[data-aside="true"]:not([data-open="true"]) { opacity: 0; transform: translateY(16px); pointer-events: none; }
 /* Tablets and small laptops have no side margin, so keep a strip on the right for Chotu's cup. */
 @media (min-width: 768px) and (max-width: 1279px) { .scene, .hero, .foot { padding-right: 104px; } }
+
+/* Earth and sky (app repo: artefacts/design/earth-and-sky.md). The top of the page is sky: ambition, the syllabus as
+   stars. From the pod down it is earth, the Adda's warm night: chai, clay and cardamom, the same colours as the app.
+   A horizon glow marks the change. Chai stays the accent in both. */
+.earth {
+  --panel: rgba(34, 24, 15, .86); --panel2: rgba(48, 34, 22, .94); --line: rgba(240, 200, 160, .16);
+  --ink: #F3E8DA; --muted: #C9B5A2; --dim: #B09A86; --recall: #9DBB83; --met: #E0CDBA;
+  background: radial-gradient(900px 220px at 50% 0, rgba(240, 160, 75, .20), transparent 70%),
+    linear-gradient(180deg, transparent 0, #17100B 240px);
+  background-color: transparent;
+}
+.earth::before { content: ""; display: block; height: 1px; margin: 0 auto; max-width: 1080px;
+  background: linear-gradient(90deg, transparent, rgba(240, 160, 75, .55), transparent); }
+.earth > .scene, .earth > .foot { position: relative; }
