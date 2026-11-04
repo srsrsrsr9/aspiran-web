@@ -22,22 +22,6 @@ const description = hi
   ? 'अकेले तैयारी मत कीजिए। UPSC की पढ़ाई की ऐसी जगह, जहाँ अक्टूबर में पढ़ा मार्च में भी याद रहे। छोटे पॉड, रोज़ का रिव्यू जो ख़त्म होता है, मेन्स के उत्तर जिन्हें आप दोबारा लिखते हैं, और चोटू, AI चाय का कप जो साथ चलता है। न स्ट्रीक, न लीडरबोर्ड, न रैंक की भविष्यवाणी।'
   : 'Never prep alone. A UPSC study space where what you read in October is still there in March. Small pods, a daily review that ends, Mains answers you rewrite, and Chotu, an AI chai cup that walks with you. No streaks, no leaderboards, no rank predictions.';
 
-// The syllabus sky: [paper, topic]. Positions are generated in the script, clustered by paper.
-const sky: [string, string][] = [
-  ['GS1', 'Ancient India'], ['GS1', 'Medieval India'], ['GS1', 'Modern India'], ['GS1', 'Freedom struggle'], ['GS1', 'Art and culture'],
-  ['GS1', 'World history'], ['GS1', 'Society'], ['GS1', 'Urbanisation'], ['GS1', 'Physical geography'], ['GS1', 'Indian geography'],
-  ['GS1', 'Monsoon'], ['GS1', 'Resources'], ['GS2', 'Constitution'], ['GS2', 'Preamble'], ['GS2', 'Fundamental rights'],
-  ['GS2', 'Parliament'], ['GS2', 'Judiciary'], ['GS2', 'Federalism'], ['GS2', 'Finance Commission'], ['GS2', 'Local bodies'],
-  ['GS2', 'Governance'], ['GS2', 'Welfare schemes'], ['GS2', 'India and neighbours'], ['GS2', 'Global groupings'],
-  ['GS3', 'Growth and inflation'], ['GS3', 'Budget'], ['GS3', 'Banking'], ['GS3', 'Agriculture'], ['GS3', 'Infrastructure'],
-  ['GS3', 'Science and tech'], ['GS3', 'Space'], ['GS3', 'Environment'], ['GS3', 'Climate change'], ['GS3', 'Disasters'],
-  ['GS3', 'Internal security'], ['GS3', 'Cyber security'], ['GS4', 'Ethics basics'], ['GS4', 'Attitude'], ['GS4', 'Emotional intelligence'],
-  ['GS4', 'Integrity'], ['GS4', 'Case studies'], ['GS4', 'Probity'], ['Essay', 'Thesis'], ['Essay', 'Structure'],
-  ['Essay', 'Openings'], ['Essay', 'Examples'], ['CSAT', 'Comprehension'], ['CSAT', 'Reasoning'], ['CSAT', 'Numeracy'],
-  ['CSAT', 'Data'], ['Optional', 'Paper 1'], ['Optional', 'Paper 2'], ['Optional', 'PYQ themes'], ['Optional', 'Answers'],
-];
-// The same stars, named in Hindi for /hi/ (same order).
-const skyHi = ["प्राचीन भारत", "मध्यकालीन भारत", "आधुनिक भारत", "स्वतंत्रता संग्राम", "कला और संस्कृति", "विश्व इतिहास", "समाज", "शहरीकरण", "भौतिक भूगोल", "भारत का भूगोल", "मानसून", "संसाधन", "संविधान", "उद्देशिका", "मौलिक अधिकार", "संसद", "न्यायपालिका", "संघवाद", "वित्त आयोग", "स्थानीय निकाय", "शासन", "कल्याणकारी योजनाएँ", "भारत और पड़ोसी", "वैश्विक समूह", "विकास और महँगाई", "बजट", "बैंकिंग", "कृषि", "बुनियादी ढाँचा", "विज्ञान और तकनीक", "अंतरिक्ष", "पर्यावरण", "जलवायु परिवर्तन", "आपदाएँ", "आंतरिक सुरक्षा", "साइबर सुरक्षा", "नीतिशास्त्र की बुनियाद", "अभिवृत्ति", "भावनात्मक बुद्धि", "सत्यनिष्ठा", "केस स्टडी", "शुचिता", "मुख्य तर्क", "ढाँचा", "शुरुआत", "उदाहरण", "बोधगम्यता", "तर्कशक्ति", "संख्यात्मकता", "आँकड़े", "प्रश्नपत्र 1", "प्रश्नपत्र 2", "PYQ के विषय", "उत्तर"];
 
 
 const passage = hi ? [
@@ -99,28 +83,64 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
       </div>
     </nav>
 
-    <!-- 1. Hero -->
-    <header class="hero" data-scene="hero">
-      <p class="hud">{hi ? 'आपका UPSC अड्डा। चाय हमारी तरफ़ से।' : 'YOUR UPSC ADDA. CHAI\'S ON US.'}</p>
-      <h1>{hi ? <>अकेले तैयारी<br /><span class="glow-text">मत कीजिए।</span></> : <>Never prep<br /><span class="glow-text">alone.</span></>}</h1>
-      <p class="lede">{hi ? <>
-        आपके लोग, आपका पॉड, और पढ़ाई की ऐसी जगह जहाँ अक्टूबर में पढ़ा मार्च में भी याद रहे। आपकी अवस्था के 6 से 8
-        अभ्यर्थियों का छोटा पॉड आपका हाल पूछता है और भारी दिनों में साथ बैठता है। बाक़ी समय के लिए चोटू है, आपका AI चाय
-        का कप, जो रात भर जागता है।
-      </> : <>
-        Your people, your pod, and a study space where what you read in October is still there in March. A small pod of
-        6 to 8 aspirants at your stage checks on you and sits with you on the heavy days. Chotu, your AI chai cup, is up
-        all night for the rest.
-      </>}</p>
-      <p class="what">{hi ? 'Aspiran: UPSC सिविल सेवा अभ्यर्थियों के लिए पढ़ाई का ऐप, हिंदी और अंग्रेज़ी में।' : 'Aspiran is a study app for UPSC Civil Services aspirants, in English and Hindi.'}</p>
-      <div class="ctas">
-        <a class="btn primary" href="#seat" data-umami-event="cta-seat" data-umami-event-where="hero">{hi ? 'पहले पॉड बैच में सीट रखें' : 'Save my seat in the first pod'}</a>
-        <button class="btn ghost" type="button" data-open-chotu data-umami-event="cta-chotu" data-umami-event-where="hero">{hi ? 'चोटू को नमस्ते कहिए' : 'Say hi to Chotu'}</button>
+    <!-- 1. The whole syllabus as a garden. The garden and the teaching come before everything else (owner, 4 Nov 2026). -->
+    <header class="hero garden-hero" data-scene="hero">
+      <div class="gh-text">
+        <p class="hud">{hi ? 'UPSC का पूरा सिलेबस · हर पंक्ति एक पत्ती' : 'THE WHOLE UPSC SYLLABUS · EVERY LINE A LEAF'}</p>
+        <h1>{hi ? <>UPSC का पूरा सिलेबस।<br /><span class="glow-text">हर एक पंक्ति।</span></> : <>The whole UPSC syllabus.<br /><span class="glow-text">Every line of it.</span></>}</h1>
+        <p class="lede">{hi ? <>नौ पेपर, 59 विषय, 297 पंक्तियाँ, सीधे UPSC की अधिसूचना से। यहाँ हर पत्ती उनमें से एक है। यह बहुत लगता है,
+          क्योंकि है। हर पत्ती तभी जलती है जब आप उसे कमा लें: पढ़ी, फिर हफ़्ते भर बाद याद से बताई, फिर उत्तर में लिखी।
+          स्क्रॉल कीजिए और एक साल बीतता देखिए।</> : <>Nine papers, 59 topics, 297 lines, straight from UPSC's notification. Every leaf here is one of them.
+          It looks like a lot because it is. A leaf lights up only when you've earned it: met, then recalled a week later,
+          then used in an answer. Scroll and watch a year go by.</>}</p>
+        <p class="what">{hi ? 'Aspiran: UPSC सिविल सेवा अभ्यर्थियों के लिए पढ़ाई का ऐप, हिंदी और अंग्रेज़ी में।' : 'Aspiran is a study app for UPSC Civil Services aspirants, in English and Hindi.'}</p>
+        <div class="ctas">
+          <a class="btn primary" href="#seat" data-umami-event="cta-seat" data-umami-event-where="hero">{hi ? 'पहले पॉड बैच में सीट रखें' : 'Save my seat in the first pod'}</a>
+          <button class="btn ghost" type="button" data-open-chotu data-umami-event="cta-chotu" data-umami-event-where="hero">{hi ? 'चोटू को नमस्ते कहिए' : 'Say hi to Chotu'}</button>
+        </div>
       </div>
-      <p class="hud dim scroll-cue" aria-hidden="true">{hi ? '↓ यह कैसे काम करता है, छोटे-छोटे कमरों में। चोटू साथ चलेगा।' : '↓ How it works, in short rooms. Chotu walks with you.'}</p>
+      <div class="garden-wrap" id="garden-wrap">
+        <div class="garden-stick">
+          <div class="garden-frame" id="garden-frame"></div>
+          <div class="sky-hud">
+            <span class="hud" id="garden-month">{hi ? 'महीना 0 · हर पत्ती अँधेरी' : 'MONTH 0 · EVERY LEAF DARK'}</span>
+            <span class="sky-tip" id="garden-tip" aria-live="polite">{hi ? 'किसी पत्ती पर टैप कीजिए' : 'Tap a leaf'}</span>
+          </div>
+          <ul class="legend garden-legend">
+            {hi ? <><li><i class="lf"></i><b>अभी नहीं</b></li><li><i class="lf met"></i><b>पढ़ लिया</b> एक बार पढ़ा है।</li>
+            <li><i class="lf recall"></i><b>याद से बता सकते हैं</b> हफ़्ते या ज़्यादा बाद याद से निकाला।</li>
+            <li><i class="lf use"></i><b>उत्तर में लिख सकते हैं</b> इससे एक उत्तर लिखा।</li></> : <><li><i class="lf"></i><b>Not yet</b></li><li><i class="lf met"></i><b>Met</b> You've read it once.</li>
+            <li><i class="lf recall"></i><b>Can recall</b> Pulled from memory a week or more later.</li>
+            <li><i class="lf use"></i><b>Can use</b> You wrote an answer with it.</li></>}
+          </ul>
+        </div>
+      </div>
     </header>
 
     <main id="main">
+      <!-- 2. How Aspiran teaches: six ideas, each with its own room below. -->
+      <section class="scene method" id="method" data-scene="sky">
+        <p class="hud">{hi ? 'Aspiran कैसे पढ़ाता है' : 'HOW ASPIRAN TEACHES'}</p>
+        <h2>{hi ? 'छह विचार। हर एक का अपना कमरा।' : 'Six ideas. A room for each.'}</h2>
+        <p class="lede">{hi ? 'याद सच में जैसे काम करती है, वैसा ही हर दिन में। नीचे हर विचार को ख़ुद आज़माइए।' : 'The way memory actually works, built into every day. Try each one yourself in the rooms below.'}</p>
+        <ol class="method-list">
+          {(hi ? [
+            ['#recall', 'याद से निकालिए, दोबारा मत पढ़िए', 'किताब बंद कीजिए और दिमाग़ से निकालिए। यही इसे टिकाता है।'],
+            ['#leak', 'भूलने से ठीक पहले रिव्यू', 'छोटे रिव्यू, जिनके बीच का अंतर एक दिन से हफ़्ते और फिर महीनों तक बढ़ता है।'],
+            ['#write', 'लिखिए, जाँचिए, दोबारा लिखिए', 'मेन्स के उत्तर काग़ज़ पर, जाँचे हुए, फिर दोबारा लिखे। निबंध तीन तस्वीरों में: ढाँचा, रूपरेखा, निबंध।'],
+            ['#chai', 'सिलेबस से जुड़ी ख़बरें', 'हर चाय कार्ड सिलेबस की उन पंक्तियों से जुड़ा है जहाँ वह आता है।'],
+            ['#sure', 'जानिए आप कितने पक्के हैं', 'उत्तर देखने से पहले बताइए कितने पक्के थे। तुलना सिर्फ़ अपने पिछले से।'],
+            ['#ipsative', 'एक बार में एक क़दम', 'आज बस अगला काम दिखता है, पूरा पहाड़ कभी नहीं। और मुक़ाबला सिर्फ़ अपने आप से।'],
+          ] : [
+            ['#recall', 'Recall, not re-reading', "Close the book and pull it out of your head. That's what makes it stay."],
+            ['#leak', "Review just before you'd forget", 'Short reviews, with gaps that grow from a day to a week to months.'],
+            ['#write', 'Write, mark, rewrite', 'Mains answers on paper, marked, then rewritten. Essays in three snaps: skeleton, outline, essay.'],
+            ['#chai', 'News tied to the syllabus', 'Every Chai card is pinned to the syllabus lines it belongs to.'],
+            ['#sure', 'Know how sure you are', 'Say how sure you were before you see the answer. Only ever against your own past.'],
+            ['#ipsative', 'One step at a time', 'Today shows the next thing to do, never the whole mountain. And the only comparison is you vs you.'],
+          ]).map(([href, title, line]) => <li><a href={href}><b>{title}</b><span>{line}</span></a></li>)}
+        </ol>
+      </section>
       <!-- 2. The planted fact -->
       <section class="scene plant" id="plant" data-scene="plant">
         <p class="hud">{hi ? 'कमरा 01 · एक छोटा प्रयोग' : 'ROOM 01 · A SMALL EXPERIMENT'}</p>
@@ -166,45 +186,9 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
         <cite>{hi ? '— हर Aspiran पॉड की दीवार पर' : '— on the wall of every Aspiran pod'}</cite>
       </aside>
 
-      <!-- 4. The sky -->
-      <section class="scene sky" id="sky-room" data-scene="sky">
-        <p class="hud">{hi ? 'कमरा 03 · आसमान जैसा आपका सिलेबस' : 'ROOM 03 · YOUR SYLLABUS, AS A SKY'}</p>
-        <h2>{hi ? 'पहले धुंध, फिर तारे।' : 'Fog, then stars.'}</h2>
-        <p class="lede">{hi ? <>UPSC सिलेबस की हर पंक्ति एक तारा है। शुरू में अँधेरा है। तारा तभी जलता है जब आप उसे कमा लें।
-          स्क्रॉल कीजिए और एक साल बीतता देखिए।</> : <>Every line of the UPSC syllabus is a star. It starts dark. It lights up only when you've earned it.
-          Scroll and watch a year go by.</>}</p>
-        <div class="sky-wrap" id="sky-wrap">
-          <div class="sky-stick">
-            <svg id="sky" class="sky-map" viewBox="0 0 1000 560" role="img" aria-label={hi ? 'सितारों के नक़्शे जैसा सिलेबस, साल भर में रोशन होता हुआ' : 'The syllabus as a star map, lighting up over a year'}>
-              <g id="sky-lines"></g>
-              {sky.map(([paper, en], i) => [paper, hi ? skyHi[i] : en]).map(([paper, topic], i) => (
-                <g class="star" data-i={i} data-paper={paper} data-topic={topic} tabindex="0">
-                  <circle class="halo" r="14"></circle>
-                  <circle class="dot" r="4.5"></circle>
-                  <title>{paper} · {topic}</title>
-                </g>
-              ))}
-              <g id="sky-labels"></g>
-            </svg>
-            <div class="sky-hud">
-              <span class="hud" id="sky-month">{hi ? 'महीना 0 · धुंध' : 'MONTH 0 · FOG'}</span>
-              <span class="sky-tip" id="sky-tip" aria-live="polite">{hi ? 'किसी तारे पर टैप कीजिए' : 'Tap a star'}</span>
-            </div>
-            <ul class="legend">
-              {hi ? <><li><i class="s met"></i><b>पढ़ लिया</b> एक बार पढ़ा है।</li>
-              <li><i class="s recall"></i><b>याद से बता सकते हैं</b> हफ़्ते या ज़्यादा बाद याद से निकाला।</li>
-              <li><i class="s use"></i><b>उत्तर में लिख सकते हैं</b> इससे एक उत्तर लिखा।</li></> : <><li><i class="s met"></i><b>Met</b> You've read it once.</li>
-              <li><i class="s recall"></i><b>Can recall</b> Pulled from memory a week or more later.</li>
-              <li><i class="s use"></i><b>Can use</b> You wrote an answer with it.</li></>}
-            </ul>
-          </div>
-        </div>
-        <p class="effect">{hi ? 'कोई "63% पूरा" नहीं। दोबारा पढ़ना झूठा भरोसा दे सकता है। समय नहीं दे सकता, इसीलिए "याद से बता सकते हैं" हफ़्ते भर बाद ही जलता है।' : 'No "63% complete". Re-reading can fake confidence. Time can\'t, which is why "Can recall" only lights up after a week.'}</p>
-      </section>
-
       <!-- 5. The recall -->
       <section class="scene recall" id="recall" data-scene="recall">
-        <p class="hud">{hi ? 'कमरा 04 · कमरा 01 याद है?' : 'ROOM 04 · REMEMBER ROOM 01?'}</p>
+        <p class="hud">{hi ? 'कमरा 03 · कमरा 01 याद है?' : 'ROOM 03 · REMEMBER ROOM 01?'}</p>
         <h2>{hi ? 'जल्दी। ऊपर स्क्रॉल मत कीजिए।' : 'Quick. Don\'t scroll up.'}</h2>
         <div class="quiz" data-reveal>
           <p class="q">{hi ? 'उद्देशिका में कितनी बार संशोधन हुआ है?' : 'How many times has the Preamble been amended?'}</p>
@@ -221,7 +205,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
 
       <!-- 6. Writing -->
       <section class="scene write" id="write" data-scene="write">
-        <p class="hud">{hi ? 'कमरा 05 · मेन्स' : 'ROOM 05 · MAINS'}</p>
+        <p class="hud">{hi ? 'कमरा 04 · मेन्स' : 'ROOM 04 · MAINS'}</p>
         <h2>{hi ? <>शब्द-सीमा के भीतर<br />सधा हुआ तर्क।</> : <>Structured argument<br />under a word limit.</>}</h2>
         <p class="lede">{hi ? <>मेन्स इसी के अंक देता है, और यह हुनर है, जन्मजात प्रतिभा नहीं। इसे मांसपेशी की तरह बनाते हैं: प्रश्न समझिए, हाथ से लिखिए,
           अपने उत्तर को ख़ुद जाँचिए, कमज़ोर हिस्सा दोबारा लिखिए। फिर से। फिर से।</> : <>That's what Mains marks, and it's a skill, not a talent. You build it like a muscle: decode, write by hand,
@@ -269,7 +253,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
 
       <!-- 7. Pluck the line -->
       <section class="scene pluck" id="pluck" data-scene="pluck">
-        <p class="hud">{hi ? 'कमरा 06 · CSAT' : 'ROOM 06 · CSAT'}</p>
+        <p class="hud">{hi ? 'कमरा 05 · CSAT' : 'ROOM 05 · CSAT'}</p>
         <h2>{hi ? 'पंक्ति चुनिए।' : 'Pluck the line.'}</h2>
         <p class="lede">{hi ? <>CSAT सिर्फ़ क्वालिफ़ाइंग है, पर इसमें रुकना पूरा साल ख़त्म कर देता है। बोधगम्यता उस एक वाक्य की खोज है जिसमें
           उत्तर छिपा है। इसलिए हमने इसे खोज बना दिया।</> : <>CSAT is only qualifying, but failing it ends the year. Comprehension is a hunt for the one sentence that
@@ -288,7 +272,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
 
       <!-- 8. Chai -->
       <section class="scene chai" id="chai" data-scene="chai">
-        <p class="hud">{hi ? 'कमरा 07 · करेंट अफ़ेयर्स' : 'ROOM 07 · CURRENT AFFAIRS'}</p>
+        <p class="hud">{hi ? 'कमरा 06 · करेंट अफ़ेयर्स' : 'ROOM 06 · CURRENT AFFAIRS'}</p>
         <h2>{hi ? 'ख़बरें, जो सिलेबस से चिपकी रहें।' : 'News that sticks to the syllabus.'}</h2>
         <p class="lede">{hi ? <>दिन में कुछ चाय कार्ड, और फिर ख़त्म। हर एक आपके आसमान के किसी तारे से जुड़ा है, और हेडलाइन के नीचे के विचार के बारे में
           पूछता है, क्योंकि UPSC वही पूछता है।</> : <>A few chai cards a day, and then it ends. Each one is pinned to a star in your sky, and asks about the idea
@@ -313,7 +297,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
 
       <!-- 9. Calibration -->
       <section class="scene sure" id="sure" data-scene="sure">
-        <p class="hud">{hi ? 'कमरा 08 · नेगेटिव मार्किंग' : 'ROOM 08 · NEGATIVE MARKING'}</p>
+        <p class="hud">{hi ? 'कमरा 07 · नेगेटिव मार्किंग' : 'ROOM 07 · NEGATIVE MARKING'}</p>
         <h2>{hi ? 'क्या आप उतने पक्के हैं, जितना लगता है?' : 'Are you as sure as you feel?'}</h2>
         <p class="lede">{hi ? <>प्रीलिम्स में ग़लत उत्तर पर प्रश्न के एक-तिहाई अंक कटते हैं। कब ख़ुद पर भरोसा करें, यह जानना असली अंक
           दिलाता है। तीन कथन: सत्य या असत्य, और आप कितने पक्के हैं?</> : <>In Prelims, a wrong answer costs a third of the question's marks. Knowing when to trust yourself is worth
@@ -334,8 +318,18 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
       <div class="earth">
       <!-- 10. Pods -->
       <section class="scene pod" id="pod" data-scene="pod">
-        <p class="hud">{hi ? 'कमरा 09 · आपका पॉड' : 'ROOM 09 · YOUR POD'}</p>
-        <h2>{hi ? <>फ़ीड कहती है सब आगे निकल गए।<br />आपका पॉड सच जानता है।</> : <>Your feed says everyone's ahead.<br />Your pod knows better.</>}</h2>
+        <p class="hud">{hi ? 'कमरा 08 · आपका पॉड' : 'ROOM 08 · YOUR POD'}</p>
+        <h2 class="never-alone">{hi ? <>अकेले तैयारी <span class="glow-text">मत कीजिए।</span></> : <>Never prep <span class="glow-text">alone.</span></>}</h2>
+        <p class="lede">{hi ? <>
+        आपके लोग, आपका पॉड, और पढ़ाई की ऐसी जगह जहाँ अक्टूबर में पढ़ा मार्च में भी याद रहे। आपकी अवस्था के 6 से 8
+        अभ्यर्थियों का छोटा पॉड आपका हाल पूछता है और भारी दिनों में साथ बैठता है। बाक़ी समय के लिए चोटू है, आपका AI चाय
+        का कप, जो रात भर जागता है।
+      </> : <>
+        Your people, your pod, and a study space where what you read in October is still there in March. A small pod of
+        6 to 8 aspirants at your stage checks on you and sits with you on the heavy days. Chotu, your AI chai cup, is up
+        all night for the rest.
+      </>}</p>
+        <h3 class="sub">{hi ? <>फ़ीड कहती है सब आगे निकल गए।<br />आपका पॉड सच जानता है।</> : <>Your feed says everyone's ahead.<br />Your pod knows better.</>}</h3>
         <p class="lede">{hi ? <>आपकी अवस्था के छह से आठ अभ्यर्थी। कोई रैंकिंग नहीं, कोई दिखावा नहीं। पहले अकेले, फिर साथ: सब एक ही प्रश्न अकेले लिखते हैं। फिर पॉड दो उत्तर आमने-सामने देखता है
           और बताता है कि कौन ज़्यादा मज़बूत है, और क्यों। कोई अंक नहीं। बस "यह वाला, क्योंकि"।</> : <>Six to eight aspirants at your stage. No rankings, no performing. Alone first, then together: everyone writes the same question alone. Then the pod sees two answers
           side by side and says which is stronger, and why. No marks. Just "this one, because".</>}</p>
@@ -366,7 +360,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
 
       <!-- 11. Your room -->
       <section class="scene yours" id="yours" data-scene="yours">
-        <p class="hud">{hi ? 'कमरा 10 · आपका अपना कमरा' : 'ROOM 10 · A ROOM OF YOUR OWN'}</p>
+        <p class="hud">{hi ? 'कमरा 09 · आपका अपना कमरा' : 'ROOM 09 · A ROOM OF YOUR OWN'}</p>
         <h2>{hi ? <>आपके नोट्स। आपकी डायरी।<br />आपके काम। आपकी नींद।</> : <>Your notes. Your journal.<br />Your to-dos. Your sleep.</>}</h2>
         <p class="lede">{hi ? <>लिखिए या बोलिए। दिन की योजना बनाइए, रात 2 बजे का ख़याल लिख लीजिए, काम पर टिक लगाइए। यह आपकी जगह है। चोटू
           इसे सिर्फ़ आपकी मदद के लिए, और सिर्फ़ आपके कहने पर इस्तेमाल करता है।</> : <>Type it or say it. Plan your day, write the 2 a.m. thought down, tick things off. It's your space. Chotu only
@@ -385,7 +379,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
 
       <!-- 12. Off the screen -->
       <section class="scene walk" id="walk" data-scene="walk">
-        <p class="hud">{hi ? 'कमरा 11 · स्क्रीन से दूर' : 'ROOM 11 · OFF THE SCREEN'}</p>
+        <p class="hud">{hi ? 'कमरा 10 · स्क्रीन से दूर' : 'ROOM 10 · OFF THE SCREEN'}</p>
         <h2>{hi ? 'ऐसी पढ़ाई जो आपको फ़ोन से चिपकाकर न रखे।' : 'Study that doesn\'t glue you to a phone.'}</h2>
         <div class="tiles" data-reveal>
           {hi ? <><div class="tile"><b>सुनिए और टहलिए</b><p>नोट्स और चाय कार्ड पढ़कर सुनाए जाते हैं। लंबे दिनों में शरीर का चलना ज़रूरी है।</p></div>
@@ -400,7 +394,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
 
       <!-- 13. Never -->
       <section class="scene never" id="never" data-scene="never">
-        <p class="hud">{hi ? 'कमरा 12 · एड-टेक का उल्टा' : 'ROOM 12 · THE ANTI-ED-TECH'}</p>
+        <p class="hud">{hi ? 'कमरा 11 · एड-टेक का उल्टा' : 'ROOM 11 · THE ANTI-ED-TECH'}</p>
         <h2>{hi ? 'जो आपको यहाँ कभी नहीं दिखेगा।' : 'Things you will never see here.'}</h2>
         <ul class="strike" id="strike">
           {never.map((n) => <li><span>{n}</span></li>)}
@@ -412,7 +406,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
 
       <!-- 14. You vs you -->
       <section class="scene ipsative" id="ipsative" data-scene="ipsative">
-        <p class="hud">{hi ? 'कमरा 13 · आप बनाम आप' : 'ROOM 13 · YOU VS. YOU'}</p>
+        <p class="hud">{hi ? 'कमरा 12 · आप बनाम आप' : 'ROOM 12 · YOU VS. YOU'}</p>
         <h2>{hi ? <>एकमात्र तुलना<br />जो न्यायपूर्ण है।</> : <>The only comparison<br />that's fair.</>}</h2>
         <p class="lede">{hi ? <>इसका एक नाम है: <b>स्व-तुलनात्मक मूल्यांकन</b> (ipsative assessment)। आपको आपके अपने अतीत से मापा जाता है, कभी किसी
           अजनबी की हाइलाइट रील से नहीं।</> : <>There's a name for it: <b>ipsative assessment</b>. You're measured against your own past, never against a
@@ -436,7 +430,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
 
       <!-- 15. Interview -->
       <section class="scene interview" id="interview" data-scene="interview">
-        <p class="hud">{hi ? 'कमरा 14 · अगर मेन्स निकल जाए' : 'ROOM 14 · IF YOU CLEAR MAINS'}</p>
+        <p class="hud">{hi ? 'कमरा 13 · अगर मेन्स निकल जाए' : 'ROOM 13 · IF YOU CLEAR MAINS'}</p>
         <h2>{hi ? 'हम पूरी ताक़त लगाते हैं।' : 'We go all in.'}</h2>
         <p class="lede">{hi ? <>इंटरव्यू बोर्ड पाँच अजनबी हैं, पाँच तरह के सवालों के साथ। इसलिए अभ्यास भी विविध: पॉड के साथ मॉक बोर्ड,
           आपके अपने फ़ॉर्म से बने सवाल (आपका शहर, आपकी डिग्री, आपके शौक़), और चोटू, वह बोर्ड सदस्य बनकर जो वह सवाल पूछे
@@ -447,7 +441,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
 
       <!-- 16. Languages -->
       <section class="scene langs" id="langs" data-scene="langs">
-        <p class="hud">{hi ? 'कमरा 15 · आपकी भाषा' : 'ROOM 15 · YOUR LANGUAGE'}</p>
+        <p class="hud">{hi ? 'कमरा 14 · आपकी भाषा' : 'ROOM 14 · YOUR LANGUAGE'}</p>
         {hi ? <h2>हिंदी में भी। पूरा।</h2> : <h2 lang="hi">हिंदी में भी। पूरा।</h2>}
         <p class="lede">{hi ? <>पहले दिन से हिंदी और अंग्रेज़ी: नोट्स, अभ्यास और उत्तरों पर राय। हर विषय के शब्द दोनों भाषाओं में,
           जैसे राजकोषीय घाटा / <span lang="en">fiscal deficit</span>, क्योंकि किताबें एक भाषा में होती हैं और परीक्षा दूसरी में हो सकती है।</> : <>Hindi and English from day one: notes, practice and answer feedback. Every topic carries its terms in both,
@@ -456,7 +450,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
 
       <!-- 17. Price -->
       <section class="scene price" id="price" data-scene="price">
-        <p class="hud">{hi ? 'कमरा 16 · क़ीमत' : 'ROOM 16 · WHAT IT COSTS'}</p>
+        <p class="hud">{hi ? 'कमरा 15 · क़ीमत' : 'ROOM 15 · WHAT IT COSTS'}</p>
         <h2>{hi ? 'जुड़ना मुफ़्त। और चाहिए तो Plus।' : 'Free to join. Plus if you want more.'}</h2>
         <div class="plans" data-reveal>
           {hi ? <><div class="plan"><b>मुफ़्त</b><p class="amt">₹0</p>
@@ -473,7 +467,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
 
       <!-- 18. Seat -->
       <section class="scene seat" id="seat" data-scene="seat">
-        <p class="hud">{hi ? 'कमरा 17 · आपकी सीट' : 'ROOM 17 · YOUR SEAT'}</p>
+        <p class="hud">{hi ? 'कमरा 16 · आपकी सीट' : 'ROOM 16 · YOUR SEAT'}</p>
         <h2 id="seat-h">{hi ? 'चोटू आपके बारे में इतना जानता है।' : "Here's what Chotu knows about you."}</h2>
         <div class="seat-card" data-reveal>
           <dl id="seat-summary"><dt class="dim">{hi ? 'अभी कुछ नहीं।' : 'Nothing yet.'}</dt><dd class="dim">{hi ? 'स्क्रॉल करते हुए चोटू से बात कीजिए, या बस नंबर छोड़ दीजिए।' : 'Talk to Chotu as you scroll, or just leave a number.'}</dd></dl>

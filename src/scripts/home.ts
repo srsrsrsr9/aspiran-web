@@ -3,6 +3,9 @@
 // Answers stay in this browser until the visitor ticks the consent box and presses Save my seat; only then do they go
 // to /web/lead. If the server can't be reached, the page still works and the seat form falls back to WhatsApp.
 
+import { garden, vinesOf, countsOf, jitter } from './garden/vine.js';
+import { papersFor, nodeId } from './garden/syllabus.js';
+
 const API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
   ? 'http://localhost:8788'
   : 'https://upsc-pods-production.chotu-aec.workers.dev';
@@ -124,58 +127,49 @@ $$('#strike li').forEach((li) => strikeIo.observe(li));
   once.observe(chart);
 })();
 
-// ---------------------------------------------------------------- Room 03: the sky
+// ---------------------------------------------------------------- Opening: the whole syllabus as a garden
+// The app's own garden (scripts/garden/, copied from the app). Every leaf starts dark; scrolling through the opening
+// plays a year: each topic is met, recalled a few weeks later and, for some, used in an answer later still.
+// The months are a sketch, steady on every visit (seeded by topic), not anyone's data.
 (() => {
-  const svg = $('#sky'), wrap = $('#sky-wrap'), month = $('#sky-month'), tip = $('#sky-tip');
-  const centres: Record<string, [number, number]> = {
-    GS1: [190, 170], GS2: [450, 135], GS3: [740, 175], GS4: [860, 420], Essay: [585, 415], CSAT: [345, 430], Optional: [120, 420],
-  };
-  let seed = 7;
-  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  const stars = $$<SVGGElement>('#sky .star').map((el) => {
-    const [cx, cy] = centres[el.dataset.paper!];
-    const a = rnd() * 6.283, r = 18 + rnd() * 78;
-    const x = cx + Math.cos(a) * r * 1.25, y = cy + Math.sin(a) * r * 0.8;
-    el.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
-    const met = 0.04 + rnd() * 0.55, recall = met + 0.12 + rnd() * 0.25, use = rnd() < 0.45 ? recall + 0.08 + rnd() * 0.25 : 2;
-    return { el, x, y, paper: el.dataset.paper!, topic: el.dataset.topic!, met, recall, use, state: '' };
+  const frame = $('#garden-frame'), wrap = $('#garden-wrap'), month = $('#garden-month'), tip = $('#garden-tip');
+  if (!frame) return;
+  const vines = vinesOf(papersFor(null), nodeId, () => 'none', false);
+  const total = countsOf(vines).lines;
+  const svg = garden(vines, { height: 430, label: t('The whole UPSC syllabus as a creeper garden: nine papers, every line a leaf, lighting up over a year', 'UPSC का पूरा सिलेबस, बेल-बग़ीचे की तरह: नौ पेपर, हर पंक्ति एक पत्ती, साल भर में जलती हुई') });
+  // Nothing to open here, so the vines aren't buttons.
+  svg.querySelectorAll('.vine').forEach((g) => { g.removeAttribute('role'); g.removeAttribute('tabindex'); g.removeAttribute('aria-label'); });
+  frame.append(svg);
+  const paperOf = Object.fromEntries(vines.flatMap((v) => v.branches.flatMap((b) => b.leaves.map((l) => [l.node, v.label]))));
+  const leaves = [...svg.querySelectorAll<SVGGElement>('.vine-leaf')].filter((l) => l.dataset.node).map((el) => {
+    const node = el.dataset.node!, a = jitter(node + 'm') + 0.5, b = jitter(node + 'r') + 0.5, c = jitter(node + 'u') + 0.5;
+    const met = 0.03 + a * 0.72, recall = met + 0.1 + b * 0.3, use = c < 0.4 ? recall + 0.08 + c * 0.5 : 2;
+    return { el, node, line: el.dataset.line ?? '', met, recall, use, state: 'none' };
   });
-  // Constellation lines: each star to its nearest neighbour in the same paper.
-  const lines = $('#sky-lines');
-  const links: [number, number][] = [];
-  stars.forEach((s, i) => {
-    let best = -1, bd = 1e9;
-    stars.forEach((o, j) => { if (j !== i && o.paper === s.paper) { const d = (o.x - s.x) ** 2 + (o.y - s.y) ** 2; if (d < bd) { bd = d; best = j; } } });
-    if (best >= 0 && !links.some(([a, b]) => (a === best && b === i))) links.push([i, best]);
-  });
-  lines.innerHTML = links.map(([a, b]) => `<line x1="${stars[a].x}" y1="${stars[a].y}" x2="${stars[b].x}" y2="${stars[b].y}" data-a="${a}" data-b="${b}"/>`).join('');
-  const skyName: Record<string, string> = HI ? { Essay: 'निबंध', CSAT: 'CSAT', Optional: 'वैकल्पिक' } : {};
-  $('#sky-labels').innerHTML = Object.entries(centres).map(([k, [x, y]]) => `<text x="${x}" y="${y - 108}" text-anchor="middle">${skyName[k] ?? k.toUpperCase()}</text>`).join('');
-  const lineEls = $$<SVGLineElement>('#sky-lines line');
-  const label = (HI ? { '': 'अभी शुरू नहीं', met: 'पढ़ लिया', recall: 'याद से बता सकते हैं', use: 'उत्तर में लिख सकते हैं' } : { '': 'not started', met: 'met', recall: 'can recall', use: 'can use' }) as Record<string, string>;
-
+  const label = (HI ? { none: 'अभी नहीं', met: 'पढ़ लिया', recall: 'याद से बता सकते हैं', use: 'उत्तर में लिख सकते हैं' } : { none: 'not yet', met: 'met', recall: 'can recall', use: 'can use' }) as Record<string, string>;
   const paint = (p: number) => {
     let m = 0, r = 0, u = 0;
-    for (const s of stars) {
-      const st = p >= s.use ? 'use' : p >= s.recall ? 'recall' : p >= s.met ? 'met' : '';
-      if (st !== s.state) { s.el.classList.remove('met', 'recall', 'use'); if (st) s.el.classList.add(st); s.state = st; }
-      s.el.setAttribute('aria-label', `${s.paper}: ${s.topic}, ${label[st]}`);
-      if (st) m++; if (st === 'recall' || st === 'use') r++; if (st === 'use') u++;
+    for (const l of leaves) {
+      const st = p >= l.use ? 'use' : p >= l.recall ? 'recall' : p >= l.met ? 'met' : 'none';
+      if (st !== l.state) { l.el.classList.remove('none', 'met', 'recall', 'use'); l.el.classList.add(st); l.state = st; }
+      if (st !== 'none') m++; if (st === 'recall' || st === 'use') r++; if (st === 'use') u++;
     }
-    lineEls.forEach((l) => l.classList.toggle('lit', !!stars[+l.dataset.a!].state && !!stars[+l.dataset.b!].state));
     const mo = Math.min(12, Math.round(p * 12));
-    month.textContent = mo === 0 ? t('MONTH 0 · FOG', 'महीना 0 · धुंध') : t(`MONTH ${mo} · ${m} MET · ${r} CAN RECALL · ${u} CAN USE`, `महीना ${mo} · ${m} पढ़े · ${r} याद से · ${u} उत्तर में`);
+    month.textContent = mo === 0 ? t(`MONTH 0 · ${total} LINES, EVERY LEAF DARK`, `महीना 0 · ${total} पंक्तियाँ, हर पत्ती अँधेरी`)
+      : t(`MONTH ${mo} · ${m} MET · ${r} CAN RECALL · ${u} CAN USE`, `महीना ${mo} · ${m} पढ़ी · ${r} याद से · ${u} उत्तर में`);
   };
   const onScroll = () => {
     const b = wrap.getBoundingClientRect();
-    const total = b.height - innerHeight * 0.8;
-    paint(Math.max(0, Math.min(1, (-b.top + innerHeight * 0.15) / Math.max(total, 1))));
+    const span = b.height - innerHeight * 0.8;
+    paint(Math.max(0, Math.min(1, (-b.top + innerHeight * 0.1) / Math.max(span, 1))));
   };
   addEventListener('scroll', () => requestAnimationFrame(onScroll), { passive: true });
   onScroll();
-  const pick = (s: (typeof stars)[number]) => { tip.textContent = `${s.paper} · ${s.topic}: ${label[s.state]}`; };
-  stars.forEach((s) => { s.el.addEventListener('click', () => pick(s)); s.el.addEventListener('focus', () => pick(s)); });
-  void svg;
+  svg.addEventListener('click', (e) => {
+    const el = (e.target as Element).closest('.vine-leaf') as SVGGElement | null;
+    const l = leaves.find((x) => x.el === el);
+    if (l) tip.textContent = `${paperOf[l.node] ?? ''} · ${l.line}: ${label[l.state]}`;
+  });
 })();
 
 // ---------------------------------------------------------------- Room 04: recall
@@ -393,7 +387,7 @@ const SCRIPT: Record<string, Beat> = {
       then: (v) => /consist|लगातार/i.test(v) ? t("Then here's a secret: the plan survives missed days. Nothing breaks, nothing piles up. You just pick up today's three.", 'तो एक राज़: छूटे दिनों से योजना नहीं टूटती। न कुछ टूटता है, न ढेर लगता है। बस आज के तीन काम उठाइए।')
         : /answer|writ|उत्तर|लेखन/i.test(v) ? t('Then the Mains room was for you. Skeleton drills: two minutes each, ten a week.', 'तो मेन्स वाला कमरा आपके लिए था। ढाँचे का अभ्यास: दो-दो मिनट, हफ़्ते में दस।')
           : /alone|lonely|अकेल/i.test(v) ? t("That's what the pod is for. Real people, at your stage.", 'पॉड इसीलिए है। असली लोग, आपकी ही अवस्था में।')
-            : /much|cover|syllab|बहुत|सिलेबस/i.test(v) ? t('The sky helps: one star at a time, and you can see which ones are lit.', 'आसमान मदद करता है: एक बार में एक तारा, और दिखता है कौन-से जल गए।')
+            : /much|cover|syllab|बहुत|सिलेबस/i.test(v) ? t('The garden helps: one leaf at a time, and you can see which ones are lit.', 'बग़ीचा मदद करता है: एक बार में एक पत्ती, और दिखता है कौन-सी जल गईं।')
               : t('Thank you for telling me. I\'ll make sure your pod hears what matters.', 'बताने के लिए शुक्रिया। जो ज़रूरी है, आपके पॉड तक पहुँचेगा।'),
     },
   },

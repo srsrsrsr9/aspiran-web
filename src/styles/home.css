@@ -360,3 +360,62 @@
 .earth::before { content: ""; display: block; height: 1px; margin: 0 auto; max-width: 1080px;
   background: linear-gradient(90deg, transparent, rgba(240, 160, 75, .55), transparent); }
 .earth > .scene, .earth > .foot { position: relative; }
+
+/* The opening: the whole syllabus as a creeper garden (scripts/garden/vine.js, the app's garden), lit over a year as you
+   scroll. Night colours, as in the app's dark mode. */
+.night { --g-sky1:#070A18; --g-sky2:#151A3A; --g-ground:#2A1D13; --g-ground2:#1A110A; --g-stem:#4D6E4C; --g-twig:#5A7F57;
+  --leaf-none:#56658A; --leaf-none-fill:rgba(96,112,150,.38); --leaf-met:#6DB36F; --leaf-recall:#9BE38C; --leaf-use:#C6FFA6;
+  --leaf-glow:rgba(155,227,140,.75); --bloom:#F0A04B; --bloom-eye:#FFE0A8; --g-star:rgba(238,234,246,.7); --g-label:#E8D8C4; }
+.garden-hero { min-height: auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; align-items: start; justify-content: stretch; padding-bottom: 4vh; }
+.garden-hero h1 { font-size: clamp(36px, 7.4vw, 96px); text-wrap: balance; }
+.gh-text { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.garden-wrap { height: 240vh; position: relative; min-width: 0; }
+.garden-stick { position: sticky; top: 7vh; display: flex; flex-direction: column; gap: 12px; }
+.garden-frame { border-radius: 24px; overflow: hidden; border: 1px solid var(--line); background: linear-gradient(180deg, var(--g-sky1), var(--g-sky2) 82%);
+  box-shadow: 0 0 80px rgba(155, 227, 140, .08); }
+.garden-frame svg { display: block; width: 100%; height: auto; max-height: 70vh; }
+@media (min-width: 960px) {
+  .garden-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 48px; }
+  .gh-text { position: sticky; top: 12vh; }
+  .garden-hero h1 { font-size: clamp(40px, 5vw, 76px); }
+  .garden-hero .lede { font-size: 18px; }
+}
+.vine-star { fill: var(--g-star); }
+.vine-ground { fill: var(--g-ground); }
+.vine-horizon { fill: var(--g-ground2); opacity: .55; }
+.vine-label { fill: var(--g-label); font: 700 9.5px var(--serif); letter-spacing: .02em; pointer-events: none; }
+.vine-hit { fill: transparent; }
+.vine-stem { fill: none; stroke: var(--g-stem); stroke-linecap: round; }
+.vine-twine { stroke: var(--g-twig); opacity: .7; }
+.vine-twig { fill: none; stroke: var(--g-twig); stroke-linecap: round; }
+.vine-leaf { cursor: pointer; }
+.vine-leaf path:first-child { fill: var(--leaf-none-fill); stroke: var(--leaf-none); stroke-width: .5px; vector-effect: non-scaling-stroke; transition: fill .6s; }
+.vine-leaf.met path:first-child { fill: var(--leaf-met); stroke: none; filter: drop-shadow(0 0 1px var(--leaf-glow)); }
+.vine-leaf.recall path:first-child { fill: var(--leaf-recall); stroke: none; filter: drop-shadow(0 0 1.5px var(--leaf-glow)); }
+.vine-leaf.use path:first-child { fill: var(--leaf-use); stroke: none; filter: drop-shadow(0 0 2.5px var(--leaf-glow)); }
+.vine.seedling .vine-leaf path:first-child { stroke-dasharray: 2 2; }
+@media (prefers-reduced-motion: no-preference) {
+  .vine-garden.grow .vine-stem { stroke-dasharray: 1; stroke-dashoffset: 1; animation: vine-draw 1.1s ease-out forwards; }
+  .vine-garden.grow .vine-branch .vine-twig { stroke-dasharray: 1; stroke-dashoffset: 1; animation: vine-draw .5s ease-out forwards; animation-delay: var(--d, 0s); }
+  .vine-garden.grow .vine-leaf { opacity: 0; animation: vine-in .45s ease-out forwards; animation-delay: calc(var(--d, 0s) + .2s); }
+}
+@keyframes vine-draw { to { stroke-dashoffset: 0; } }
+@keyframes vine-in { to { opacity: 1; } }
+.legend .lf { display: inline-block; width: 15px; height: 9px; border-radius: 0 80% 0 80%; margin-right: 8px; transform: rotate(-20deg);
+  background: var(--leaf-none-fill); border: 1px solid var(--leaf-none); }
+.legend .lf.met { background: var(--leaf-met); border-color: transparent; }
+.legend .lf.recall { background: var(--leaf-recall); border-color: transparent; }
+.legend .lf.use { background: var(--leaf-use); border-color: transparent; box-shadow: 0 0 6px var(--leaf-glow); }
+/* How Aspiran teaches: six ideas, each a link to its room. */
+.method-list { list-style: none; counter-reset: m; margin: 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.method-list li { counter-increment: m; }
+.method-list a { display: grid; grid-template-columns: 40px 1fr; column-gap: 12px; padding: 16px 18px; border-radius: 18px; background: var(--panel);
+  border: 1px solid var(--line); color: var(--muted); text-decoration: none; height: 100%; box-sizing: border-box; transition: border-color .2s; }
+.method-list a:hover, .method-list a:focus-visible { border-color: var(--saffron); }
+.method-list a::before { content: counter(m, decimal-leading-zero); grid-row: span 2; font-family: var(--mono); font-size: 14px; color: var(--saffron); padding-top: 4px; }
+.method-list b { color: var(--ink); font-family: var(--serif); font-size: 19px; line-height: 1.3; }
+.method-list span { font-size: 15.5px; line-height: 1.5; margin-top: 4px; }
+.pod .never-alone { font-size: clamp(44px, 8vw, 110px); line-height: .98; }
+.pod h3.sub { color: var(--ink); font-family: var(--serif); font-weight: 700; font-size: clamp(22px, 3.2vw, 34px); line-height: 1.2; margin: 0; text-wrap: balance; }
+@media (max-width: 600px) { .garden-wrap { height: 200vh; } .garden-frame svg { max-height: 62vh; } }
+@media (prefers-reduced-motion: reduce) { .garden-wrap { height: auto; } .garden-stick, .gh-text { position: static; } }
