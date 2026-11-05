@@ -333,16 +333,25 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
         <p class="lede">{hi ? <>आपकी अवस्था के छह से आठ अभ्यर्थी। कोई रैंकिंग नहीं, कोई दिखावा नहीं। पहले अकेले, फिर साथ: सब एक ही प्रश्न अकेले लिखते हैं। फिर पॉड दो उत्तर आमने-सामने देखता है
           और बताता है कि कौन ज़्यादा मज़बूत है, और क्यों। कोई अंक नहीं। बस "यह वाला, क्योंकि"।</> : <>Six to eight aspirants at your stage. No rankings, no performing. Alone first, then together: everyone writes the same question alone. Then the pod sees two answers
           side by side and says which is stronger, and why. No marks. Just "this one, because".</>}</p>
-        <div class="podviz" data-reveal aria-hidden="true">
-          <div class="orbit">
+        <div class="podviz" data-podviz data-step="0">
+          <div class="orbit" aria-hidden="true">
             <span class="p" style="--a:0">R</span><span class="p" style="--a:1">M</span><span class="p" style="--a:2">S</span>
             <span class="p" style="--a:3">A</span><span class="p" style="--a:4">K</span><span class="p" style="--a:5">T</span>
             <span class="core">{hi ? <>एक ही<br />प्रश्न</> : <>same<br />question</>}</span>
           </div>
-          <div class="pair">
-            <div class="ans-mini">{hi ? <>उत्तर A<br /><i>एक आँकड़े से शुरू</i></> : <>Answer A<br /><i>opens with a statistic</i></>}</div>
-            <div class="vs">{hi ? 'कौन ज़्यादा मज़बूत?' : 'which is stronger?'}</div>
-            <div class="ans-mini win">{hi ? <>उत्तर B<br /><i>पहली पंक्ति में "स्पष्ट" करता है</i></> : <>Answer B<br /><i>answers "explain" in line one</i></>}</div>
+          <div class="podplay">
+            <div class="pod-steps" role="group" aria-label={hi ? 'पॉड कैसे काम करता है' : 'How a pod works'}>
+              <button type="button" data-step="0">{hi ? '1 · अकेले' : '1 · Alone'}</button>
+              <button type="button" data-step="1">{hi ? '2 · आमने-सामने' : '2 · Side by side'}</button>
+              <button type="button" data-step="2">{hi ? '3 · यह वाला, क्योंकि' : '3 · This one, because'}</button>
+            </div>
+            <p class="pod-cap" aria-live="polite">{hi ? 'सब एक ही प्रश्न अकेले लिखते हैं। अभी कोई किसी का उत्तर नहीं देखता।' : "Everyone writes the same question, alone. Nobody sees anyone else's yet."}</p>
+            <div class="pair">
+              <button type="button" class="ans-mini" data-ans="a">{hi ? <>उत्तर A<br /><i>एक आँकड़े से शुरू</i></> : <>Answer A<br /><i>opens with a statistic</i></>}</button>
+              <div class="vs">{hi ? 'कौन ज़्यादा मज़बूत?' : 'which is stronger?'}</div>
+              <button type="button" class="ans-mini" data-ans="b">{hi ? <>उत्तर B<br /><i>पहली पंक्ति में "स्पष्ट" करता है</i></> : <>Answer B<br /><i>answers "explain" in line one</i></>}</button>
+            </div>
+            <ul class="pod-says" aria-live="polite"></ul>
           </div>
         </div>
         <ul class="facts">

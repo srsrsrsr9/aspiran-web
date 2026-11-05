@@ -507,7 +507,17 @@ function beat(scene: string) {
 // A room counts as reached when it crosses the middle of the screen, however tall it is (room 5 is 3,000px on a phone).
 const sceneIo = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) beat((e.target as HTMLElement).dataset.scene!); }), { rootMargin: '-35% 0px -35% 0px' });
 // Chotu always says hello first, even when the page opens part-way down (a reload, a shared link).
-setTimeout(() => { beat('hero'); $$('[data-scene]').forEach((s) => sceneIo.observe(s)); }, 700);
+// But Chotu waits until the visitor has scrolled past the hero (the garden), so its bubble never covers the opening.
+const startChotu = () => { beat('hero'); $$('[data-scene]').forEach((s) => sceneIo.observe(s)); };
+const firstRoom = $('#method');
+if (!firstRoom || firstRoom.getBoundingClientRect().top < innerHeight * 0.75) setTimeout(startChotu, 700);
+else {
+  const past = new IntersectionObserver((es) => {
+    if (!es.some((e) => e.isIntersecting)) return;
+    past.disconnect(); setTimeout(startChotu, 400);
+  }, { rootMargin: '0px 0px -25% 0px' });
+  past.observe(firstRoom);
+}
 
 $('#dock-form').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -589,4 +599,62 @@ $('#seat-form').addEventListener('submit', async (e) => {
     out.appendChild(a);
   }
 });
+// ---------------------------------------------------------------- The pod room: alone, side by side, "this one, because"
+(() => {
+  const box = $('[data-podviz]');
+  if (!box) return;
+  const cap = box.querySelector('.pod-cap') as HTMLElement;
+  const says = box.querySelector('.pod-says') as HTMLElement;
+  const CAPS = [
+    t("Everyone writes the same question, alone. Nobody sees anyone else's yet.", 'सब एक ही प्रश्न अकेले लिखते हैं। अभी कोई किसी का उत्तर नहीं देखता।'),
+    t('Then two answers go up side by side, names off.', 'फिर दो उत्तर आमने-सामने रखे जाते हैं, बिना नाम के।'),
+    t('Which is stronger? Tap one.', 'कौन ज़्यादा मज़बूत है? किसी एक पर टैप कीजिए।'),
+  ];
+  const FACES = ['R', 'M', 'S', 'A', 'K', 'T'];
+  const hue = (who: string) => `hsl(${FACES.indexOf(who) * 50 + 20} 70% 68%)`;
+  let timer = 0, auto = true;
+  const later: number[] = [];
+  const set = (n: number) => {
+    later.forEach(clearTimeout); later.length = 0;
+    box.dataset.step = String(n);
+    cap.textContent = CAPS[n];
+    box.querySelectorAll<HTMLButtonElement>('.pod-steps button').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.step) === n)));
+    says.innerHTML = '';
+    box.querySelectorAll('.ans-mini').forEach((a) => a.classList.remove('picked', 'win'));
+  };
+  const after = (ms: number, fn: () => void) => { if (reduced) fn(); else later.push(window.setTimeout(fn, ms)); };
+  const say = (who: string, text: string, ms: number) => after(ms, () => {
+    const li = document.createElement('li');
+    const dot = document.createElement('span'); dot.className = 'who'; dot.textContent = who; dot.style.background = hue(who);
+    const p = document.createElement('span'); p.textContent = text;
+    li.append(dot, p); says.append(li);
+  });
+  const pick = (which: 'a' | 'b') => {
+    auto = false; clearTimeout(timer);
+    set(2);
+    box.querySelector(`[data-ans="${which}"]`)!.classList.add('picked');
+    box.querySelector('[data-ans="b"]')!.classList.add('win');
+    cap.textContent = which === 'b'
+      ? t('Same pick as the pod. Now the "because":', 'पॉड जैसा ही चुनाव। अब "क्योंकि":')
+      : t('A fair pick. Here is what the pod said:', 'ठीक चुनाव। पॉड ने यह कहा:');
+    if (which === 'a') say('K', t("A's number is strong. But the question said explain, and B explains first.", 'A का आँकड़ा दमदार है। पर प्रश्न ने "स्पष्ट" करने को कहा था, और B पहले स्पष्ट करता है।'), 200);
+    else say('K', t('B says why in its first line. That is what "explain" asks for.', 'B पहली पंक्ति में बताता है कि क्यों। "स्पष्ट कीजिए" यही माँगता है।'), 200);
+    say('T', t("Put A's number in B's second line and it beats both.", 'A का आँकड़ा B की दूसरी पंक्ति में रख दें, तो दोनों से बेहतर।'), 1300);
+    say('S', t('Both rewrite tonight. Same question, better answer.', 'आज रात दोनों फिर से लिखेंगे। वही प्रश्न, बेहतर उत्तर।'), 2400);
+    after(3400, () => { cap.textContent = t('No marks. Just "this one, because".', 'कोई अंक नहीं। बस "यह वाला, क्योंकि"।'); });
+  };
+  box.querySelectorAll<HTMLButtonElement>('.pod-steps button').forEach((b) => b.addEventListener('click', () => { auto = false; clearTimeout(timer); set(Number(b.dataset.step)); }));
+  box.querySelectorAll<HTMLButtonElement>('.ans-mini').forEach((b) => b.addEventListener('click', () => pick(b.dataset.ans as 'a' | 'b')));
+  set(reduced ? 2 : 0);
+  if (reduced) return;
+  // Plays once when the room comes into view: alone, then side by side, then the question waits for a tap.
+  const run = () => {
+    if (!auto) return;
+    set(0);
+    timer = window.setTimeout(() => { if (!auto) return; set(1); timer = window.setTimeout(() => { if (auto) set(2); }, 3600); }, 3600);
+  };
+  const seen = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { seen.disconnect(); run(); } }, { threshold: 0.4 });
+  seen.observe(box);
+})();
+
 export {};
