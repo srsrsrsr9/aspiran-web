@@ -459,3 +459,14 @@
   .pod-says li { animation: none; }
   .podviz .ans-mini, .podviz .pair { transition: none; }
 }
+
+/* "Can use" flowers: a marigold opens at the leaf tip (as in the app) */
+.vine-bloom ellipse { fill: var(--bloom); }
+.vine-bloom .vine-bloom-eye { fill: var(--bloom-eye); }
+.vine-leaf .bloom-open { transform: scale(0); opacity: 0; transition: transform .5s cubic-bezier(.3,1.6,.5,1), opacity .3s; }
+.vine-leaf.use .bloom-open { transform: scale(1); opacity: 1; }
+.vine-leaf .vine-bloom { filter: drop-shadow(0 0 2px rgba(240,160,75,.6)); }
+.legend .lf.use { position: relative; }
+.legend .lf.use::after { content: ""; position: absolute; right: -6px; top: -5px; width: 9px; height: 9px; border-radius: 50%;
+  background: radial-gradient(circle, var(--bloom-eye) 0 28%, var(--bloom) 30% 100%); box-shadow: 0 0 6px rgba(240,160,75,.7); transform: rotate(20deg); }
+@media (prefers-reduced-motion: reduce) { .vine-leaf .bloom-open { transition: none; } }

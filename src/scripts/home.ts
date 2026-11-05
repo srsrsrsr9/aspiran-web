@@ -146,6 +146,33 @@ $$('#strike li').forEach((li) => strikeIo.observe(li));
     const met = 0.03 + a * 0.72, recall = met + 0.1 + b * 0.3, use = c < 0.4 ? recall + 0.08 + c * 0.5 : 2;
     return { el, node, line: el.dataset.line ?? '', met, recall, use, state: 'none' };
   });
+  // "Can use" is a marigold flower at the leaf's tip, as in the app. Each leaf that will flower gets its bloom now,
+  // hidden; the .use class opens it.
+  const NS = 'http://www.w3.org/2000/svg';
+  leaves.filter((l) => l.use < 2).forEach((l) => {
+    const leafPath = l.el.querySelector('path');
+    if (!leafPath) return;
+    const bb = leafPath.getBBox();
+    const size = Math.max(2.2, Math.min(bb.width, 14) * 0.3);
+    const g = document.createElementNS(NS, 'g');
+    g.setAttribute('class', 'vine-bloom');
+    g.setAttribute('transform', `translate(${(bb.x + bb.width * 0.92).toFixed(1)} ${(bb.y + bb.height * 0.5).toFixed(1)})`);
+    for (let k = 0; k < 5; k++) {
+      const e = document.createElementNS(NS, 'ellipse');
+      e.setAttribute('cx', '0'); e.setAttribute('cy', (-size * 0.55).toFixed(2));
+      e.setAttribute('rx', (size * 0.38).toFixed(2)); e.setAttribute('ry', (size * 0.55).toFixed(2));
+      e.setAttribute('transform', `rotate(${k * 72})`);
+      g.append(e);
+    }
+    const eye = document.createElementNS(NS, 'circle');
+    eye.setAttribute('r', (size * 0.32).toFixed(2)); eye.setAttribute('class', 'vine-bloom-eye');
+    g.append(eye);
+    const inner = document.createElementNS(NS, 'g');
+    inner.setAttribute('class', 'bloom-open');
+    inner.append(...g.childNodes);
+    g.append(inner);
+    l.el.append(g);
+  });
   const label = (HI ? { none: 'अभी नहीं', met: 'पढ़ लिया', recall: 'याद से बता सकते हैं', use: 'उत्तर में लिख सकते हैं' } : { none: 'not yet', met: 'met', recall: 'can recall', use: 'can use' }) as Record<string, string>;
   const paint = (p: number) => {
     let m = 0, r = 0, u = 0;
