@@ -1,0 +1,239 @@
+---
+// The short home page (12 Nov 2026): the problem, one thing to try, what Aspiran does, who is behind it, the price.
+// One action everywhere: "Try one topic free, no sign-up", which opens the app's open demo. The long page with the
+// garden and the rooms lives at /how-it-works/. English and Hindi side by side, as on the long page.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { waUrl } from '../i18n';
+import '@fontsource/martel/latin-800.css';
+import '@fontsource/martel/devanagari-700.css';
+import '@fontsource/mukta/devanagari-400.css';
+import '../styles/short.css';
+
+interface Props { lang?: 'en' | 'hi' }
+const { lang = 'en' } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+
+const title = T('Aspiran: remember what you read for UPSC', 'Aspiran: UPSC के लिए जो पढ़ा, वह याद रहे');
+const description = T(
+  'What you read in October is gone by March. Aspiran brings it back before you forget, has you write and mark real answers, and puts you in a small pod. UPSC, in English and Hindi. Try one topic free.',
+  'अक्टूबर में पढ़ा मार्च तक निकल जाता है। Aspiran भूलने से पहले उसे वापस लाता है, उत्तर लिखवाता और जँचवाता है, और एक छोटे पॉड में रखता है। UPSC, हिंदी और अंग्रेज़ी में। एक टॉपिक मुफ़्त आज़माइए।',
+);
+const app = (where: string, hash = '#try') => `https://app.aspiran.in/app/?utm_source=site&utm_medium=${where}${hash}`;
+const how = hi ? '/hi/how-it-works/' : '/how-it-works/';
+const WA_PAY = waUrl(T("Hi Aspiran! I'd like Plus at the first-300 price.", 'Hi Aspiran! मुझे पहले 300 वाली क़ीमत पर Plus चाहिए।'));
+const tryLabel = T('Try one topic free, no sign-up', 'एक टॉपिक मुफ़्त आज़माएँ, बिना साइन-अप');
+
+const does = hi ? [
+  ['याद रहे', 'रोज़ 10 से 20 मिनट का रिव्यू। हर चीज़ ठीक भूलने से पहले लौटती है: एक दिन, एक हफ़्ता, फिर महीने।', '#leak'],
+  ['लिखें, जाँचें, फिर लिखें', 'मेन्स का उत्तर काग़ज़ पर। पहले ख़ुद जाँचिए, फिर AI की दूसरी राय देखिए, फिर सबसे कमज़ोर हिस्सा दोबारा लिखिए। हिंदी और अंग्रेज़ी, दोनों में।', '#write'],
+  ['अकेले नहीं', 'आपके स्टेज के 6 से 8 अभ्यर्थियों का छोटा पॉड। न रैंक, न दिखावा। पहले अकेले लिखिए, फिर साथ में तुलना।', '#pod'],
+] : [
+  ['Remember it', 'A 10 to 20 minute review each day. Everything comes back just before you would forget it: a day, a week, then months.', '#leak'],
+  ['Write, mark, rewrite', 'Mains answers on paper. Mark your own first, then see an AI second opinion, then rewrite the weakest part. In English and in Hindi.', '#write'],
+  ['Not alone', 'A small pod of 6 to 8 aspirants at your stage. No ranks, no performing. Write alone first, then compare together.', '#pod'],
+];
+const never = hi
+  ? ['टूटने से डराने वाली स्ट्रीक', 'लीडरबोर्ड और पब्लिक रैंक', '"आपके चयन की संभावना: 73%"', '"सिर्फ़ 4 सीटें बचीं" वाली उलटी गिनती', 'पीछा करने वाली नोटिफ़िकेशन', 'कॉल सेंटर को बेचा गया आपका नंबर']
+  : ['Streaks you are scared to break', 'Leaderboards and public ranks', '"Your selection chance: 73%"', '"Only 4 seats left" countdowns', 'Notifications that chase you', 'Your number sold to a call centre'];
+const faq = hi ? [
+  ['क्या यह कोचिंग या पूरा कोर्स है?', 'नहीं। आप अपनी किताबें पढ़ते हैं (लक्ष्मीकांत, NCERT, स्पेक्ट्रम)। Aspiran पक्का करता है कि पढ़ा हुआ याद रहे, उत्तर में काम आए, और आप अकेले न हों।'],
+  ['क्या हिंदी में पूरा है?', 'ऐप, नोट्स, अभ्यास और उत्तर की जाँच हिंदी में हैं। जो सामग्री अभी हिंदी संपादक ने नहीं जाँची, उस पर ऐसा लिखा रहता है।'],
+  ['AI कहाँ है?', 'Chotu, आपका स्टडी साथी, AI है, और उत्तर पर दूसरी राय भी AI देता है। दोनों पर हमेशा AI लिखा रहता है। AI ग़लत हो सकता है; इसीलिए पहले आप ख़ुद जाँचते हैं।'],
+  ['फ़ोन पर चलेगा?', 'हाँ। वेब ऐप किसी भी फ़ोन या लैपटॉप के ब्राउज़र में चलता है। Android ऐप Google Play पर टेस्टिंग में है।'],
+] : [
+  ['Is this coaching, or a full course?', 'No. You read your own books (Laxmikanth, the NCERTs, Spectrum). Aspiran makes sure what you read stays, works in an answer, and that you are not doing it alone.'],
+  ['Is it really in Hindi?', 'The app, notes, practice and answer marking are in Hindi. Anything a Hindi editor has not checked yet says so on the page.'],
+  ['Where is the AI?', 'Chotu, your study buddy, is an AI, and so is the second opinion on your answers. Both are always labelled AI. AI can be wrong, which is why you mark your own answer first.'],
+  ['Does it work on my phone?', 'Yes. The web app runs in the browser on any phone or laptop. The Android app is in testing on Google Play.'],
+];
+---
+
+<BaseLayout title={title} description={description} themeColor="#06070F" lang={lang}>
+  <div class="sh" id="top">
+    <a class="skip" href="#main">{T('Skip to the page', 'पेज पर जाएँ')}</a>
+    <nav class="sh-nav" aria-label="Site">
+      <a class="sh-brand" href={hi ? '/hi/' : '/'}>
+        <svg aria-hidden="true" width="28" height="28" viewBox="0 0 40 40">
+          <path d="M14 3c-2 3 2 4 0 7M20 2c-2 3 2 4 0 8M26 3c-2 3 2 4 0 7" fill="none" stroke="#F0A04B" stroke-width="2" stroke-linecap="round"></path>
+          <path d="M5 15h30l-4.5 20.5a3 3 0 0 1-3 2.5H12.5a3 3 0 0 1-3-2.5z" fill="#C8693A"></path>
+          <rect x="4" y="13" width="32" height="4.5" rx="2.2" fill="#E08A55"></rect>
+        </svg>
+        <b>Aspiran</b>
+      </a>
+      <div class="sh-nav-r">
+        <a href={how}>{T('How it teaches', 'कैसे पढ़ाता है')}</a>
+        {hi ? <a href="/" hreflang="en" lang="en">English</a> : <a href="/hi/" hreflang="hi" lang="hi">हिंदी</a>}
+        <a class="sh-btn ghost sm" href={app('nav', '')} data-cta="app" data-where="nav">{T('Open the app', 'ऐप खोलें')}</a>
+      </div>
+    </nav>
+
+    <main id="main">
+      <!-- 1. The problem, and the one action. -->
+      <header class="sh-hero">
+        <p class="sh-kick">{T('UPSC CIVIL SERVICES · ENGLISH AND HINDI', 'UPSC सिविल सेवा · हिंदी और अंग्रेज़ी')}</p>
+        <h1>{hi ? <>अक्टूबर में पढ़ा,<br /><span class="glow">मार्च तक ग़ायब।</span></> : <>What you read in October<br /><span class="glow">is gone by March.</span></>}</h1>
+        <p class="sh-lede">{T(
+          'Aspiran brings it back just before you forget, has you write and mark real answers, and puts you in a small pod so you never prep alone.',
+          'Aspiran उसे ठीक भूलने से पहले वापस लाता है, असली उत्तर लिखवाता और जँचवाता है, और आपको एक छोटे पॉड में रखता है, ताकि तैयारी अकेले न हो।')}</p>
+        <p class="sh-ctas">
+          <a class="sh-btn primary" href={app('hero')} data-cta="try" data-where="hero">{tryLabel}</a>
+          <a class="sh-btn ghost" href={how} data-cta="how" data-where="hero">{T('See how it teaches', 'देखें, कैसे पढ़ाता है')}</a>
+        </p>
+        <p class="sh-small">{T('Free to join. No card. One whole topic, Federalism, start to finish, in about 20 minutes.', 'जुड़ना मुफ़्त। कार्ड नहीं चाहिए। एक पूरा टॉपिक, संघवाद, शुरू से अंत तक, क़रीब 20 मिनट में।')}</p>
+      </header>
+
+      <!-- 2. Remember this (the question comes back two sections down). -->
+      <section class="sh-sec sh-plant" aria-labelledby="plant-h">
+        <p class="sh-kick">{T('A SMALL EXPERIMENT', 'एक छोटा प्रयोग')}</p>
+        <h2 id="plant-h">{T('Remember this. I\'ll ask you in a minute.', 'इसे याद रखिए। एक मिनट में पूछूँगा।')}</h2>
+        <div class="sh-card fact">
+          <p class="sh-kick">{T('FACT · GS2 · PREAMBLE', 'तथ्य · GS2 · प्रस्तावना')}</p>
+          <p>{hi ? <>प्रस्तावना में ठीक <b>एक बार</b> संशोधन हुआ है: 1976 में, 42वें संशोधन से, जिसने <b>समाजवादी, पंथनिरपेक्ष</b> और <b>अखंडता</b> जोड़े।</>
+            : <>The Preamble has been amended exactly <b>once</b>: in 1976, by the 42nd Amendment, which added <b>socialist, secular</b> and <b>integrity</b>.</>}</p>
+        </div>
+      </section>
+
+      <!-- 3. What it does. -->
+      <section class="sh-sec" aria-labelledby="does-h">
+        <h2 id="does-h">{T('Three things, done every day', 'तीन काम, हर रोज़')}</h2>
+        <div class="sh-grid">
+          {does.map(([h, p, anchor]) => (
+            <a class="sh-card link" href={how + anchor}><h3>{h}</h3><p>{p}</p><span class="more">{T('See it', 'देखें')} →</span></a>
+          ))}
+        </div>
+        <p class="sh-note">{T(
+          'Plus a few current-affairs cards a day, each pinned to the syllabus line it belongs to, and Chotu, an AI study buddy, for doubts.',
+          'साथ में रोज़ कुछ करेंट अफ़ेयर्स कार्ड, हर एक अपने सिलेबस की पंक्ति से जुड़ा, और शंकाओं के लिए Chotu, एक AI स्टडी साथी।')}</p>
+      </section>
+
+      <!-- 4. The question comes back. -->
+      <section class="sh-sec sh-recall" aria-labelledby="recall-h">
+        <p class="sh-kick">{T('REMEMBER THE FACT?', 'वह तथ्य याद है?')}</p>
+        <h2 id="recall-h">{T('Quick. Don\'t scroll up.', 'जल्दी। ऊपर मत जाइए।')}</h2>
+        <div class="sh-card">
+          <p><b>{T('In which year was the Preamble amended?', 'प्रस्तावना में संशोधन किस वर्ष हुआ?')}</b></p>
+          <div class="sh-opts" id="recall-opts" data-right="1976"
+            data-yes={T('Right. 1976, the 42nd Amendment.', 'सही। 1976, 42वाँ संशोधन।')}
+            data-no={T('It was 1976, the 42nd Amendment.', 'यह 1976 था, 42वाँ संशोधन।')}>
+            {['1971', '1976', '1978', T('No idea', 'पता नहीं')].map((o) => <button type="button" data-v={o}>{o}</button>)}
+          </div>
+          <p class="sh-out" id="recall-out" aria-live="polite"></p>
+          <p class="sh-after" id="recall-after" hidden>{T(
+            'That small effort of pulling it out is the whole trick. Reading it again would have felt easier and done less. Aspiran is built on this: you answer first, then you look, and it comes back before you forget.',
+            'याद से निकालने की वही छोटी मेहनत असली तरकीब है। दोबारा पढ़ना आसान लगता, पर कम काम करता। Aspiran इसी पर बना है: पहले जवाब, फिर देखना, और भूलने से पहले वापसी।')}
+            <br /><a class="sh-btn primary" href={app('recall')} data-cta="try" data-where="recall">{T('Do a whole topic this way, free', 'पूरा टॉपिक इसी तरह कीजिए, मुफ़्त')}</a></p>
+        </div>
+      </section>
+
+      <!-- 5. Who is behind it, and what we won't do. Honest for a new product: no borrowed toppers. -->
+      <section class="sh-sec" aria-labelledby="trust-h">
+        <h2 id="trust-h">{T('New, and honest about it', 'नया है, और यह छिपाता नहीं')}</h2>
+        <div class="sh-grid two">
+          <div class="sh-card">
+            <h3>{T('Who is behind Aspiran', 'Aspiran के पीछे कौन है')}</h3>
+            <p>{T(
+              'Aspiran is made by SnapSkill LLP in Mohali, Punjab. We opened in 2026, so we have no toppers to show you and we won\'t borrow anyone else\'s. Try one topic and judge it yourself.',
+              'Aspiran को SnapSkill LLP, मोहाली, पंजाब ने बनाया है। हम 2026 में खुले हैं, इसलिए दिखाने को हमारे पास टॉपर नहीं हैं, और किसी और के उधार नहीं लेंगे। एक टॉपिक आज़माइए और ख़ुद परखिए।')}</p>
+            <p>{T(
+              'Every note and card shows whether an editor has checked it. The method is not ours: recall, spaced review and feedback you act on are decades of learning research.',
+              'हर नोट और कार्ड पर लिखा होता है कि संपादक ने उसे जाँचा है या नहीं। तरीक़ा हमारा नहीं: याद से निकालना, अंतराल पर रिव्यू और काम में लाया गया फ़ीडबैक, दशकों के शोध से आए हैं।')}
+              {' '}<a href={how}>{T('See the six ideas', 'छह विचार देखें')}</a>.</p>
+            <p class="sh-small">{T('Questions? ', 'सवाल? ')}<a href="mailto:hello@aspiran.in">hello@aspiran.in</a></p>
+          </div>
+          <div class="sh-card">
+            <h3>{T('Things you will never see here', 'जो यहाँ कभी नहीं दिखेगा')}</h3>
+            <ul class="sh-never">{never.map((n) => <li>{n}</li>)}</ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Price. -->
+      <section class="sh-sec" id="price" aria-labelledby="price-h">
+        <h2 id="price-h">{T('Free to join. Plus if you want more.', 'जुड़ना मुफ़्त। और चाहिए तो Plus।')}</h2>
+        <div class="sh-grid two">
+          <div class="sh-card"><p class="sh-kick">{T('FREE', 'मुफ़्त')}</p><p class="sh-price">₹0</p>
+            <ul>{(hi ? ['आपका पॉड और कॉमन्स', 'रोज़ का रिव्यू और चाय कार्ड', 'रोज़मर्रा की शंकाओं के लिए Chotu', 'हफ़्ते में 3 उत्तरों की जाँच, महीने में 1 मॉक']
+              : ['Your pod and the Commons', 'The daily review and Chai cards', 'Chotu for everyday doubts', '3 answers marked a week, 1 mock a month']).map((x) => <li>{x}</li>)}</ul>
+            <a class="sh-btn primary" href={app('price')} data-cta="try" data-where="price">{tryLabel}</a></div>
+          <div class="sh-card"><p class="sh-kick">PLUS</p><p class="sh-price">₹9,999<span>{T(' / year', ' / साल')}</span></p>
+            <ul>{(hi ? ['असीमित उत्तर-जाँच और दोबारा लिखना', 'सारे मॉक, आपकी ग़लतियों के प्रकार के साथ', 'तीन तस्वीरों में निबंध', 'Chotu और ज़्यादा']
+              : ['Unlimited answer marking and rewrites', 'All mocks, with your mistake types', 'Essays in three snaps', 'More of Chotu']).map((x) => <li>{x}</li>)}</ul>
+            <p class="sh-small">{T('One payment, no auto-renewal, refund within 7 days. First 300: ₹999 for the first year. ', 'एक भुगतान, अपने-आप रिन्यू नहीं, 7 दिन में रिफ़ंड। पहले 300 के लिए: पहले साल ₹999। ')}
+              <a href={WA_PAY} target="_blank" rel="noopener" data-cta="whatsapp" data-where="price">{T('WhatsApp us to pay by UPI', 'UPI से भुगतान के लिए WhatsApp कीजिए')}</a>.</p></div>
+        </div>
+      </section>
+
+      <!-- 7. Questions. -->
+      <section class="sh-sec" aria-labelledby="faq-h">
+        <h2 id="faq-h">{T('Questions people ask', 'लोग जो पूछते हैं')}</h2>
+        {faq.map(([q, a]) => <details class="sh-faq"><summary>{q}</summary><p>{a}</p></details>)}
+      </section>
+
+      <!-- 8. The same door, and a way to be reminded. -->
+      <section class="sh-sec sh-end" aria-labelledby="end-h">
+        <h2 id="end-h">{T('Chai\'s getting cold.', 'चाय ठंडी हो रही है।')}</h2>
+        <p class="sh-ctas"><a class="sh-btn primary" href={app('end')} data-cta="try" data-where="end">{tryLabel}</a></p>
+        <form class="sh-later" id="later" novalidate>
+          <label for="later-in">{T('Not now? Leave your email and we\'ll send you the link.', 'अभी नहीं? ईमेल छोड़ दीजिए, हम लिंक भेज देंगे।')}</label>
+          <div class="row"><input id="later-in" type="email" autocomplete="email" maxlength="80" placeholder="you@example.com" />
+            <input type="text" name="company" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
+            <button class="sh-btn ghost" type="submit">{T('Send it', 'भेजिए')}</button></div>
+          <p class="sh-small">{T('One email with the link. By sending, you agree we can email you about Aspiran. ', 'लिंक वाला एक ईमेल। भेजकर आप मानते हैं कि हम Aspiran के बारे में आपको ईमेल कर सकते हैं। ')}<a href="/privacy">{T('Privacy', 'प्राइवेसी')}</a>.</p>
+          <p class="sh-out" id="later-out" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <footer class="sh-foot">
+      <b>Aspiran</b>
+      <nav aria-label="Footer"><a href={how}>{T('How it teaches', 'कैसे पढ़ाता है')}</a><a href="https://app.aspiran.in/learn">{T('UPSC syllabus, topic by topic', 'UPSC सिलेबस, टॉपिक दर टॉपिक')}</a><a href="/privacy">{T('Privacy', 'प्राइवेसी')}</a><a href="/terms">{T('Terms', 'शर्तें')}</a>{hi ? <a href="/" hreflang="en" lang="en">English</a> : <a href="/hi/" hreflang="hi" lang="hi">हिंदी</a>}</nav>
+      <p>{T('Not affiliated with UPSC. Chotu is an AI and can be wrong. Content says on the page whether an editor has checked it.', 'UPSC से संबद्ध नहीं। Chotu AI है और ग़लत हो सकता है। सामग्री पर लिखा रहता है कि संपादक ने उसे जाँचा है या नहीं।')}</p>
+    </footer>
+  </div>
+
+  <script>
+    const HI = document.documentElement.lang === 'hi';
+    const ph = (name: string, props: Record<string, unknown> = {}) => (window as any).posthog?.capture?.(name, props);
+    // Every button with data-cta is counted, with where on the page it sat.
+    document.querySelectorAll<HTMLElement>('[data-cta]').forEach((el) =>
+      el.addEventListener('click', () => ph('cta', { cta: el.dataset.cta, where: el.dataset.where })));
+
+    // The recall question.
+    const opts = document.getElementById('recall-opts')!;
+    opts.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest('button');
+      if (!b || opts.dataset.done) return;
+      opts.dataset.done = '1';
+      const right = b.dataset.v === opts.dataset.right;
+      opts.querySelectorAll('button').forEach((x) => { x.disabled = true; if (x.dataset.v === opts.dataset.right) x.classList.add('right'); });
+      if (!right) b.classList.add('wrong');
+      document.getElementById('recall-out')!.textContent = right ? opts.dataset.yes! : opts.dataset.no!;
+      document.getElementById('recall-after')!.hidden = false;
+      ph('recall_answered', { right });
+    });
+
+    // "Send me the link": the same /web/lead the long page uses; the server emails the link at once.
+    const store = { get: (k: string) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* private window */ } } };
+    const visitorId = store.get('aspiran-vid') ?? `v-${crypto.getRandomValues(new Uint32Array(3)).join('-')}`;
+    store.set('aspiran-vid', visitorId);
+    const API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'http://localhost:8788' : 'https://app.aspiran.in';
+    const u = new URL(location.href);
+    const source = ['utm_source', 'utm_medium', 'utm_campaign'].map((k) => u.searchParams.get(k)).filter(Boolean).join('/') || (document.referrer ? new URL(document.referrer).hostname : 'direct');
+    document.getElementById('later')!.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.currentTarget as HTMLFormElement;
+      const out = document.getElementById('later-out')!;
+      const contact = (document.getElementById('later-in') as HTMLInputElement).value.trim();
+      if (!/^\S+@\S+\.\S+$/.test(contact)) { out.textContent = HI ? 'ईमेल पता डालिए।' : 'Add an email address.'; return; }
+      out.textContent = HI ? 'भेज रहे हैं…' : 'Sending…';
+      try {
+        const r = await fetch(`${API}/web/lead`, { method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ visitorId, details: {}, contact, consent: true, lang: HI ? 'hi' : 'en', source, company: (f.elements.namedItem('company') as HTMLInputElement).value }) });
+        if (!r.ok) throw new Error();
+        out.textContent = HI ? 'भेज दिया। अपना इनबॉक्स देखिए।' : 'Sent. Check your inbox.';
+        ph('lead_saved', { kind: 'email' });
+      } catch { out.textContent = HI ? 'अभी नहीं भेज पाए। ऊपर का बटन सीधे ऐप खोलता है।' : "Couldn't send just now. The button above opens the app directly."; }
+    });
+  </script>
+</BaseLayout>
