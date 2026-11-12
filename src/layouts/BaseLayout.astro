@@ -19,14 +19,20 @@ interface Props {
   lang?: 'en' | 'hi';
 }
 const { title, description, themeColor = '#F7F2EA', lang = 'en' } = Astro.props;
-// The home page exists in English (/) and Hindi (/hi/): each names the other for search engines.
-const home = Astro.url.pathname === '/' || Astro.url.pathname.replace(/\/$/, '') === '/hi';
+// The home page and "How Aspiran teaches" exist in English and Hindi (/hi/...): each names the other for search engines.
+const bare = Astro.url.pathname.replace(/^\/hi(?=\/|$)/, '').replace(/\/$/, '') || '/';
+const home = bare === '/' || bare === '/how-it-works';
+const enPath = bare === '/' ? '/' : bare + '/';
+const hiPath = bare === '/' ? '/hi/' : '/hi' + bare + '/';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL('/og.png', Astro.site);
 
-// Analytics: Umami (cloud.umami.is), same as snapskill.in. Paste the website ID from the
-// Umami dashboard here and every page picks it up. Left empty so no script ships until then.
-const UMAMI_WEBSITE_ID = '';
+// Analytics: PostHog (visits, where people click, how far they scroll, and session replays). Paste the project key
+// from PostHog (Project settings; it starts with "phc_" and is public by design) here and every page picks it up.
+// Left empty so no script ships until then. It runs without cookies (persistence: 'memory'), and replays hide
+// everything typed into a box, so no consent banner is needed; the privacy page says what it records.
+const POSTHOG_KEY = 'phc_w8BUoc6nfx5UU7HFg2w5kZKTySWPBQKF6TbsQPPs8Sbx';
+const POSTHOG_HOST = 'https://us.i.posthog.com';
 ---
 
 <!doctype html>
@@ -37,9 +43,9 @@ const UMAMI_WEBSITE_ID = '';
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {home && <link rel="alternate" hreflang="en" href={new URL('/', Astro.site)} />}
-    {home && <link rel="alternate" hreflang="hi" href={new URL('/hi/', Astro.site)} />}
-    {home && <link rel="alternate" hreflang="x-default" href={new URL('/', Astro.site)} />}
+    {home && <link rel="alternate" hreflang="en" href={new URL(enPath, Astro.site)} />}
+    {home && <link rel="alternate" hreflang="hi" href={new URL(hiPath, Astro.site)} />}
+    {home && <link rel="alternate" hreflang="x-default" href={new URL(enPath, Astro.site)} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content={themeColor} />
 
@@ -66,8 +72,11 @@ const UMAMI_WEBSITE_ID = '';
     </script>
 
     {
-      UMAMI_WEBSITE_ID && (
-        <script defer src="https://cloud.umami.is/script.js" data-website-id={UMAMI_WEBSITE_ID} />
+      POSTHOG_KEY && (
+        <script is:inline define:vars={{ POSTHOG_KEY, POSTHOG_HOST }}>
+          !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled getFeatureFlag onFeatureFlags".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+          posthog.init(POSTHOG_KEY, { api_host: POSTHOG_HOST, persistence: 'memory', person_profiles: 'identified_only', capture_pageview: true, capture_pageleave: true, session_recording: { maskAllInputs: true } });
+        </script>
       )
     }
   </head>
