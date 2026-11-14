@@ -8,7 +8,7 @@ import { papersFor, nodeId } from './garden/syllabus.js';
 
 const API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
   ? 'http://localhost:8788'
-  : 'https://upsc-pods-production.chotu-aec.workers.dev';
+  : 'https://app.aspiran.in';
 const WA_NUMBER = '919876656573';
 // The Hindi page (/hi/) sets <html lang="hi">: every line below has its Hindi side by side.
 const HI = document.documentElement.lang === 'hi';
@@ -614,7 +614,13 @@ $('#seat-form').addEventListener('submit', async (e) => {
   out.textContent = t('Saving…', 'सेव हो रहा है…');
   try {
     await postLead({ contact, consent: true, company: hp });
-    out.textContent = t(`Seat saved${nm()}. We'll message you when your pod batch opens.`, `सीट सेव हो गई${nm()}। पॉड बैच खुलते ही हम मैसेज करेंगे।`); out.classList.add('ok');
+    // No waiting list: the app is open, so the saved seat comes with the way in.
+    out.innerHTML = '';
+    out.append(t(`Seat saved${nm()}. Aspiran is open now: `, `सीट सेव हो गई${nm()}। Aspiran अभी खुला है: `));
+    const go = document.createElement('a');
+    go.href = 'https://app.aspiran.in/app/?utm_source=site&utm_medium=seat#try'; go.className = 'btn primary sm';
+    go.textContent = t('Try one topic free', 'एक टॉपिक मुफ़्त आज़माएँ');
+    out.append(go); out.classList.add('ok');
     chotuSays(t(`Saved${nm()}. See you in the pod. I'll bring the chai.`, `सेव हो गया${nm()}। पॉड में मिलते हैं। चाय मैं लाऊँगा।`));
   } catch (err) {
     const msg = (err as Error).message;
