@@ -565,7 +565,7 @@ $('#dock-form').addEventListener('submit', async (e) => {
     const j = await r.json().catch(() => ({}));
     thinking.remove();
     if (j.care) {
-      add('c', t("I'm an AI, and this matters too much for me to get wrong. Please talk to someone now: Tele-MANAS, 14416 (free, 24 hours). If you're in danger, call 112.", 'मैं AI हूँ, और यह बात इतनी ज़रूरी है कि मैं गलती नहीं कर सकता। कृपया अभी किसी से बात कीजिए: Tele-MANAS, 14416 (मुफ़्त, 24 घंटे)। ख़तरे में हों तो 112 पर कॉल कीजिए।'));
+      add('c', t("I'm an AI, and this matters too much for me to get wrong. Please talk to someone now: the Vandrevala Foundation helpline, 9999 666 555 (free, 24 hours, call or WhatsApp). If you're in danger, call 112.", 'मैं AI हूँ, और यह बात इतनी ज़रूरी है कि मैं गलती नहीं कर सकता। कृपया अभी किसी से बात कीजिए: Vandrevala Foundation हेल्पलाइन, 9999 666 555 (मुफ़्त, 24 घंटे, कॉल या WhatsApp)। ख़तरे में हों तो 112 पर कॉल कीजिए।'));
       return;
     }
     const reply = j.reply || j.error || t("I can't reach my brain right now. Try again in a minute, or leave your details below.", 'अभी मेरा दिमाग़ जुड़ नहीं पा रहा। एक मिनट बाद फिर कोशिश कीजिए, या नीचे अपनी जानकारी छोड़िए।');
