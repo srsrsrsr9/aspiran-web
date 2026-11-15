@@ -78,3 +78,31 @@ html[lang="hi"] .sh-sec h2 { line-height: 1.4; font-weight: 700; }
 .sh-foot p { flex-basis: 100%; margin: 0; color: var(--mute); font-size: 14px; }
 .sh .skip { position: absolute; left: -999px; top: 8px; background: var(--saffron); color: #1B1205 !important; padding: 8px 14px; border-radius: 8px; z-index: 100; }
 .sh .skip:focus { left: 8px; }
+
+/* 15 Nov 2026 (conversion review): the hero's second line and ticks, the screens strip, the numbers, the Plus "then" line. */
+.sh-sub { font: 700 clamp(19px, 2.6vw, 24px)/1.4 var(--sans); color: var(--recall); margin: 0 0 12px; max-width: 40ch; }
+.sh-ticks { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 20px; padding: 0; margin: 6px 0 0; font-size: 17px; color: var(--ink); }
+.sh-ticks li { padding-left: 24px; position: relative; }
+.sh-ticks li::before { content: "✓"; position: absolute; left: 2px; color: var(--ok); font-weight: 700; }
+
+.sh-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 8px 0 24px; }
+.sh-shot { margin: 0; }
+.sh-shot img { display: block; width: 100%; max-width: 300px; height: auto; border-radius: 22px; border: 1px solid var(--line); box-shadow: 0 12px 40px rgba(0,0,0,.45); background: var(--card); }
+.sh-shot figcaption { margin-top: 12px; max-width: 300px; } .sh-shot figcaption b { display: block; font-size: 18px; } .sh-shot figcaption span { color: var(--mute); font-size: 16px; }
+@media (max-width: 800px) {
+  /* A swipeable row on phones; the page itself never scrolls sideways. */
+  .sh-strip { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 14px; margin-left: -20px; margin-right: -20px; padding: 0 20px 8px; scrollbar-width: thin; }
+  .sh-shot { flex: 0 0 72%; scroll-snap-align: start; }
+}
+
+.sh-nums { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.sh-nums li { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; font: 700 18px/1.35 var(--sans); }
+@media (max-width: 800px) { .sh-nums { grid-template-columns: 1fr 1fr; } }
+.sh-nums + .sh-small { margin: 10px 0 20px; }
+.sh-card h3 + p + h3, .sh-card p + h3 { margin-top: 16px; }
+.sh-card.main { border-color: rgba(255,194,122,.45); }
+.sh-then { margin: 0 0 8px !important; }
+
+/* One Hindi word in the English nav/footer shouldn't pull a 100 KB Devanagari web font: use the system's. */
+.sh-lang { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+@media (max-width: 520px) { .sh-hero { padding: 4vh 0 6vh; } .sh-hero h1 { margin-bottom: 14px; } .sh-lede { font-size: 17px; margin-bottom: 18px; } }
