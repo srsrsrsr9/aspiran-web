@@ -67,7 +67,7 @@
 [data-reveal] { opacity: 0; transform: translateY(28px) scale(.985); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
 [data-reveal].in { opacity: 1; transform: none; }
 
-.panel, .fact-card, .leak-box, .quiz, .mark, .pluck-box, .chai-card, .casefile, .cal, .sleep, .tile, .seat-card, .plan, .tn {
+.panel, .fact-card, .leak-box, .quiz, .mark, .pluck-box, .chai-card, .casefile, .cal, .sleep, .tile, .later-card, .plan, .tn {
   background: var(--panel); border: 1px solid var(--line); border-radius: 22px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 
 /* Room 01 */
@@ -253,23 +253,23 @@
 .offer { margin: 0; padding: 10px 14px; border-radius: 12px; background: rgba(255,197,107,.1); color: var(--ink); }
 .offer b { color: var(--use); }
 
-/* Room 17 */
-.seat-card { padding: 26px; display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
-@media (max-width: 760px) { .seat-card { grid-template-columns: 1fr; } }
-#seat-summary { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; align-content: start; }
-#seat-summary dt { font: 12.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--recall); padding-top: 3px; }
-#seat-summary dd { margin: 0; }
-#seat-form { display: flex; flex-direction: column; gap: 12px; }
-#seat-form label { font-weight: 600; }
-#seat-form input[type="text"] { font: 18px var(--sans); padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); background: rgba(0,0,0,.3); color: var(--ink); }
-#seat-form .tick { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; color: var(--muted); }
-#seat-form .tick input { width: 20px; height: 20px; accent-color: var(--saffron); margin-top: 3px; flex: none; }
+/* Room 15: the Try button under the price cards */
+.center-ctas { justify-content: center; margin-top: 22px; }
+
+/* Room 16: "Not now? Leave your email" */
+.later-card { padding: 26px; max-width: 640px; }
+#later { display: flex; flex-direction: column; gap: 12px; }
+#later label { font-weight: 600; }
+#later .row { display: flex; flex-wrap: wrap; gap: 10px; }
+#later input[type="email"] { flex: 1 1 220px; min-width: 0; font: 18px var(--sans); padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); background: rgba(0,0,0,.3); color: var(--ink); }
+#later p { margin: 0; }
 .form-out { margin: 0; min-height: 1.4em; }
 .form-out.ok { color: var(--good); } .form-out.err { color: var(--warn); }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 
 .end { align-items: center; text-align: center; padding-bottom: 10vh; }
 .end h2 { max-width: 16ch; }
+.end .ctas { justify-content: center; }
 .foot { max-width: 1080px; margin: 0 auto; padding: 40px 24px 140px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; }
 .foot nav { display: flex; gap: 18px; }
 .foot p { flex-basis: 100%; margin: 0; }
@@ -341,7 +341,7 @@
   .dock-cup .chotu { width: 36px; }
   .dock[data-waiting="true"] .dock-cup::after { top: 0; right: 0; width: 11px; height: 11px; }
 }
-/* While the price and seat sections are on screen, Chotu steps aside (the chat still opens from the buttons). */
+/* While the price and email-form sections are on screen, Chotu steps aside (the chat still opens from the buttons). */
 .dock { transition: opacity .25s, transform .25s; }
 .dock[data-aside="true"]:not([data-open="true"]) { opacity: 0; transform: translateY(16px); pointer-events: none; }
 /* Tablets and small laptops have no side margin, so keep a strip on the right for Chotu's cup. */

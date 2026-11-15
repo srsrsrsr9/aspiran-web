@@ -1,7 +1,7 @@
 // The long home page: the star field, the rooms' interactions, and Chotu walking down the page with the visitor.
 // Chotu's scripted lines and questions are below (SCRIPT). Free-text questions go to the Worker's /web/chotu.
-// Answers stay in this browser until the visitor ticks the consent box and presses Save my seat; only then do they go
-// to /web/lead. If the server can't be reached, the page still works and the seat form falls back to WhatsApp.
+// Chotu's answers stay in this browser. The only thing sent to /web/lead is an email the visitor types in the
+// "Not now?" form near the end, and only that email (no answers), so the server can send them the link.
 
 import { garden, vinesOf, countsOf, jitter } from './garden/vine.js';
 import { papersFor, nodeId } from './garden/syllabus.js';
@@ -9,7 +9,6 @@ import { papersFor, nodeId } from './garden/syllabus.js';
 const API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
   ? 'http://localhost:8788'
   : 'https://app.aspiran.in';
-const WA_NUMBER = '919876656573';
 // The Hindi page (/hi/) sets <html lang="hi">: every line below has its Hindi side by side.
 const HI = document.documentElement.lang === 'hi';
 const t = (en: string, hi: string) => (HI ? hi : en);
@@ -32,11 +31,10 @@ const source = (() => {
   return utm || (document.referrer ? new URL(document.referrer).hostname : 'direct');
 })();
 
-// Kept on this device only; nothing is sent until Save my seat.
+// Kept on this device only; Chotu uses them to talk to the visitor, and they are never sent with the email form.
 function setDetail(k: string, v: string) {
   details[k] = v;
   store.set('aspiran-details', JSON.stringify(details));
-  renderSummary();
 }
 async function postLead(extra: Record<string, unknown> = {}) {
   const r = await fetch(`${API}/web/lead`, {
@@ -427,7 +425,7 @@ const SCRIPT: Record<string, Beat> = {
   never: { say: t('Notice what is missing? Good.', 'देखा क्या नहीं है? बढ़िया।') },
   interview: { say: t('Picture me on the board, in a tiny bandhgala.', 'सोचिए, मैं बोर्ड में बैठा हूँ, छोटा-सा बंदगला पहनकर।') },
   price: { say: t('₹999 for the first 300 on the website. After that it is ₹9,999. Just saying.', 'वेबसाइट पर पहले 300 के लिए ₹999। उसके बाद ₹9,999। बस बता रहा हूँ।') },
-  seat: { say: () => t(`Here's everything you told me${nm()}. Leave a number or email and I'll save your seat.`, `आपने मुझे जो बताया, सब यहाँ है${nm()}। नंबर या ईमेल छोड़िए, मैं आपकी सीट रख लूँगा।`) },
+  later: { say: () => t(`Not today${nm()}? Fine. Leave an email and the link will be waiting.`, `आज नहीं${nm()}? कोई बात नहीं। ईमेल छोड़िए, लिंक इंतज़ार करेगा।`) },
 };
 
 const dock = $('#dock'), log = $('#dock-log'), chips = $('#dock-chips'), bubble = $('#dock-bubble');
@@ -459,15 +457,15 @@ function gesture() {
 }
 let bubbleTimer = 0;
 const narrow = () => innerWidth < 600;
-// Chotu steps aside while the price and the seat form are on screen, so nothing covers them.
+// Chotu steps aside while the price and the email form are on screen, so nothing covers them.
 let aside = false;
 const asideIo = new IntersectionObserver((es) => {
   es.forEach((e) => (e.target as HTMLElement).dataset.inView = String(e.isIntersecting));
-  aside = $$('#price, #seat').some((el) => el.dataset.inView === 'true');
+  aside = $$('#price, #later-room').some((el) => el.dataset.inView === 'true');
   dock.dataset.aside = String(aside);
   if (aside) bubble.hidden = true;
 });
-$$('#price, #seat').forEach((el) => asideIo.observe(el));
+$$('#price, #later-room').forEach((el) => asideIo.observe(el));
 function chotuSays(text: string, ask?: Ask) {
   add("c", text);
   ask ??= pending ?? undefined; // a question still open keeps its buttons under any new line
@@ -568,68 +566,31 @@ $('#dock-form').addEventListener('submit', async (e) => {
       add('c', t("I'm an AI, and this matters too much for me to get wrong. Please talk to someone you trust today. If you're in danger, call 112.", 'मैं AI हूँ, और यह बात इतनी ज़रूरी है कि मैं गलती नहीं कर सकता। कृपया आज ही किसी भरोसेमंद व्यक्ति से बात कीजिए। ख़तरे में हों तो 112 पर कॉल कीजिए।'));
       return;
     }
-    const reply = j.reply || j.error || t("I can't reach my brain right now. Try again in a minute, or leave your details below.", 'अभी मेरा दिमाग़ जुड़ नहीं पा रहा। एक मिनट बाद फिर कोशिश कीजिए, या नीचे अपनी जानकारी छोड़िए।');
+    const reply = j.reply || j.error || t("I can't reach my brain right now. Try again in a minute, or use the Try button at the end.", 'अभी मेरा दिमाग़ जुड़ नहीं पा रहा। एक मिनट बाद फिर कोशिश कीजिए, या आख़िर में आज़माएँ वाला बटन दबाइए।');
     add('c', reply);
     if (j.reply) chat.push({ role: 'assistant', content: j.reply });
   } catch {
     thinking.remove();
-    add('c', t("I can't reach my brain right now. The page still works, and you can leave your details at the end.", 'अभी मेरा दिमाग़ जुड़ नहीं पा रहा। पेज फिर भी चलता है, और आख़िर में अपनी जानकारी छोड़ सकते हैं।'));
+    add('c', t("I can't reach my brain right now. The page still works, and the Try button at the end opens the app.", 'अभी मेरा दिमाग़ जुड़ नहीं पा रहा। पेज फिर भी चलता है, और आख़िर का बटन ऐप खोलता है।'));
   }
   if (!reduced) gesture();
 });
 
-// ---------------------------------------------------------------- Room 17: the seat
-const LABELS: Record<string, string> = HI ? {
-  name: 'नाम', attempt: 'प्रयास', medium: 'माध्यम', optional: 'वैकल्पिक विषय', hours: 'रोज़ के घंटे', worry: 'सबसे मुश्किल',
-  sleep: 'नींद', recall: 'कमरा 01 की याद', pluck: 'CSAT पंक्ति', chai: 'केस फ़ाइल', calibration: 'जब पक्के थे',
-} : {
-  name: 'Name', attempt: 'Attempt', medium: 'Medium', optional: 'Optional', hours: 'Hours a day', worry: 'Hardest part',
-  sleep: 'Sleep', recall: 'Room 01 recall', pluck: 'CSAT line', chai: 'Case file', calibration: 'When sure',
-};
-function renderSummary() {
-  const dl = $('#seat-summary');
-  const rows = Object.entries(LABELS).filter(([k]) => details[k]);
-  if (!rows.length) return;
-  dl.innerHTML = '';
-  rows.forEach(([k, l]) => {
-    const dt = document.createElement('dt'); dt.textContent = l;
-    const dd = document.createElement('dd'); dd.textContent = details[k];
-    dl.append(dt, dd);
-  });
-  $('#seat-h').textContent = details.name ? t(`Here's what Chotu knows about you, ${details.name}.`, `${details.name}, चोटू आपके बारे में इतना जानता है।`) : t("Here's what Chotu knows about you.", 'चोटू आपके बारे में इतना जानता है।');
-  const wa = $<HTMLAnchorElement>('#seat-wa');
-  wa.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(waText())}`;
-}
-const waText = () => t(`Hi Aspiran! I'd like a seat in the first pod batch.\n`, `Hi Aspiran! मुझे पहले पॉड बैच में सीट चाहिए।\n`) +
-  Object.entries(LABELS).filter(([k]) => details[k] && ['name', 'attempt', 'medium', 'optional', 'hours'].includes(k)).map(([k, l]) => `${l}: ${details[k]}`).join('\n');
-renderSummary();
-
-$('#seat-form').addEventListener('submit', async (e) => {
+// ---------------------------------------------------------------- Room 16: "Not now? Leave your email"
+// The same /web/lead the short home page's #later form uses; the server emails the link at once. Only the email goes.
+const later = document.querySelector<HTMLFormElement>('#later');
+later?.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const out = $('#seat-out'), contact = $<HTMLInputElement>('#seat-contact').value.trim(), ok = $<HTMLInputElement>('#seat-ok').checked;
-  const hp = (e.currentTarget as HTMLFormElement).querySelector<HTMLInputElement>('input[name="company"]')!.value;
+  const out = $('#later-out'), contact = $<HTMLInputElement>('#later-in').value.trim();
   out.className = 'form-out';
-  if (!contact) { out.textContent = t('Add a WhatsApp number or an email.', 'WhatsApp नंबर या ईमेल डालिए।'); out.classList.add('err'); return; }
-  if (!ok) { out.textContent = t('Tick the box so we can message you.', 'बॉक्स पर टिक कीजिए, ताकि हम आपको मैसेज कर सकें।'); out.classList.add('err'); return; }
-  out.textContent = t('Saving…', 'सेव हो रहा है…');
+  if (!/^\S+@\S+\.\S+$/.test(contact)) { out.textContent = t('Add an email address.', 'ईमेल पता डालिए।'); out.classList.add('err'); return; }
+  out.textContent = t('Sending…', 'भेज रहे हैं…');
   try {
-    await postLead({ contact, consent: true, company: hp });
-    // No waiting list: the app is open, so the saved seat comes with the way in.
-    out.innerHTML = '';
-    out.append(t(`Seat saved${nm()}. Aspiran is open now: `, `सीट सेव हो गई${nm()}। Aspiran अभी खुला है: `));
-    const go = document.createElement('a');
-    go.href = 'https://app.aspiran.in/app/?utm_source=site&utm_medium=seat#try/path-pol-federalism'; go.className = 'btn primary sm';
-    go.textContent = t('Try one topic free', 'एक टॉपिक मुफ़्त आज़माएँ');
-    out.append(go); out.classList.add('ok');
-    chotuSays(t(`Saved${nm()}. See you in the pod. I'll bring the chai.`, `सेव हो गया${nm()}। पॉड में मिलते हैं। चाय मैं लाऊँगा।`));
-  } catch (err) {
-    const msg = (err as Error).message;
-    if (/look like|Tick/.test(msg)) { out.textContent = msg; out.classList.add('err'); return; }
-    out.innerHTML = '';
-    const a = document.createElement('a');
-    a.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(waText() + `\n${t('Contact', 'संपर्क')}: ${contact}`)}`; a.target = '_blank'; a.rel = 'noopener';
-    a.textContent = t("Our server didn't answer. Tap here to send it on WhatsApp instead.", 'हमारे सर्वर ने जवाब नहीं दिया। यहाँ टैप करके WhatsApp पर भेज दीजिए।');
-    out.appendChild(a);
+    await postLead({ details: {}, contact, consent: true, company: (later.elements.namedItem('company') as HTMLInputElement).value });
+    out.textContent = t('Sent. Check your inbox.', 'भेज दिया। अपना इनबॉक्स देखिए।'); out.classList.add('ok');
+    (window as any).posthog?.capture?.('lead_saved', { kind: 'email' });
+  } catch {
+    out.textContent = t("Couldn't send just now. The button below opens the app directly.", 'अभी नहीं भेज पाए। नीचे का बटन सीधे ऐप खोलता है।'); out.classList.add('err');
   }
 });
 // ---------------------------------------------------------------- The pod room: alone, side by side, "this one, because"
