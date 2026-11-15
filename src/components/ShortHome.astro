@@ -19,7 +19,8 @@ const description = T(
   'What you read in October is gone by March. Aspiran brings it back before you forget, has you write and mark real answers, and puts you in a small pod. UPSC, in English and Hindi. Try one topic free.',
   'अक्टूबर में पढ़ा मार्च तक निकल जाता है। Aspiran भूलने से पहले उसे वापस लाता है, उत्तर लिखवाता और जँचवाता है, और एक छोटे पॉड में रखता है। UPSC, हिंदी और अंग्रेज़ी में। एक टॉपिक मुफ़्त आज़माइए।',
 );
-const app = (where: string, hash = '#try') => `https://app.aspiran.in/app/?utm_source=site&utm_medium=${where}${hash}`;
+// Try buttons open Federalism's cover; Hindi pages ask for the Hindi demo.
+const app = (where: string, hash = '#try/path-pol-federalism') => `https://app.aspiran.in/app/?utm_source=site&utm_medium=${where}${hi ? '&lang=hi' : ''}${hash}`;
 const how = hi ? '/hi/how-it-works/' : '/how-it-works/';
 const WA_PAY = waUrl(T("Hi Aspiran! I'd like Plus at the first-300 price.", 'Hi Aspiran! मुझे पहले 300 वाली क़ीमत पर Plus चाहिए।'));
 const tryLabel = T('Try one topic free, no sign-up', 'एक टॉपिक मुफ़्त आज़माएँ, बिना साइन-अप');
@@ -80,7 +81,7 @@ const faq = hi ? [
           <a class="sh-btn primary" href={app('hero')} data-cta="try" data-where="hero">{tryLabel}</a>
           <a class="sh-btn ghost" href={how} data-cta="how" data-where="hero">{T('See how it teaches', 'देखें, कैसे पढ़ाता है')}</a>
         </p>
-        <p class="sh-small">{T('Free to join. No card. One whole topic, Federalism, start to finish, in about 20 minutes.', 'जुड़ना मुफ़्त। कार्ड नहीं चाहिए। एक पूरा टॉपिक, संघवाद, शुरू से अंत तक, क़रीब 20 मिनट में।')}</p>
+        <p class="sh-small">{T('Free to join. No card. One whole topic, Federalism, start to finish, in about 15 minutes. No sign-up to try.', 'जुड़ना मुफ़्त। कार्ड नहीं चाहिए। एक पूरा टॉपिक, संघवाद, शुरू से अंत तक, क़रीब 15 मिनट में। आज़माने के लिए साइन-अप नहीं।')}</p>
       </header>
 
       <!-- 2. Remember this (the question comes back two sections down). -->
@@ -195,9 +196,7 @@ const faq = hi ? [
   <script>
     const HI = document.documentElement.lang === 'hi';
     const ph = (name: string, props: Record<string, unknown> = {}) => (window as any).posthog?.capture?.(name, props);
-    // Every button with data-cta is counted, with where on the page it sat.
-    document.querySelectorAll<HTMLElement>('[data-cta]').forEach((el) =>
-      el.addEventListener('click', () => ph('cta', { cta: el.dataset.cta, where: el.dataset.where })));
+    // Buttons with data-cta are counted in BaseLayout, for every page.
 
     // The recall question.
     const opts = document.getElementById('recall-opts')!;

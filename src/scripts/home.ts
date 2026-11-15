@@ -618,7 +618,7 @@ $('#seat-form').addEventListener('submit', async (e) => {
     out.innerHTML = '';
     out.append(t(`Seat saved${nm()}. Aspiran is open now: `, `सीट सेव हो गई${nm()}। Aspiran अभी खुला है: `));
     const go = document.createElement('a');
-    go.href = 'https://app.aspiran.in/app/?utm_source=site&utm_medium=seat#try'; go.className = 'btn primary sm';
+    go.href = 'https://app.aspiran.in/app/?utm_source=site&utm_medium=seat#try/path-pol-federalism'; go.className = 'btn primary sm';
     go.textContent = t('Try one topic free', 'एक टॉपिक मुफ़्त आज़माएँ');
     out.append(go); out.classList.add('ok');
     chotuSays(t(`Saved${nm()}. See you in the pod. I'll bring the chai.`, `सेव हो गया${nm()}। पॉड में मिलते हैं। चाय मैं लाऊँगा।`));

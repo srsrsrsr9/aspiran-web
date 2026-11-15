@@ -76,6 +76,19 @@ const POSTHOG_HOST = 'https://us.i.posthog.com';
         <script is:inline define:vars={{ POSTHOG_KEY, POSTHOG_HOST }}>
           !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled getFeatureFlag onFeatureFlags".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
           posthog.init(POSTHOG_KEY, { api_host: POSTHOG_HOST, persistence: 'memory', person_profiles: 'identified_only', capture_pageview: true, capture_pageleave: true, session_recording: { maskAllInputs: true } });
+          // Every button with data-cta is counted, with where on the page it sat. Links into the app carry this
+          // visit's PostHog id (ph=), so the site visit and the demo join up as one person in the funnel.
+          document.addEventListener('click', function (e) {
+            var a = e.target && e.target.closest && e.target.closest('a[href]');
+            var c = e.target && e.target.closest && e.target.closest('[data-cta]');
+            if (c) posthog.capture('cta', { cta: c.dataset.cta, where: c.dataset.where });
+            if (!a || a.href.indexOf('https://app.aspiran.in/app/') !== 0 || a.href.indexOf('ph=') !== -1) return;
+            try {
+              var id = posthog.get_distinct_id && posthog.get_distinct_id();
+              if (!id) return;
+              var u = new URL(a.href); u.searchParams.set('ph', String(id)); a.href = u.toString();
+            } catch (err) {}
+          }, true);
         </script>
       )
     }

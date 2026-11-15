@@ -18,7 +18,7 @@ const { lang = 'en' } = Astro.props;
 const hi = lang === 'hi';
 
 const title = hi ? 'Aspiran कैसे पढ़ाता है: छह विचार, हर एक का अपना कमरा' : 'How Aspiran teaches: six ideas, a room for each';
-const APP = 'https://app.aspiran.in/app/?utm_source=site&utm_medium=how-it-works';
+const APP = (where: string) => `https://app.aspiran.in/app/?utm_source=site&utm_medium=how-${where}${hi ? '&lang=hi' : ''}#try/path-pol-federalism`;
 const description = hi
   ? 'अकेले तैयारी मत कीजिए। UPSC की पढ़ाई की ऐसी जगह, जहाँ अक्टूबर में पढ़ा मार्च में भी याद रहे। छोटे पॉड, रोज़ का रिव्यू जो ख़त्म होता है, मेन्स के उत्तर जिन्हें आप दोबारा लिखते हैं, और चोटू, AI चाय का कप जो साथ चलता है। न स्ट्रीक, न लीडरबोर्ड, न रैंक की भविष्यवाणी।'
   : 'Never prep alone. A UPSC study space where what you read in October is still there in March. Small pods, a daily review that ends, Mains answers you rewrite, and Chotu, an AI chai cup that walks with you. No streaks, no leaderboards, no rank predictions.';
@@ -80,7 +80,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
       </a>
       <div class="hud-r">
         {hi ? <a class="lang-link" href="/how-it-works/" hreflang="en" lang="en">English</a> : <a class="lang-link" href="/hi/how-it-works/" hreflang="hi" lang="hi">हिंदी</a>}
-        <a class="btn ghost sm" href={APP + '#try'} data-cta="try" data-where="nav">{hi ? 'एक टॉपिक मुफ़्त आज़माएँ' : 'Try one topic free'}</a>
+        <a class="btn ghost sm" href={APP('nav')} data-cta="try" data-where="how-nav">{hi ? 'एक टॉपिक मुफ़्त आज़माएँ' : 'Try one topic free'}</a>
       </div>
     </nav>
 
@@ -96,7 +96,7 @@ const WA = waUrl(hi ? WA_MSG_HI : WA_MSG_EN);
           then used in an answer. Scroll and watch a year go by.</>}</p>
         <p class="what">{hi ? 'Aspiran: UPSC सिविल सेवा अभ्यर्थियों के लिए पढ़ाई का ऐप, हिंदी और अंग्रेज़ी में।' : 'Aspiran is a study app for UPSC Civil Services aspirants, in English and Hindi.'}</p>
         <div class="ctas">
-          <a class="btn primary" href={APP + '#try'} data-cta="try" data-where="hero">{hi ? 'एक पूरा टॉपिक मुफ़्त आज़माएँ, बिना साइन-अप' : 'Try one whole topic free, no sign-up'}</a>
+          <a class="btn primary" href={APP('hero')} data-cta="try" data-where="how-hero">{hi ? 'एक पूरा टॉपिक मुफ़्त आज़माएँ, बिना साइन-अप' : 'Try one whole topic free, no sign-up'}</a>
           <button class="btn ghost" type="button" data-open-chotu data-umami-event="cta-chotu" data-umami-event-where="hero">{hi ? 'चोटू को नमस्ते कहिए' : 'Say hi to Chotu'}</button>
         </div>
       </div>
