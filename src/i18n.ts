@@ -5,6 +5,9 @@ export const WA_NUMBER = '919876656573';
 export const WA_DISPLAY = '+91 98766 56573';
 export const WA_MSG_EN = "Hi Aspiran! I'd like early access to the first pod batch.";
 export const WA_MSG_HI = 'Hi Aspiran! मुझे पहले पॉड बैच में अर्ली एक्सेस चाहिए।';
+// The /how-it-works page: the app is open, so the WhatsApp message is a plain hello.
+export const WA_MSG_OPEN_EN = 'Hi Aspiran! I have a question about the app.';
+export const WA_MSG_OPEN_HI = 'Hi Aspiran! ऐप के बारे में मेरा एक सवाल है।';
 // Optional: a Formspree or Web3Forms endpoint. If set, the early-access form also posts its answers there.
 export const FORM_ENDPOINT = '';
 export const waUrl = (msg: string) => `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
