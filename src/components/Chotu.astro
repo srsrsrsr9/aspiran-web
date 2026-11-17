@@ -1,12 +1,12 @@
 ---
-// Chotu, the clay chai cup. Always carries the AI badge. Gestures are driven by
+// Chotu, the clay chai cup. Gestures are driven by
 // src/scripts/site.ts: it swaps the .ch-gest class (gst0..gst6) on every [data-chotu="<group>"].
 interface Props {
   group: string;
   size?: number;
   label?: string;
 }
-const { group, size = 150, label = 'Chotu, an AI chai cup' } = Astro.props;
+const { group, size = 150, label = 'Chotu, a chai cup' } = Astro.props;
 ---
 
 <svg
@@ -38,8 +38,6 @@ const { group, size = 150, label = 'Chotu, an AI chai cup' } = Astro.props;
       <ellipse cx="58" cy="142" rx="9" ry="6" fill="#F2A27C" opacity=".75"></ellipse>
       <ellipse cx="142" cy="142" rx="9" ry="6" fill="#F2A27C" opacity=".75"></ellipse>
       <path d="M88 140Q100 154 112 140" fill="none" stroke="#2A1B12" stroke-width="4" stroke-linecap="round"></path>
-      <rect x="82" y="168" width="36" height="20" rx="6" fill="#FFF6EA"></rect>
-      <text x="100" y="183" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="#6B3A1F">AI</text>
     </g>
   </g>
 </svg>

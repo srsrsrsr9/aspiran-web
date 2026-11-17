@@ -20,8 +20,8 @@ const hi = lang === 'hi';
 const title = hi ? 'Aspiran कैसे पढ़ाता है: छह विचार, हर एक का अपना कमरा' : 'How Aspiran teaches: six ideas, a room for each';
 const APP = (where: string) => `https://app.aspiran.in/app/?utm_source=site&utm_medium=how-${where}${hi ? '&lang=hi' : ''}#try/path-pol-federalism`;
 const description = hi
-  ? 'अकेले तैयारी मत कीजिए। UPSC की पढ़ाई की ऐसी जगह, जहाँ अक्टूबर में पढ़ा मार्च में भी याद रहे। छोटे पॉड, रोज़ का रिव्यू जो ख़त्म होता है, मेन्स के उत्तर जिन्हें आप दोबारा लिखते हैं, और चोटू, AI चाय का कप जो साथ चलता है। न स्ट्रीक, न लीडरबोर्ड, न रैंक की भविष्यवाणी।'
-  : 'Never prep alone. A UPSC study space where what you read in October is still there in March. Small pods, a daily review that ends, Mains answers you rewrite, and Chotu, an AI chai cup that walks with you. No streaks, no leaderboards, no rank predictions.';
+  ? 'अकेले तैयारी मत कीजिए। UPSC की पढ़ाई की ऐसी जगह, जहाँ अक्टूबर में पढ़ा मार्च में भी याद रहे। छोटे पॉड, रोज़ का रिव्यू जो ख़त्म होता है, मेन्स के उत्तर जिन्हें आप दोबारा लिखते हैं, और चोटू, चाय का कप जो साथ चलता है। न स्ट्रीक, न लीडरबोर्ड, न रैंक की भविष्यवाणी।'
+  : 'Never prep alone. A UPSC study space where what you read in October is still there in March. Small pods, a daily review that ends, Mains answers you rewrite, and Chotu, a chai cup that walks with you. No streaks, no leaderboards, no rank predictions.';
 
 
 
@@ -237,10 +237,10 @@ const TRY = hi ? 'एक टॉपिक मुफ़्त आज़माए�
               राज्यों को 41% दिया। यह अनुदानों की भी सिफ़ारिश करता है। इसलिए यह संघवाद के लिए बहुत महत्वपूर्ण है।</> : <>The Finance Commission is set up every five years under Article 280. It recommends how taxes are shared between
               the Centre and the states and among the states. It uses criteria like population, area and income distance. The
               15th Finance Commission gave 41% to states. It also recommends grants. So it is very important for federalism.</>}</p>
-            <p class="dim small">{hi ? 'पहले इस उत्तर को ख़ुद अंक दीजिए, हर पंक्ति पर 1 से 5। फिर अपने अंकों के साथ AI के अंक देखिए।' : 'Rate this answer yourself first, 1 to 5 on each line. Then see the AI\'s marks next to yours.'}</p>
+            <p class="dim small">{hi ? 'पहले इस उत्तर को ख़ुद अंक दीजिए, हर पंक्ति पर 1 से 5। फिर अपने अंकों के साथ हमारे अंक देखिए।' : 'Rate this answer yourself first, 1 to 5 on each line. Then see our marks next to yours.'}</p>
           </div>
           <div class="rubric" id="rubric"></div>
-          <button type="button" class="btn primary" id="mark-reveal" disabled>{hi ? 'AI के अंक दिखाइए' : "Show the AI's marks"}</button>
+          <button type="button" class="btn primary" id="mark-reveal" disabled>{hi ? 'हमारे अंक दिखाइए' : 'Show our marks'}</button>
           <p class="reveal-line" id="mark-out" aria-live="polite" hidden></p>
         </div>
         <p class="effect">{hi ? <>आपके और हमारे अंकों का अंतर ही असली हुनर है। महीनों में आप इसे घटता देखेंगे।
@@ -250,7 +250,7 @@ const TRY = hi ? 'एक टॉपिक मुफ़्त आज़माए�
 
       <aside class="pause" data-scene="q2" aria-label={hi ? 'एक ठहराव' : 'A pause'}>
         <blockquote>{hi ? <>"परीक्षा यह नहीं पूछती कि आपने क्या पढ़ा।<br />यह पूछती है कि आप अब भी क्या ढूँढ़ सकते हैं।"</> : <>"The exam doesn't ask what you read.<br />It asks what you can still find."</>}</blockquote>
-        <cite>{hi ? '— चोटू · AI, शायद रात 2 बजे' : '— Chotu · AI, at 2 a.m., probably'}</cite>
+        <cite>{hi ? '— चोटू, शायद रात 2 बजे' : '— Chotu, at 2 a.m., probably'}</cite>
       </aside>
 
       <!-- 7. Pluck the line -->
@@ -324,11 +324,11 @@ const TRY = hi ? 'एक टॉपिक मुफ़्त आज़माए�
         <h2 class="never-alone">{hi ? <>अकेले तैयारी <span class="glow-text">मत कीजिए।</span></> : <>Never prep <span class="glow-text">alone.</span></>}</h2>
         <p class="lede">{hi ? <>
         आपके लोग, आपका पॉड, और पढ़ाई की ऐसी जगह जहाँ अक्टूबर में पढ़ा मार्च में भी याद रहे। आपकी अवस्था के 6 से 8
-        अभ्यर्थियों का छोटा पॉड आपका हाल पूछता है और भारी दिनों में साथ बैठता है। बाक़ी समय के लिए चोटू है, आपका AI चाय
+        अभ्यर्थियों का छोटा पॉड आपका हाल पूछता है और भारी दिनों में साथ बैठता है। बाक़ी समय के लिए चोटू है, आपका चाय
         का कप, जो रात भर जागता है।
       </> : <>
         Your people, your pod, and a study space where what you read in October is still there in March. A small pod of
-        6 to 8 aspirants at your stage checks on you and sits with you on the heavy days. Chotu, your AI chai cup, is up
+        6 to 8 aspirants at your stage checks on you and sits with you on the heavy days. Chotu, your chai cup, is up
         all night for the rest.
       </>}</p>
         <h3 class="sub">{hi ? <>फ़ीड कहती है सब आगे निकल गए।<br />आपका पॉड सच जानता है।</> : <>Your feed says everyone's ahead.<br />Your pod knows better.</>}</h3>
@@ -359,9 +359,9 @@ const TRY = hi ? 'एक टॉपिक मुफ़्त आज़माए�
         <ul class="facts">
           {hi ? <><li><b>आप</b> पढ़ते हैं, लिखते हैं, आराम करते हैं। अपना हफ़्ता आप तय करते हैं।</li>
           <li><b>आपका पॉड</b> एक-दूसरे को समझाता है, उत्तर मिलाता है, ध्यान रखता है जब कोई चुप हो जाए।</li>
-          <li><b>Aspiran</b> नक़्शा रखता है, चीज़ें समय पर वापस लाता है, और उत्तरों के अंक देता है (AI, हमेशा लिखा हुआ)।</li></> : <><li><b>You</b> read, write and rest. You decide your week.</li>
+          <li><b>Aspiran</b> नक़्शा रखता है, चीज़ें समय पर वापस लाता है, और उत्तरों के अंक देता है, मिनटों में।</li></> : <><li><b>You</b> read, write and rest. You decide your week.</li>
           <li><b>Your pod</b> explains to each other, compares answers, notices when someone goes quiet.</li>
-          <li><b>Aspiran</b> keeps the map, brings things back on time, and marks answers (AI, always labelled).</li></>}
+          <li><b>Aspiran</b> keeps the map, brings things back on time, and marks answers, in minutes.</li></>}
         </ul>
         <p class="effect">{hi ? <>पॉड कभी-कभी चुप हो जाते हैं: नौकरी, परीक्षा, ज़िंदगी। जब आपका हो, हम उसे चुपचाप दूसरे से जोड़ देते हैं (और आप चाहें तो वहीं रह सकते हैं)।
           कोई ख़ाली कमरे में नहीं छूटता।</> : <>Pods go quiet sometimes: jobs, exams, life. When yours does, we join it with another (you can choose to stay).
@@ -424,8 +424,8 @@ const TRY = hi ? 'एक टॉपिक मुफ़्त आज़माए�
           stranger's highlight reel.</>}</p>
         <div class="then-now" data-reveal>
           <div class="tn then"><span class="hud">{hi ? 'अक्टूबर वाले आप' : 'OCTOBER YOU'}</span>
-            {hi ? <ul><li>ख़ुद के अंक AI से 4 अंक दूर</li><li>कथन ग़लत पढ़ा: 9 बार</li><li>14 तारे पढ़े, 2 याद से</li></ul>
-              : <ul><li>Self-marks 4 points off the AI's</li><li>Misread the statement: 9 times</li><li>14 stars met, 2 can recall</li></ul>}</div>
+            {hi ? <ul><li>ख़ुद के अंक हमारे अंकों से 4 दूर</li><li>कथन ग़लत पढ़ा: 9 बार</li><li>14 तारे पढ़े, 2 याद से</li></ul>
+              : <ul><li>Self-marks 4 points off ours</li><li>Misread the statement: 9 times</li><li>14 stars met, 2 can recall</li></ul>}</div>
           <div class="tn arrow" aria-hidden="true">→</div>
           <div class="tn now"><span class="hud">{hi ? 'फ़रवरी वाले आप' : 'FEBRUARY YOU'}</span>
             {hi ? <ul><li>ख़ुद के अंक 1 अंक दूर</li><li>कथन ग़लत पढ़ा: 3 बार</li><li>61 तारे पढ़े, 38 याद से, 12 उत्तर में</li></ul>
@@ -466,12 +466,12 @@ const TRY = hi ? 'एक टॉपिक मुफ़्त आज़माए�
         <div class="plans" data-reveal>
           {hi ? <><div class="plan"><b>मुफ़्त</b><p class="amt">₹0</p>
             <ul><li>आपका पॉड और कॉमन्स</li><li>रोज़ का रिव्यू और चाय</li><li>रोज़ के सवालों के लिए चोटू</li><li>आपके नोट्स, डायरी, काम और नींद</li></ul></div>
-          <div class="plan plus"><b>Plus</b><p class="amt">₹999<span> पहले साल</span></p>
-            <p class="offer">पहले 300 लोगों के लिए। उसके बाद ₹9,999 साल।</p>
+          <div class="plan plus"><b>Plus</b><p class="amt">₹3,999<span> साल</span></p>
+            <p class="offer">एक बार भुगतान, अपने-आप रिन्यू नहीं, 7 दिन में रिफ़ंड।</p>
             <ul><li>असीमित उत्तर-जाँच और दोबारा लेखन</li><li>सारे मॉक, आपकी गलतियों के प्रकार के साथ</li><li>तीन फ़ोटो में निबंध</li><li>चोटू ज़्यादा</li></ul></div></> : <><div class="plan"><b>Free</b><p class="amt">₹0</p>
             <ul><li>Your pod and the Commons</li><li>The daily review and Chai</li><li>Chotu for everyday doubts</li><li>Your notes, journal, to-dos and sleep</li></ul></div>
-          <div class="plan plus"><b>Plus</b><p class="amt">₹999<span> first year</span></p>
-            <p class="offer">For the first 300 people. Then ₹9,999 a year.</p>
+          <div class="plan plus"><b>Plus</b><p class="amt">₹3,999<span> a year</span></p>
+            <p class="offer">One payment, no auto-renewal, refund within 7 days.</p>
             <ul><li>Unlimited answer marking and rewrites</li><li>All mocks, with your mistake types</li><li>Essays in three snaps</li><li>More of Chotu</li></ul></div></>}
         </div>
         <p class="ctas center-ctas"><a class="btn primary" href={APP('price')} data-cta="try" data-where="how-price">{TRY}</a></p>
@@ -504,19 +504,19 @@ const TRY = hi ? 'एक टॉपिक मुफ़्त आज़माए�
       <footer class="foot">
         <b>Aspiran</b>
         <nav aria-label="Footer"><a href="/privacy">{hi ? 'प्राइवेसी' : 'Privacy'}</a><a href="/terms">{hi ? 'शर्तें' : 'Terms'}</a><a href={WA} target="_blank" rel="noopener">WhatsApp</a>{hi ? <a href="/" hreflang="en" lang="en">English</a> : <a href="/hi/" hreflang="hi" lang="hi">हिंदी</a>}</nav>
-        <p class="small dim">{hi ? 'UPSC से संबद्ध नहीं। चोटू AI है और ग़लत हो सकता है। सामग्री पर लिखा रहता है कि संपादक ने उसे जाँचा है या नहीं।' : 'Not affiliated with UPSC. Chotu is an AI and can be wrong. Content says on the page whether an editor has checked it.'}</p>
+        <p class="small dim">{hi ? 'UPSC से संबद्ध नहीं। चोटू ग़लत हो सकता है, ज़रूरी तथ्य जाँचें।' : 'Not affiliated with UPSC. Chotu can be wrong, so check the facts that matter.'}</p>
       </footer>
       </div>
     </main>
 
     <!-- Chotu's dock: walks down the page with the visitor -->
-    <aside class="dock" id="dock" aria-label={hi ? 'चोटू से बात कीजिए, एक AI' : 'Chat with Chotu, an AI'} data-open="false">
+    <aside class="dock" id="dock" aria-label={hi ? 'चोटू से बात कीजिए' : 'Chat with Chotu'} data-open="false">
       <div class="dock-bubble" id="dock-bubble" hidden></div>
       <button type="button" class="dock-cup" id="dock-cup" aria-label={hi ? 'चोटू के साथ चैट खोलिए' : 'Open the chat with Chotu'} aria-expanded="false" aria-controls="dock-panel">
         <Chotu group="dock" size={66} />
       </button>
       <div class="dock-panel" id="dock-panel">
-        <div class="dock-head"><b>{hi ? 'चोटू' : 'Chotu'}</b><span class="ai">AI</span><span class="dim small" id="dock-status">{hi ? 'आपके साथ चल रहा है' : 'walking with you'}</span>
+        <div class="dock-head"><b>{hi ? 'चोटू' : 'Chotu'}</b><span class="dim small" id="dock-status">{hi ? 'आपके साथ चल रहा है' : 'walking with you'}</span>
           <button type="button" class="dock-x" id="dock-x" aria-label={hi ? 'चैट छोटी कीजिए' : 'Minimise the chat'}>–</button></div>
         <div class="dock-log" id="dock-log" aria-live="polite"></div>
         <div class="dock-chips" id="dock-chips"></div>
@@ -524,7 +524,7 @@ const TRY = hi ? 'एक टॉपिक मुफ़्त आज़माए�
           <input id="dock-in" type="text" maxlength="500" autocomplete="off" placeholder={hi ? 'चोटू से कुछ भी पूछिए' : 'Ask Chotu anything'} aria-label={hi ? 'चोटू को मैसेज' : 'Message Chotu'} />
           <button type="submit" class="btn primary sm">{hi ? 'भेजें' : 'Send'}</button>
         </form>
-        <p class="dock-note">{hi ? <>चोटू AI है और ग़लत हो सकता है। आपके जवाब इसी ब्राउज़र में रहते हैं। यहाँ लिखी बात जवाब के लिए AI को जाती है। <a href="/privacy">प्राइवेसी</a></> : <>Chotu is AI and can be wrong. Your answers stay in this browser. What you type here goes to an AI to get a reply. <a href="/privacy">Privacy</a></>}</p>
+        <p class="dock-note">{hi ? <>चोटू ग़लत हो सकता है। आपके जवाब इसी ब्राउज़र में रहते हैं। यहाँ लिखी बात जवाब लिखने वाली सेवा को जाती है। <a href="/privacy">प्राइवेसी</a></> : <>Chotu can be wrong. Your answers stay in this browser. What you type here goes to a service that writes the reply. <a href="/privacy">Privacy</a></>}</p>
       </div>
     </aside>
   </div>

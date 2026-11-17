@@ -239,7 +239,7 @@ $$('#recall-opts button').forEach((b) => b.addEventListener('click', () => {
       const row = box.querySelector(`[data-r="${i}"]`)!;
       row.querySelector(`button[data-v="${ai}"]`)!.classList.add('ai');
       const d = (mine[i] ?? 0) - ai; gap += Math.abs(d);
-      row.querySelector('.gap')!.textContent = `AI: ${ai}. ${d === 0 ? t('Same as yours.', 'आपके जितने ही।') : d > 0 ? t(`You were ${d} kinder.`, `आपने ${d} ज़्यादा दिए।`) : t(`You were ${-d} harsher.`, `आपने ${-d} कम दिए।`)} ${why}`;
+      row.querySelector('.gap')!.textContent = `${t('Ours', 'हमारे')}: ${ai}. ${d === 0 ? t('Same as yours.', 'आपके जितने ही।') : d > 0 ? t(`You were ${d} kinder.`, `आपने ${d} ज़्यादा दिए।`) : t(`You were ${-d} harsher.`, `आपने ${-d} कम दिए।`)} ${why}`;
     });
     const out = $('#mark-out'); out.hidden = false;
     out.textContent = gap <= 3
@@ -364,8 +364,8 @@ const SCRIPT: Record<string, Beat> = {
       const hr = new Date().getHours(), m = new Date().getMinutes();
       const late = hr === 23 && m >= 30 || hr < 7;
       return late
-        ? t("Namaste! I'm Chotu · AI, a chai cup with opinions. It's late, so I'm half asleep: I'll walk with you, but my typed replies wait till 7 a.m.", 'नमस्ते! मैं चोटू · AI, अपनी राय रखने वाला चाय का कप। देर हो गई है, आधा सो रहा हूँ: साथ चलूँगा, पर लिखे जवाब सुबह 7 बजे के बाद।')
-        : t("Namaste! I'm Chotu · AI, a chai cup with opinions. I'll walk down this page with you.", 'नमस्ते! मैं चोटू · AI, अपनी राय रखने वाला चाय का कप। इस पेज पर नीचे तक आपके साथ चलूँगा।');
+        ? t("Namaste! I'm Chotu, a chai cup with opinions. It's late, so I'm half asleep: I'll walk with you, but my typed replies wait till 7 a.m.", 'नमस्ते! मैं चोटू, अपनी राय रखने वाला चाय का कप। देर हो गई है, आधा सो रहा हूँ: साथ चलूँगा, पर लिखे जवाब सुबह 7 बजे के बाद।')
+        : t("Namaste! I'm Chotu, a chai cup with opinions. I'll walk down this page with you.", 'नमस्ते! मैं चोटू, अपनी राय रखने वाला चाय का कप। इस पेज पर नीचे तक आपके साथ चलूँगा।');
     },
     ask: {
       key: 'name', q: t('What should I call you?', 'आपको क्या बुलाऊँ?'), text: true, chips: [t('Skip', 'रहने दीजिए')],
@@ -424,7 +424,7 @@ const SCRIPT: Record<string, Beat> = {
   },
   never: { say: t('Notice what is missing? Good.', 'देखा क्या नहीं है? बढ़िया।') },
   interview: { say: t('Picture me on the board, in a tiny bandhgala.', 'सोचिए, मैं बोर्ड में बैठा हूँ, छोटा-सा बंदगला पहनकर।') },
-  price: { say: t('₹999 for the first 300 on the website. After that it is ₹9,999. Just saying.', 'वेबसाइट पर पहले 300 के लिए ₹999। उसके बाद ₹9,999। बस बता रहा हूँ।') },
+  price: { say: t('₹3,999 a year. About ₹11 a day, less than my chai. Just saying.', '₹3,999 साल। लगभग ₹11 रोज़, मेरी चाय से कम। बस बता रहा हूँ।') },
   later: { say: () => t(`Not today${nm()}? Fine. Leave an email and the link will be waiting.`, `आज नहीं${nm()}? कोई बात नहीं। ईमेल छोड़िए, लिंक इंतज़ार करेगा।`) },
 };
 
@@ -563,7 +563,7 @@ $('#dock-form').addEventListener('submit', async (e) => {
     const j = await r.json().catch(() => ({}));
     thinking.remove();
     if (j.care) {
-      add('c', t("I'm an AI, and this matters too much for me to get wrong. Please talk to someone you trust today. If you're in danger, call 112.", 'मैं AI हूँ, और यह बात इतनी ज़रूरी है कि मैं गलती नहीं कर सकता। कृपया आज ही किसी भरोसेमंद व्यक्ति से बात कीजिए। ख़तरे में हों तो 112 पर कॉल कीजिए।'));
+      add('c', t("I'm a chai cup, and this matters too much for me to get wrong. Please talk to someone you trust today. If you're in danger, call 112.", 'मैं एक कुल्हड़ हूँ, और यह बात इतनी ज़रूरी है कि मैं गलती नहीं कर सकता। कृपया आज ही किसी भरोसेमंद व्यक्ति से बात कीजिए। ख़तरे में हों तो 112 पर कॉल कीजिए।'));
       return;
     }
     const reply = j.reply || j.error || t("I can't reach my brain right now. Try again in a minute, or use the Try button at the end.", 'अभी मेरा दिमाग़ जुड़ नहीं पा रहा। एक मिनट बाद फिर कोशिश कीजिए, या आख़िर में आज़माएँ वाला बटन दबाइए।');
