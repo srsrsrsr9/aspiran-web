@@ -92,7 +92,7 @@ html[lang="hi"] .kick { letter-spacing: .02em; font-size: 15px; }
 .menu-list a { padding: 10px 12px; border-radius: 8px; color: var(--ink); text-decoration: none; }
 .menu-list a:hover { background: var(--paper-2); }
 @media (max-width: 1000px) { .nav { display: none; } .menu { display: block; } }
-@media (max-width: 460px) { .top .btn.sm { display: none; } }
+@media (max-width: 460px) { .top .btn.sm { padding: 8px 12px; font-size: 14.5px; } .top .brand { font-size: 0; gap: 0; } .top .brand svg { width: 28px; height: 28px; } .top-r { gap: 6px; } .lang { padding: 6px 4px; font-size: 15px; } }
 
 /* Sections */
 .sec { padding: 64px 0; }
@@ -164,11 +164,52 @@ html[lang="hi"] .prose { font-size: 19px; line-height: 1.9; }
 .toc ol { margin: 0; padding-left: 22px; }
 .toc li { margin: 4px 0; }
 
-/* The app box at the end of every reading page */
-.appbox { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; background: var(--night); color: var(--night-ink); border-radius: 18px; padding: 24px; margin: 40px 0 10px; }
-.appbox h2 { color: var(--night-ink); font-size: 24px; margin: 0 0 6px; }
-.appbox p { color: var(--night-2); margin: 0 0 12px; }
-@media (max-width: 560px) { .appbox { grid-template-columns: 1fr; } }
+/* The sales box on every free page (components/AppBox.astro): a real app screen and the matching pitch. */
+.appbox { display: grid; grid-template-columns: 200px 1fr; gap: 28px; align-items: center; background: var(--night); color: var(--night-ink);
+  border-radius: 22px; padding: 26px 28px; margin: 44px 0 10px; overflow: hidden; position: relative;
+  background-image: radial-gradient(500px 260px at 0% 100%, rgba(233, 177, 58, .18), transparent 70%); }
+.appbox h2 { color: var(--night-ink); font-size: clamp(24px, 3vw, 30px); margin: 2px 0 10px; }
+.appbox p { color: var(--night-2); }
+.appbox .kick { color: #E9B13A; margin: 0; }
+.appbox .small { color: var(--night-2); }
+.appbox-shot { margin: 0; }
+.appbox-shot img { display: block; width: 100%; height: auto; border-radius: 22px; border: 6px solid #0E0C0A; transform: rotate(-3deg); box-shadow: 0 20px 40px -16px rgba(0,0,0,.6); }
+.ticks-list { list-style: none; padding: 0; margin: 0 0 18px; display: grid; gap: 8px; }
+.ticks-list li { padding-left: 28px; position: relative; color: var(--ink); font-size: 17.5px; line-height: 1.45; }
+.appbox .ticks-list li, .night .ticks-list li { color: var(--night-ink); font-size: inherit; }
+.ticks-list li::before { content: "✓"; position: absolute; left: 2px; top: 0; color: var(--leaf); font-weight: 800; }
+.appbox .ticks-list li::before, .night .ticks-list li::before { color: #E9B13A; }
+.appbox .btn.ghost { color: var(--night-ink); border-color: rgba(255,255,255,.28); }
+.appbox .btn.ghost:hover { border-color: #E9B13A; }
+.appbox.compact { grid-template-columns: 130px 1fr; padding: 20px; }
+@media (max-width: 640px) {
+  .appbox, .appbox.compact { grid-template-columns: 1fr; padding: 22px 18px; }
+  .appbox-shot { max-width: 170px; margin: 0 auto -8px; }
+}
+
+/* Questions you can answer on the page (scripts/quiz.ts) */
+.mcq-opts { list-style: none; padding: 0; margin: 14px 0 8px; display: grid; gap: 10px; }
+.mcq-opts button { width: 100%; display: flex; gap: 12px; align-items: flex-start; text-align: left; font: 500 17px/1.45 var(--sans); color: var(--ink);
+  background: var(--card); border: 1.5px solid var(--line-2); border-radius: 12px; padding: 12px 14px; cursor: pointer; min-height: 50px; }
+.mcq-opts button b { flex: none; width: 26px; height: 26px; border-radius: 999px; display: grid; place-items: center; background: var(--paper-2); font-size: 14px; text-transform: uppercase; }
+.mcq-opts button:hover:not(:disabled) { border-color: var(--chai); }
+.mcq-opts button.picked { border-color: var(--chai); box-shadow: 0 0 0 2px var(--chai-soft); }
+.mcq-opts button.right { border-color: var(--leaf); background: var(--leaf-soft); }
+.mcq-opts button.right b { background: var(--leaf); color: #fff; }
+.mcq-opts button.wrong { border-color: var(--wrong); background: var(--wrong-soft); }
+.mcq-opts button:disabled { cursor: default; }
+.mcq-sure { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 6px 0; padding: 12px; border-radius: 12px; background: var(--haldi-soft); }
+.mcq-sure span { font-weight: 700; margin-right: 4px; }
+.mcq-sure button { font: 700 15px var(--sans); border: 1.5px solid var(--line-2); background: var(--card); color: var(--ink); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+.mcq-sure button.picked { border-color: var(--chai); background: var(--chai); color: #fff; }
+.mcq-out { font-weight: 700; margin: 6px 0; min-height: 0; }
+.mcq-reveal { border-top: 1px dashed var(--line-2); margin-top: 10px; padding-top: 12px; }
+.pyq { margin-bottom: 18px; }
+.pyq-head { margin: 0 0 4px; }
+.pyq-q { font-size: 20px; line-height: 1.45; margin: 6px 0; font-family: var(--sans); font-weight: 600; }
+.pyq-q a { color: var(--ink); text-decoration: none; }
+.pyq-q a:hover { color: var(--chai-2); text-decoration: underline; }
+.pyq-line { margin: 4px 0; }
 
 /* Lists of pages */
 .index-group { margin: 0 0 36px; }
@@ -192,3 +233,9 @@ html[lang="hi"] .prose { font-size: 19px; line-height: 1.9; }
 .field-row { display: flex; gap: 10px; flex-wrap: wrap; }
 .field-row input[type="email"] { flex: 1 1 240px; min-height: 50px; border-radius: 12px; border: 1.5px solid var(--line-2); background: var(--card); color: var(--ink); padding: 0 14px; font: 17px var(--sans); }
 .out { min-height: 1.4em; font-weight: 600; margin: 8px 0 0; }
+
+/* PYQ home: one tile per paper */
+.paper-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+.paper-tile { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; text-decoration: none; color: var(--ink); }
+.paper-tile b { font-size: 17px; }
+.paper-tile:hover { border-color: var(--chai); }

@@ -1,0 +1,40 @@
+---
+// One PYQ on its own page (what people search for: "UPSC 2023 prelims question on …").
+import SiteLayout from '../layouts/SiteLayout.astro';
+import AppBox from './AppBox.astro';
+import PyqCard from './PyqCard.astro';
+import { type Lang, type Paper, type PyqQ, paperName, paperUrl, qUrl, qIn, pyqHome, clip, nodeName, allPages, pageUrl } from '../lib/content';
+interface Props { p: Paper; q: PyqQ; lang: Lang }
+const { p, q, lang } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const P = hi ? '/hi' : '';
+const name = paperName(p, lang);
+const v = qIn(q, lang);
+const lead = clip(String(v.q).split('\n')[0], 90);
+const qs = hi ? p.questions.filter((x) => x.hi?.q) : p.questions;
+const i = qs.indexOf(q);
+const prev = qs[i - 1], next = qs[i + 1];
+const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: 'PYQ', href: pyqHome(lang) }, { name, href: paperUrl(p, lang) }, { name: T(`Q${q.n}`, `प्रश्न ${q.n}`) }];
+const alternates = q.hi?.q ? { en: qUrl(p, q, 'en'), hi: qUrl(p, q, 'hi') } : undefined;
+const frame = p.exam === 'mains' ? allPages(lang).find((x) => x.kind === 'mains-skeleton' && x.data.pyqId === `${p.id}-q${String(q.n).padStart(2, '0')}`) : undefined;
+const topics = q.nodes.map((id) => nodeName(id)).filter(Boolean);
+const keyed = p.exam === 'prelims' && p.key.status === 'official' && typeof q.answer === 'number';
+const ld = { '@type': 'Quiz', name: `${name} Q${q.n}`, inLanguage: hi ? 'hi-IN' : 'en-IN', isAccessibleForFree: true, educationalLevel: 'UPSC Civil Services' };
+---
+<SiteLayout title={`${lead} | UPSC ${name} Q${q.n} | Aspiran`} description={T(`UPSC ${name}, question ${q.n}: ${clip(v.q, 180)}${keyed ? " With UPSC's official answer and why." : ''}`, `UPSC ${name}, प्रश्न ${q.n}: ${clip(v.q, 180)}`)}
+  lang={lang} alternates={alternates} crumbs={crumbs} jsonLd={[ld]} ogType="article" current="pyq">
+  <div class="wrap narrow">
+    <p class="kick" style="margin-top:10px">{T(`UPSC ${name} · question ${q.n}`, `UPSC ${name} · प्रश्न ${q.n}`)}</p>
+    <PyqCard p={p} q={q} lang={lang} heading="h2" />
+    {topics.length > 0 && <p class="small">{T('Syllabus: ', 'सिलेबस: ')}{topics.map((n, k) => <>{k > 0 && ', '}<a href={`https://app.aspiran.in${n!.learn}`}>{n!.name}</a></>)}</p>}
+    {frame && <p class="box green"><b>{T('How to frame this answer: ', 'यह आंसर कैसे लिखें: ')}</b><a href={pageUrl(frame, lang)}>{T('intro, points, example and conclusion', 'भूमिका, पॉइंट, उदाहरण और निष्कर्ष')}</a></p>}
+    <AppBox lang={lang} where="pyq-q" feature={p.exam === 'mains' ? 'mark' : 'pyq'} />
+    <nav class="field-row" style="justify-content:space-between;margin:24px 0" aria-label={T('Other questions', 'दूसरे सवाल')}>
+      {prev ? <a class="btn ghost sm" href={qUrl(p, prev, lang)}>← {T(`Q${prev.n}`, `प्रश्न ${prev.n}`)}</a> : <span></span>}
+      <a class="btn ghost sm" href={paperUrl(p, lang)}>{T('Whole paper', 'पूरा पेपर')}</a>
+      {next ? <a class="btn ghost sm" href={qUrl(p, next, lang)}>{T(`Q${next.n}`, `प्रश्न ${next.n}`)} →</a> : <span></span>}
+    </nav>
+  </div>
+  <div style="height:40px"></div>
+</SiteLayout>

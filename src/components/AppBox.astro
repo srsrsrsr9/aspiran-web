@@ -1,22 +1,53 @@
 ---
-// The box at the end of every free page: what the app adds to what they just read.
+// The sales box on every free page (owner, 22 Nov 2026: "every free piece of content out there is a sales person for
+// me, disguised as something else"). It shows the app feature that fits what the visitor just read, with a real screen
+// from the app, and asks for a free sign-up. `feature` picks the pitch; title/text can be overridden. The data-say line
+// is what Chotu (Dock.astro) says while the box is on screen.
+import { joinUrl, tourUrl, shot, type Shot } from '../lib/links';
 import type { Lang } from '../lib/content';
-interface Props { lang: Lang; where: string; title?: string; text?: string; button?: string; hash?: string }
-const { lang, where, title, text, button, hash = '' } = Astro.props;
+export type Feature = 'revise' | 'mark' | 'pyq' | 'ca' | 'play' | 'essay' | 'ethics' | 'pod';
+interface Props { lang: Lang; where: string; feature?: Feature; title?: string; text?: string; button?: string; compact?: boolean }
+const { lang, where, feature = 'revise', title, text, button, compact = false } = Astro.props;
 const hi = lang === 'hi';
-const href = `https://app.aspiran.in/app/?utm_source=site&utm_medium=${where}${hi ? '&lang=hi' : ''}${hash}`;
+const F: Record<Feature, { shot: Shot; en: [string, string[], string]; hi: [string, string[], string] }> = {
+  revise: { shot: 'cards',
+    en: ['Read it today. Still know it in the exam.', ['This topic comes back as quick questions: in 3 days, a week, then months', '15 minutes a day, and it ends', 'Notes, audio, videos and PYQs on every topic'], "Reading once isn't enough. Join free and I'll bring this back right before you'd forget it."],
+    hi: ['आज पढ़िए। एग्ज़ाम में भी याद रहे।', ['यही टॉपिक छोटे सवालों में लौटेगा: 3 दिन, फिर हफ़्ते, फिर महीनों बाद', 'रोज़ बस 15 मिनट, फिर ख़त्म', 'हर टॉपिक पर नोट्स, ऑडियो, वीडियो और PYQ'], 'एक बार पढ़ना काफ़ी नहीं। फ़्री में जुड़िए, मैं इसे भूलने से ठीक पहले वापस लाऊँगा।'] },
+  mark: { shot: 'desk',
+    en: ['Write this answer. Get it marked in minutes.', ['Write on paper and take a photo, or type, in Hindi or English', 'Marks on 5 parts and one fix for each, then rewrite', '3 answers a week free · unlimited on Plus'], "Reading frames won't get you marks. Writing will. Write this one in the app and I'll mark it in minutes."],
+    hi: ['यह आंसर लिखिए। मिनटों में जाँच पाइए।', ['काग़ज़ पर लिखकर फ़ोटो लीजिए, या टाइप कीजिए, हिंदी या इंग्लिश में', '5 हिस्सों पर नंबर और हर एक का सुधार, फिर दोबारा लिखिए', 'हफ़्ते में 3 आंसर फ़्री · Plus में अनलिमिटेड'], 'फ़्रेम पढ़ने से नंबर नहीं आते, लिखने से आते हैं। ऐप में लिखिए, मैं मिनटों में जाँच दूँगा।'] },
+  pyq: { shot: 'pyq',
+    en: ['Every PYQ, and you learn where you guess.', ["1,797 PYQs from 2016 to 2026 with UPSC's keys", '"How sure are you?" before every answer, so negative marking stops surprising you', '35 full mocks with the −⅓'], "PYQs show what UPSC likes to ask. In the app I keep track of the ones you guessed, and bring those back."],
+    hi: ['हर PYQ, और पता चले कि कहाँ तुक्का लग रहा है।', ['2016 से 2026 तक 1,797 PYQ, UPSC की आंसर-की के साथ', 'हर जवाब से पहले "कितने पक्के हैं?", ताकि नेगेटिव मार्किंग चौंकाए नहीं', '35 फ़ुल मॉक टेस्ट, −⅓ के साथ'], 'PYQ बताते हैं UPSC क्या पूछता है। ऐप में मैं याद रखता हूँ कौन-से तुक्के थे, और वही दोबारा पूछता हूँ।'] },
+  ca: { shot: 'read',
+    en: ['Three cards with your morning chai.', ['Every story tied to a syllabus line, with a question', 'The facts you mark come back in revision before Prelims', 'No 40-page monthly PDF'], "Current affairs slip away by Prelims. In the app the facts come back to you. Join free, it's 10 minutes a morning."],
+    hi: ['सुबह की चाय के साथ तीन कार्ड।', ['हर ख़बर सिलेबस की लाइन से जुड़ी, एक सवाल के साथ', 'जो तथ्य आप चुनें, प्रीलिम्स से पहले रिवीज़न में लौटते हैं', '40 पेज की मंथली PDF नहीं'], 'करंट अफ़ेयर्स प्रीलिम्स तक भूल जाते हैं। ऐप में तथ्य ख़ुद लौटकर आते हैं। फ़्री में जुड़िए, सुबह बस 10 मिनट।'] },
+  play: { shot: 'gov',
+    en: ['Learn it by doing it.', ['Be the Governor, sort the lists, play the GST vote', '400+ short videos and 25+ hours of audio notes', 'Every topic ends with real PYQs'], "Reading the same page again is boring. In the app you sit at the Governor's desk. Come and try it, free."],
+    hi: ['करके सीखिए।', ['राज्यपाल बनिए, लिस्ट छाँटिए, GST का वोट खेलिए', '400+ छोटे वीडियो और 25+ घंटे के ऑडियो नोट्स', 'हर टॉपिक के अंत में असली PYQ'], 'एक ही पेज बार-बार पढ़ना बोरिंग है। ऐप में आप राज्यपाल की कुर्सी पर बैठते हैं। फ़्री में आज़माइए।'] },
+  essay: { shot: 'essay',
+    en: ['Write the essay. Get it marked from 3 photos.', ['Skeleton, outline, first page: checked step by step', 'Margin notes like a strict teacher, minus the scolding', 'Plus: as many essays as you write'], "The Essay paper is 250 marks. Write one this week in the app and I'll mark it from three photos."],
+    hi: ['एसे लिखिए। 3 फ़ोटो से जाँच पाइए।', ['ढाँचा, आउटलाइन, पहला पेज: हर क़दम की जाँच', 'हाशिये में सख़्त टीचर जैसे नोट्स, बस डाँट के बिना', 'Plus में जितने चाहें उतने एसे'], 'एसे पेपर 250 नंबर का है। इस हफ़्ते ऐप में एक लिखिए, मैं तीन फ़ोटो से जाँच दूँगा।'] },
+  ethics: { shot: 'desk',
+    en: ['Write your case answer. Get it marked.', ['GS4 cases with stakeholders, options and a reasoned choice', 'Your answer marked on 5 parts, in minutes', 'Practice interview conversations too'], "GS4 is all about how you reason. Write your answer in the app and I'll show you where it holds and where it slips."],
+    hi: ['केस का आंसर लिखिए। जाँच पाइए।', ['GS4 केस: हितधारक, विकल्प और तर्कपूर्ण चुनाव', 'आपका आंसर 5 हिस्सों पर मिनटों में जाँचा', 'इंटरव्यू की प्रैक्टिस बातचीत भी'], 'GS4 में असली बात आपका तर्क है। ऐप में आंसर लिखिए, मैं दिखाऊँगा कहाँ मज़बूत है, कहाँ फिसलता है।'] },
+  pod: { shot: 'pods',
+    en: ['Never prep alone again.', ['A pod of up to 8 aspirants at your stage', 'Study room together, doubts in the group', 'No ranks, no showing off'], 'Prep is a long road. In the app you get a small pod to walk it with. Join free.'],
+    hi: ['अब अकेले तैयारी नहीं।', ['आपके स्टेज के 8 तक साथियों का पॉड', 'साथ में स्टडी रूम, ग्रुप में डाउट', 'न रैंक, न दिखावा'], 'तैयारी लंबा सफ़र है। ऐप में साथ चलने को एक छोटा पॉड मिलता है। फ़्री में जुड़िए।'] },
+};
+const f = F[feature];
+const [h, bullets, chotu] = f[lang];
 ---
-<aside class="appbox">
-  <svg aria-hidden="true" width="64" height="64" viewBox="0 0 40 40">
-    <path d="M14 3c-2 3 2 4 0 7M20 2c-2 3 2 4 0 8M26 3c-2 3 2 4 0 7" fill="none" stroke="#E08A55" stroke-width="2" stroke-linecap="round"></path>
-    <path d="M5 15h30l-4.5 20.5a3 3 0 0 1-3 2.5H12.5a3 3 0 0 1-3-2.5z" fill="#B4502A"></path>
-    <rect x="4" y="13" width="32" height="4.5" rx="2.2" fill="#D9764A"></rect>
-  </svg>
-  <div>
-    <h2>{title ?? (hi ? 'पढ़ लिया। अब याद भी रखिए।' : 'You\'ve read it. Now make sure you remember it.')}</h2>
-    <p>{text ?? (hi
-      ? 'Aspiran ऐप में यही टॉपिक सवालों के साथ लौटता है: 3 दिन बाद, फिर एक हफ़्ते बाद, फिर महीनों बाद, ठीक भूलने से पहले। साथ में मेन्स उत्तरों की जाँच मिनटों में। मुफ़्त, साइन-अप के बिना आज़माइए।'
-      : 'In the Aspiran app this topic comes back as questions: in 3 days, then a week, then months, just before you would forget it. Plus Mains answers checked in minutes. Free, and you can try it without signing up.')}</p>
-    <a class="btn primary" href={href} data-cta="app" data-where={where}>{button ?? (hi ? 'ऐप मुफ़्त खोलिए' : 'Open the app, free')}</a>
+<aside class={`appbox ${compact ? 'compact' : ''}`} data-say={chotu}>
+  <figure class="appbox-shot"><img src={shot(f.shot, lang)} alt="" width="520" height="961" loading="lazy" decoding="async" /></figure>
+  <div class="appbox-text">
+    <p class="kick">{hi ? 'Aspiran ऐप में' : 'In the Aspiran app'}</p>
+    <h2>{title ?? h}</h2>
+    {text ? <p>{text}</p> : <ul class="ticks-list">{bullets.map((b) => <li>{b}</li>)}</ul>}
+    <div class="ctas">
+      <a class="btn primary" href={joinUrl(where, lang)} data-cta="join" data-where={where}>{button ?? (hi ? 'फ़्री में जुड़ें' : 'Join free')}</a>
+      <a class="btn ghost" href={tourUrl(where, lang)} data-cta="tour" data-where={where}>▶ {hi ? 'पहले 6 मिनट का टूर' : 'Watch a 6-min tour first'}</a>
+    </div>
+    <p class="small" style="margin:10px 0 0">{hi ? 'हमेशा फ़्री वाला प्लान · कोई कार्ड नहीं · हिंदी और इंग्लिश' : 'Free forever plan · no card · English and हिंदी'}</p>
   </div>
 </aside>

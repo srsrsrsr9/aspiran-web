@@ -1,0 +1,8 @@
+---
+import '../../../../../styles/fonts-hi.css';
+import QuestionPage from '../../../../../components/QuestionPage.astro';
+import { PAPERS, paperSlug } from '../../../../../lib/content';
+export function getStaticPaths() { return PAPERS.flatMap((p) => p.questions.filter((q) => q.hi?.q).map((q) => ({ params: { paper: paperSlug(p), q: 'q' + q.n }, props: { p, q } }))); }
+const { p, q } = Astro.props;
+---
+<QuestionPage p={p} q={q} lang="hi" />

@@ -1,0 +1,107 @@
+---
+// Chotu's join bar, on every page (owner, 22 Nov 2026: "the job of the website is to convert every visitor into at least
+// a free sign-up … deploy Chotu if it helps"). It appears once the visitor has scrolled past the top of the page, says
+// a line that fits what is on screen (any element with data-say), reacts when they answer a question on the page
+// (scripts/quiz.ts sends a "chotu" event), and always carries Join free. Text only, never sound.
+// Chotu sleeps from 23:30 to 07:00 IST (standing rule): eyes shut and no lines; the bar keeps a plain Join free.
+// The cross shrinks it to Chotu alone for this visit; tapping Chotu opens it again. No "AI" label anywhere.
+import ChotuFace from './ChotuFace.astro';
+import { joinUrl, tourUrl } from '../lib/links';
+import type { Lang } from '../lib/content';
+interface Props { lang: Lang; where: string; line?: string }
+const { lang, where, line } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const first = line ?? T("Hi, I'm Chotu. Join free and I'll make sure what you study here stays till exam day.",
+  'नमस्ते, मैं छोटू। फ़्री में जुड़िए, जो यहाँ पढ़ेंगे वो एग्ज़ाम तक याद रखवाऊँगा।');
+---
+<aside class="dock" id="dock" data-where={where} aria-label={T('Join Aspiran free', 'Aspiran से फ़्री में जुड़ें')} data-state="off"
+  data-night={T('Free forever. No card. Sign up in under a minute.', 'हमेशा फ़्री। कोई कार्ड नहीं। एक मिनट में जुड़िए।')}>
+  <button class="dock-chotu" type="button" aria-label={T('Chotu', 'छोटू')} aria-expanded="true">
+    <ChotuFace size={44} />
+  </button>
+  <div class="dock-body">
+    <p class="dock-line" aria-live="polite">{first}</p>
+    <div class="dock-acts">
+      <a class="btn primary sm" href={joinUrl(`dock-${where}`, lang)} data-cta="join" data-where={`dock-${where}`}>{T('Join free', 'फ़्री में जुड़ें')}</a>
+      <a class="dock-tour" href={tourUrl(`dock-${where}`, lang)} data-cta="tour" data-where={`dock-${where}`}>▶ {T('6-min tour', '6 मिनट का टूर')}</a>
+    </div>
+  </div>
+  <button class="dock-x" type="button" aria-label={T('Make smaller', 'छोटा करें')}>×</button>
+</aside>
+
+<style is:global>
+  .dock { position: fixed; z-index: 40; right: 16px; bottom: 16px; width: min(380px, calc(100vw - 32px)); display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: start;
+    background: var(--card); border: 1.5px solid var(--line-2); border-radius: 18px; padding: 12px 10px 12px 12px; box-shadow: 0 18px 40px -18px rgba(30, 26, 22, .45);
+    transform: translateY(140%); opacity: 0; transition: transform .35s ease, opacity .35s ease; }
+  .dock[data-state="on"], .dock[data-state="min"] { transform: none; opacity: 1; }
+  .dock[data-state="min"] { width: auto; grid-template-columns: auto; padding: 6px; border-radius: 999px; }
+  .dock[data-state="min"] .dock-body, .dock[data-state="min"] .dock-x { display: none; }
+  .dock-chotu { background: var(--paper); border: 0; border-radius: 999px; width: 54px; height: 54px; display: grid; place-items: center; cursor: pointer; padding: 0; }
+  .dock-chotu svg { width: 40px; height: 50px; }
+  .dock-line { margin: 0 0 8px; font-size: 15.5px; line-height: 1.4; color: var(--ink); min-height: 2.8em; }
+  .dock-acts { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .dock-tour { font-weight: 700; font-size: 15px; color: var(--chai-2); text-decoration: none; }
+  .dock-x { background: none; border: 0; font-size: 22px; line-height: 1; color: var(--ink-3); cursor: pointer; padding: 2px 6px; }
+  .dock.talk .dock-line { animation: dock-pop .4s ease; }
+  @keyframes dock-pop { from { opacity: .2; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .dock.talk .dock-chotu svg { animation: dock-hop .5s ease; }
+  @keyframes dock-hop { 40% { transform: translateY(-5px) rotate(-6deg); } }
+  @media (prefers-reduced-motion: reduce) { .dock { transition: none; } .dock.talk .dock-line, .dock.talk .dock-chotu svg { animation: none; } }
+  @media (max-width: 640px) {
+    .dock { left: 0; right: 0; bottom: 0; width: auto; border-radius: 16px 16px 0 0; border-width: 1.5px 0 0; padding: 10px 10px calc(10px + env(safe-area-inset-bottom)); }
+    .dock[data-state="min"] { left: auto; right: 12px; bottom: 12px; border-radius: 999px; border-width: 1.5px; }
+    .dock-line { font-size: 14.5px; min-height: 0; margin-bottom: 6px; }
+    html.dock-open .foot { padding-bottom: 150px; }
+  }
+</style>
+
+<script>
+  const dock = document.getElementById('dock')!;
+  const lineEl = dock.querySelector('.dock-line')!;
+  const HI = document.documentElement.lang === 'hi';
+  const ph = (n: string, p: Record<string, unknown> = {}) => (window as any).posthog?.capture?.(n, p);
+  const ss = { get: (k: string) => { try { return sessionStorage.getItem(k); } catch { return null; } }, set: (k: string, v: string) => { try { sessionStorage.setItem(k, v); } catch { /* private */ } } };
+  // Quiet hours, India time (UTC+5:30): 23:30 to 07:00.
+  const ist = new Date(Date.now() + 330 * 60000); const hm = ist.getUTCHours() * 60 + ist.getUTCMinutes();
+  const night = hm >= 23 * 60 + 30 || hm < 7 * 60;
+  if (night) {
+    dock.querySelector('.cf-open')?.setAttribute('style', 'display:none');
+    dock.querySelector('.cf-shut')?.removeAttribute('style');
+    dock.querySelector('.cf-steam')?.setAttribute('opacity', '.35');
+    lineEl.textContent = dock.dataset.night!;
+  }
+  let shown = false, said = '';
+  const setState = (s: 'on' | 'min' | 'off') => { dock.dataset.state = s; document.documentElement.classList.toggle('dock-open', s === 'on'); dock.querySelector('.dock-chotu')!.setAttribute('aria-expanded', String(s === 'on')); };
+  const say = (text: string) => {
+    if (night || !text || text === said) return;
+    said = text; lineEl.textContent = text;
+    dock.classList.remove('talk'); void (dock as HTMLElement).offsetWidth; dock.classList.add('talk');
+  };
+  const show = () => { if (shown) return; shown = true; setState(ss.get('dock-min') ? 'min' : 'on'); ph('dock_shown', { where: dock.dataset.where }); };
+  // Shows after the first screen (or straight away on short pages), and steps aside for any big Join section on screen.
+  const onScroll = () => { if (scrollY > innerHeight * 0.6 || document.body.scrollHeight < innerHeight * 1.6) show(); };
+  addEventListener('scroll', onScroll, { passive: true }); setTimeout(onScroll, 1200);
+  const quiet = new Set<Element>();
+  const io = new IntersectionObserver((es) => {
+    for (const e of es) {
+      const el = e.target as HTMLElement;
+      if (el.hasAttribute('data-no-dock')) { e.isIntersecting ? quiet.add(el) : quiet.delete(el); dock.style.visibility = quiet.size ? 'hidden' : ''; continue; }
+      if (e.isIntersecting && shown && dock.dataset.state === 'on') say(el.dataset.say!);
+    }
+  }, { rootMargin: '-35% 0px -35% 0px' });
+  document.querySelectorAll('[data-say], [data-no-dock]').forEach((el) => io.observe(el));
+  dock.querySelector('.dock-x')!.addEventListener('click', () => { setState('min'); ss.set('dock-min', '1'); ph('dock_min'); });
+  dock.querySelector('.dock-chotu')!.addEventListener('click', () => {
+    if (dock.dataset.state === 'min') { setState('on'); ss.set('dock-min', ''); ph('dock_open'); return; }
+    say(HI ? 'जुड़ना फ़्री है, और रहेगा। मैं रोज़ सुबह 7 से रात 11:30 तक आपके डाउट के लिए हूँ।' : "Joining is free, and stays free. I'm here for your doubts from 7 am to 11:30 pm, every day.");
+  });
+  // A question answered on the page (scripts/quiz.ts): Chotu says what it means, and the bar comes up if it was down.
+  // If they made it small, it stays small: Chotu just hops, and the line waits for when they open him.
+  addEventListener('chotu', (e) => {
+    show();
+    const text = (e as CustomEvent).detail?.say ?? '';
+    if (dock.dataset.state === 'min') { if (!night) { lineEl.textContent = text; said = text; dock.classList.remove('talk'); void (dock as HTMLElement).offsetWidth; dock.classList.add('talk'); } return; }
+    say(text);
+  });
+</script>

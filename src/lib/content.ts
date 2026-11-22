@@ -8,7 +8,7 @@ type Card = Record<string, any>;
 type Day = { day: string; items: Card[] };
 type Node = { id: string; name: string; paper: string; learn: string };
 
-const DATA = raw as unknown as { generatedAt: string; nodes?: Node[]; items: Item[]; briefs: Day[] };
+const DATA = raw as unknown as { generatedAt: string; nodes?: Node[]; items: Item[]; briefs: Day[]; papers?: Paper[] };
 export const APP = 'https://app.aspiran.in';
 export const generatedAt = DATA.generatedAt;
 const NODES = new Map((DATA.nodes ?? []).map((n) => [n.id, n]));
@@ -29,26 +29,26 @@ export interface Section { id: SectionId; kinds: string[]; name: Record<Lang, st
 export const SECTIONS: Section[] = [
   { id: 'notes', kinds: ['read'],
     name: { en: 'Notes', hi: 'नोट्स' },
-    title: { en: 'Free UPSC notes, topic by topic', hi: 'UPSC के मुफ़्त नोट्स, टॉपिक दर टॉपिक' },
+    title: { en: 'Free UPSC notes, topic by topic', hi: 'UPSC के फ़्री नोट्स, हर टॉपिक के' },
     blurb: { en: 'Clear, exam-focused notes for Prelims and Mains, mapped to the syllabus. Each ends with questions to test yourself.', hi: 'प्रीलिम्स और मेन्स के लिए साफ़, परीक्षा पर केंद्रित नोट्स, सिलेबस के हिसाब से। हर नोट के अंत में ख़ुद को परखने के सवाल।' },
     one: { en: 'note', hi: 'नोट' } },
   { id: 'mains-answer-writing', kinds: ['mains-skeleton'],
-    name: { en: 'Mains answer frames', hi: 'मेन्स उत्तर ढाँचे' },
-    title: { en: 'UPSC Mains answer writing: how to frame real past questions', hi: 'UPSC मेन्स उत्तर लेखन: असली पिछले सवालों का ढाँचा' },
+    name: { en: 'Mains answer writing', hi: 'मेन्स आंसर राइटिंग' },
+    title: { en: 'UPSC Mains answer writing: how to frame real PYQs', hi: 'UPSC मेन्स आंसर राइटिंग: असली PYQ का आंसर कैसे लिखें' },
     blurb: { en: 'Actual UPSC Mains questions, each with what the directive word wants, an intro, the points to cover, a conclusion and the mistake most people make.', hi: 'UPSC मेन्स के असली सवाल, हर एक के साथ: निर्देश शब्द क्या माँगता है, भूमिका, कवर करने के बिंदु, निष्कर्ष और सबसे आम ग़लती।' },
-    one: { en: 'answer frame', hi: 'उत्तर ढाँचा' } },
+    one: { en: 'answer frame', hi: 'आंसर फ़्रेम' } },
   { id: 'ethics-case-studies', kinds: ['gs4-case', 'ethics-dilemma'],
     name: { en: 'Ethics case studies', hi: 'एथिक्स केस स्टडी' },
     title: { en: 'GS4 ethics case studies with worked solutions', hi: 'GS4 एथिक्स केस स्टडी, हल के साथ' },
     blurb: { en: 'Practice cases in the UPSC GS Paper IV style: the stakeholders, the options, what each one costs, and a reasoned choice.', hi: 'UPSC GS पेपर IV की शैली में अभ्यास केस: हितधारक, विकल्प, हर विकल्प की क़ीमत, और एक तर्कपूर्ण चुनाव।' },
     one: { en: 'case', hi: 'केस' } },
   { id: 'essay-topics', kinds: ['essay'],
-    name: { en: 'Essay topics', hi: 'निबंध विषय' },
+    name: { en: 'Essay topics', hi: 'एसे (निबंध) टॉपिक' },
     title: { en: 'UPSC essay topics with outlines and openers', hi: 'UPSC निबंध विषय, रूपरेखा और शुरुआत के साथ' },
     blurb: { en: 'Essay topics in the UPSC style, each with a stand, an outline, angles to cover, ways to open and the traps to avoid.', hi: 'UPSC शैली के निबंध विषय, हर एक के साथ: पक्ष, रूपरेखा, आयाम, शुरुआत के तरीक़े और बचने लायक़ ग़लतियाँ।' },
     one: { en: 'essay topic', hi: 'निबंध विषय' } },
   { id: 'landmark-judgments', kinds: ['landmark-case'],
-    name: { en: 'Landmark judgments', hi: 'ऐतिहासिक फ़ैसले' },
+    name: { en: 'Landmark judgments', hi: 'लैंडमार्क जजमेंट' },
     title: { en: 'Landmark Supreme Court judgments for UPSC', hi: 'UPSC के लिए सुप्रीम कोर्ट के ऐतिहासिक फ़ैसले' },
     blurb: { en: 'The cases that come up again and again in Polity: the question before the court, what it held, and why it matters for the exam.', hi: 'राजव्यवस्था में बार-बार आने वाले केस: अदालत के सामने सवाल, फ़ैसला, और परीक्षा के लिए उसका महत्व।' },
     one: { en: 'judgment', hi: 'फ़ैसला' } },
@@ -58,7 +58,7 @@ export const SECTIONS: Section[] = [
     blurb: { en: 'Each scheme on one page: ministry, aim, who it covers, the number to remember and the exam angle.', hi: 'हर योजना एक पेज में: मंत्रालय, उद्देश्य, किसे मिलती है, याद रखने लायक़ आँकड़ा और परीक्षा का नज़रिया।' },
     one: { en: 'scheme', hi: 'योजना' } },
   { id: 'glossary', kinds: ['terms'],
-    name: { en: 'English–Hindi glossary', hi: 'अंग्रेज़ी–हिंदी शब्दावली' },
+    name: { en: 'English–Hindi glossary', hi: 'इंग्लिश–हिंदी शब्दकोश' },
     title: { en: 'English–Hindi UPSC glossary, subject by subject', hi: 'UPSC अंग्रेज़ी–हिंदी शब्दावली, विषय दर विषय' },
     blurb: { en: 'The terms you meet in every subject, in English and Hindi, with a one-line meaning. Made for Hindi-medium aspirants reading English sources, and the other way round.', hi: 'हर विषय के ज़रूरी शब्द, अंग्रेज़ी और हिंदी में, एक पंक्ति के अर्थ के साथ। अंग्रेज़ी स्रोत पढ़ने वाले हिंदी माध्यम के अभ्यर्थियों के लिए, और उल्टा भी।' },
     one: { en: 'list', hi: 'सूची' } },
@@ -240,3 +240,27 @@ export const totals = {
   caDays: DAYS.length, caCards: DAYS.reduce((n, d) => n + d.cards.length, 0),
   terms: pagesIn('glossary').reduce((n, p) => n + (p.data.terms?.length ?? 0), 0),
 };
+
+
+// ---------------------------------------------------------------- PYQs (owner, 22 Nov 2026: call them PYQs, keep them here)
+export interface PyqQ { n: string; nodes: string[]; marks?: number; words?: number; answer: number | null; en: { q: string; options?: string[] }; hi?: { q: string; options?: string[] };
+  explain?: { why: any; wrong: { option: number; en: string; hi?: string }[]; trap?: any } }
+export interface Paper { id: string; exam: 'prelims' | 'mains'; year: number; paper: string; title: any; sourceUrl: string;
+  key: { status: string; url?: string; dropped?: string[]; provisional?: boolean }; questions: PyqQ[] }
+const P_ORDER = ['prelims', 'csat', 'gs1', 'gs2', 'gs3', 'gs4', 'essay'];
+export const PAPERS: Paper[] = (DATA.papers ?? []).slice().sort((a, b) => b.year - a.year || (a.exam === b.exam ? 0 : a.exam === 'prelims' ? -1 : 1) || P_ORDER.indexOf(a.paper) - P_ORDER.indexOf(b.paper));
+const P_NAME: Record<string, Record<Lang, string>> = {
+  prelims: { en: 'GS Paper I', hi: 'GS पेपर I' }, csat: { en: 'CSAT', hi: 'CSAT' }, gs1: { en: 'GS1', hi: 'GS1' }, gs2: { en: 'GS2', hi: 'GS2' },
+  gs3: { en: 'GS3', hi: 'GS3' }, gs4: { en: 'GS4 (Ethics)', hi: 'GS4 (एथिक्स)' }, essay: { en: 'Essay', hi: 'एसे' } };
+export const examName = (p: Paper, lang: Lang) => (p.exam === 'mains' ? (lang === 'hi' ? 'मेन्स' : 'Mains') : (lang === 'hi' ? 'प्रीलिम्स' : 'Prelims'));
+export const paperName = (p: Paper, lang: Lang) => `${examName(p, lang)} ${p.year} ${P_NAME[p.paper]?.[lang] ?? p.paper.toUpperCase()}`;
+export const paperSlug = (p: Paper) => `${p.exam}-${p.year}-${p.paper === 'prelims' ? 'gs1' : p.paper}`;
+export const paperHasHindi = (p: Paper) => p.questions.some((q) => q.hi?.q);
+export const papersIn = (lang: Lang) => PAPERS.filter((p) => lang === 'en' || paperHasHindi(p));
+export const pyqHome = (lang: Lang) => `${prefix(lang)}/pyq/`;
+export const paperUrl = (p: Paper, lang: Lang) => `${prefix(lang)}/pyq/${paperSlug(p)}/`;
+export const qUrl = (p: Paper, q: PyqQ, lang: Lang) => `${prefix(lang)}/pyq/${paperSlug(p)}/q${q.n}/`;
+export const qIn = (q: PyqQ, lang: Lang) => (lang === 'hi' && q.hi?.q ? { q: q.hi.q, options: q.hi.options?.length ? q.hi.options : q.en.options } : q.en);
+export const pyqCount = PAPERS.reduce((n, p) => n + p.questions.length, 0);
+export const pyqYears = [...new Set(PAPERS.map((p) => p.year))].sort((a, b) => b - a);
+export const nodeName = (id: string) => NODES.get(id);

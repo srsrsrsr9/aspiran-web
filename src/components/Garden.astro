@@ -1,0 +1,82 @@
+---
+// The syllabus garden (owner, 22 Nov 2026: "the creeper visual did a great job of selling the idea that we cover the
+// entire syllabus"). The app's own garden: nine papers, every syllabus line a leaf. Scroll plays a year of prep.
+import { joinUrl } from '../lib/links';
+import type { Lang } from '../lib/content';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+---
+<section class="gband" aria-labelledby="garden-h" data-say={T("Every leaf is one line of the syllabus. Join free and your own garden starts growing today.", 'हर पत्ती सिलेबस की एक लाइन है। फ़्री में जुड़िए, आपका अपना बग़ीचा आज से उगने लगेगा।')}>
+  <div class="wrap gband-grid" id="garden-wrap">
+    <div class="gband-text">
+      <p class="kick">{T('9 papers · Prelims to Mains · nothing left out', '9 पेपर · प्रीलिम्स से मेन्स · कुछ नहीं छूटा')}</p>
+      <h2 id="garden-h">{T('The whole UPSC syllabus. Every line of it.', 'UPSC का पूरा सिलेबस। उसकी हर एक लाइन।')}</h2>
+      <p class="gband-lede">{T("This is your syllabus in the app: every leaf is one line. Keep scrolling to watch a year of prep. Leaves light up as you read, glow brighter when you remember, and flower when you can write them in an answer.",
+        'ऐप में आपका सिलेबस ऐसा दिखता है: हर पत्ती एक लाइन। स्क्रॉल करते रहिए और एक साल की तैयारी देखिए। पढ़ने पर पत्ती जलती है, याद रहने पर और चमकती है, और आंसर में लिखने लायक़ होने पर फूल खिलता है।')}</p>
+      <ul class="legend">
+        <li><i class="lf"></i>{T('Not yet', 'अभी नहीं')}</li>
+        <li><i class="lf met"></i>{T('Read', 'पढ़ लिया')}</li>
+        <li><i class="lf recall"></i>{T('Remembered', 'याद है')}</li>
+        <li><i class="lf use"></i>{T('Ready for answers', 'आंसर के लिए तैयार')}</li>
+      </ul>
+      <a class="btn primary" href={joinUrl('garden', lang)} data-cta="join" data-where="garden">{T('Start my garden, free', 'मेरा बग़ीचा शुरू करें, फ़्री')}</a>
+    </div>
+    <div class="garden-stick">
+      <div class="garden-frame" id="garden-frame"></div>
+      <p class="garden-month" id="garden-month" aria-live="off"></p>
+      <p class="garden-tip" id="garden-tip">{T('Tap any leaf to see its syllabus line.', 'किसी भी पत्ती पर टैप करके उसकी लाइन देखिए।')}</p>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .gband { background: linear-gradient(180deg, #0B0E1E, #121733 60%, #0B0E1E); color: #F3E8DA; padding: 72px 0 40px;
+    --g-sky1:#070A18; --g-sky2:#151A3A; --g-ground:#2A1D13; --g-ground2:#1A110A; --g-stem:#4D6E4C; --g-twig:#5A7F57;
+    --leaf-none:#56658A; --leaf-none-fill:rgba(96,112,150,.38); --leaf-met:#6DB36F; --leaf-recall:#9BE38C; --leaf-use:#C6FFA6;
+    --leaf-glow:rgba(155,227,140,.75); --bloom:#F0A04B; --bloom-eye:#FFE0A8; --g-star:rgba(238,234,246,.7); --g-label:#E8D8C4; }
+  .gband h2 { color: #FFF6E8; font-size: clamp(32px, 4.6vw, 56px); line-height: 1.08; text-wrap: balance; margin: 8px 0 14px; }
+  .gband .kick { color: #E9B13A; }
+  .gband-lede { color: #C9B5A2; font-size: 18px; line-height: 1.55; max-width: 34em; }
+  .gband-grid { height: 230vh; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 48px; align-items: start; }
+  .gband-text, .garden-stick { position: sticky; top: 12vh; }
+  .gband-text { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .gband .legend { list-style: none; padding: 0; margin: 10px 0 22px; display: flex; flex-wrap: wrap; gap: 8px 18px; color: #E0CDBA; font-size: 15px; }
+  .gband .legend li { display: flex; align-items: center; }
+  .gband .legend .lf { display: inline-block; width: 15px; height: 9px; border-radius: 0 80% 0 80%; margin-right: 8px; transform: rotate(-20deg); background: var(--leaf-none-fill); border: 1px solid var(--leaf-none); }
+  .gband .legend .lf.met { background: var(--leaf-met); border-color: transparent; }
+  .gband .legend .lf.recall { background: var(--leaf-recall); border-color: transparent; }
+  .gband .legend .lf.use { background: var(--leaf-use); border-color: transparent; box-shadow: 0 0 6px var(--leaf-glow); }
+  .garden-frame { border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,.08); background: linear-gradient(180deg, var(--g-sky1), var(--g-sky2) 82%); box-shadow: 0 0 80px rgba(155, 227, 140, .10); }
+  .garden-frame svg { display: block; width: 100%; height: auto; max-height: 68vh; }
+  .garden-month { font: 700 13px/1.4 var(--sans); letter-spacing: .08em; color: #9BE38C; margin: 12px 0 2px; }
+  html[lang="hi"] .garden-month { letter-spacing: 0; font-size: 15px; }
+  .garden-tip { font-size: 14.5px; color: #B09A86; margin: 0; min-height: 1.4em; }
+  .vine-star { fill: var(--g-star); }
+  .vine-ground { fill: var(--g-ground); }
+  .vine-horizon { fill: var(--g-ground2); opacity: .55; }
+  .vine-label { fill: var(--g-label); font: 700 9.5px var(--serif); letter-spacing: .02em; pointer-events: none; }
+  .vine-hit { fill: transparent; }
+  .vine-stem { fill: none; stroke: var(--g-stem); stroke-linecap: round; }
+  .vine-twine { stroke: var(--g-twig); opacity: .7; }
+  .vine-twig { fill: none; stroke: var(--g-twig); stroke-linecap: round; }
+  .vine-leaf { cursor: pointer; }
+  .vine-leaf path:first-child { fill: var(--leaf-none-fill); stroke: var(--leaf-none); stroke-width: .5px; vector-effect: non-scaling-stroke; transition: fill .6s; }
+  .vine-leaf.met path:first-child { fill: var(--leaf-met); stroke: none; filter: drop-shadow(0 0 1px var(--leaf-glow)); }
+  .vine-leaf.recall path:first-child { fill: var(--leaf-recall); stroke: none; filter: drop-shadow(0 0 1.5px var(--leaf-glow)); }
+  .vine-leaf.use path:first-child { fill: var(--leaf-use); stroke: none; filter: drop-shadow(0 0 2.5px var(--leaf-glow)); }
+  .vine-bloom ellipse { fill: var(--bloom); }
+  .vine-bloom .vine-bloom-eye { fill: var(--bloom-eye); }
+  .vine-leaf .bloom-open { transform: scale(0); opacity: 0; transition: transform .5s cubic-bezier(.3,1.6,.5,1), opacity .3s; }
+  .vine-leaf.use .bloom-open { transform: scale(1); opacity: 1; }
+  .vine-leaf .vine-bloom { filter: drop-shadow(0 0 2px rgba(240,160,75,.6)); }
+  @media (max-width: 860px) {
+    .gband-grid { grid-template-columns: 1fr; height: auto; gap: 20px; }
+    .gband-text { position: static; }
+    .garden-stick { position: sticky; top: 64px; }
+    .gband-grid::after { content: ""; display: block; height: 120vh; }
+  }
+  @media (prefers-reduced-motion: reduce) { .gband-grid { height: auto; } .gband-grid::after { display: none; } .gband-text, .garden-stick { position: static; } .vine-leaf .bloom-open { transition: none; } }
+</style>
+<script>import '../scripts/garden-scroll.ts';</script>

@@ -62,7 +62,7 @@ const never = hi ? [
 ];
 
 const WA = waUrl(hi ? WA_MSG_OPEN_HI : WA_MSG_OPEN_EN);
-const TRY = hi ? 'एक टॉपिक मुफ़्त आज़माएँ' : 'Try one topic free';
+const TRY = hi ? 'एक टॉपिक फ़्री आज़माएँ' : 'Try one topic free';
 ---
 
 <BaseLayout title={title} description={description} themeColor="#06070F" lang={lang}>
@@ -81,7 +81,7 @@ const TRY = hi ? 'एक टॉपिक मुफ़्त आज़माए�
       </a>
       <div class="hud-r">
         {hi ? <a class="lang-link" href="/how-it-works/" hreflang="en" lang="en">English</a> : <a class="lang-link" href="/hi/how-it-works/" hreflang="hi" lang="hi">हिंदी</a>}
-        <a class="btn ghost sm" href={APP('nav')} data-cta="try" data-where="how-nav">{hi ? 'एक टॉपिक मुफ़्त आज़माएँ' : 'Try one topic free'}</a>
+        <a class="btn ghost sm" href={APP('nav')} data-cta="try" data-where="how-nav">{hi ? 'एक टॉपिक फ़्री आज़माएँ' : 'Try one topic free'}</a>
       </div>
     </nav>
 
@@ -97,7 +97,7 @@ const TRY = hi ? 'एक टॉपिक मुफ़्त आज़माए�
           then used in an answer. Scroll and watch a year go by.</>}</p>
         <p class="what">{hi ? 'Aspiran: UPSC सिविल सेवा अभ्यर्थियों के लिए पढ़ाई का ऐप, हिंदी और अंग्रेज़ी में।' : 'Aspiran is a study app for UPSC Civil Services aspirants, in English and Hindi.'}</p>
         <div class="ctas">
-          <a class="btn primary" href={APP('hero')} data-cta="try" data-where="how-hero">{hi ? 'एक पूरा टॉपिक मुफ़्त आज़माएँ, बिना साइन-अप' : 'Try one whole topic free, no sign-up'}</a>
+          <a class="btn primary" href={APP('hero')} data-cta="try" data-where="how-hero">{hi ? 'एक पूरा टॉपिक फ़्री आज़माएँ, बिना साइन-अप' : 'Try one whole topic free, no sign-up'}</a>
           <button class="btn ghost" type="button" data-open-chotu data-umami-event="cta-chotu" data-umami-event-where="hero">{hi ? 'चोटू को नमस्ते कहिए' : 'Say hi to Chotu'}</button>
         </div>
       </div>
@@ -274,7 +274,7 @@ const TRY = hi ? 'एक टॉपिक मुफ़्त आज़माए�
 
       <!-- 8. Chai -->
       <section class="scene chai" id="chai" data-scene="chai">
-        <p class="hud">{hi ? 'कमरा 06 · करेंट अफ़ेयर्स' : 'ROOM 06 · CURRENT AFFAIRS'}</p>
+        <p class="hud">{hi ? 'कमरा 06 · करंट अफ़ेयर्स' : 'ROOM 06 · CURRENT AFFAIRS'}</p>
         <h2>{hi ? 'ख़बरें, जो सिलेबस से चिपकी रहें।' : 'News that sticks to the syllabus.'}</h2>
         <p class="lede">{hi ? <>दिन में कुछ चाय कार्ड, और फिर ख़त्म। हर एक आपके आसमान के किसी तारे से जुड़ा है, और हेडलाइन के नीचे के विचार के बारे में
           पूछता है, क्योंकि UPSC वही पूछता है।</> : <>A few chai cards a day, and then it ends. Each one is pinned to a star in your sky, and asks about the idea
@@ -462,9 +462,9 @@ const TRY = hi ? 'एक टॉपिक मुफ़्त आज़माए�
       <!-- 17. Price -->
       <section class="scene price" id="price" data-scene="price">
         <p class="hud">{hi ? 'कमरा 15 · क़ीमत' : 'ROOM 15 · WHAT IT COSTS'}</p>
-        <h2>{hi ? 'जुड़ना मुफ़्त। और चाहिए तो Plus।' : 'Free to join. Plus if you want more.'}</h2>
+        <h2>{hi ? 'जुड़ना फ़्री। और चाहिए तो Plus।' : 'Free to join. Plus if you want more.'}</h2>
         <div class="plans" data-reveal>
-          {hi ? <><div class="plan"><b>मुफ़्त</b><p class="amt">₹0</p>
+          {hi ? <><div class="plan"><b>फ़्री</b><p class="amt">₹0</p>
             <ul><li>आपका पॉड और कॉमन्स</li><li>रोज़ का रिव्यू और चाय</li><li>रोज़ के सवालों के लिए चोटू</li><li>आपके नोट्स, डायरी, काम और नींद</li></ul></div>
           <div class="plan plus"><b>Plus</b><p class="amt">₹3,999<span> साल</span></p>
             <p class="offer">एक बार भुगतान, अपने-आप रिन्यू नहीं, 7 दिन में रिफ़ंड।</p>
@@ -496,7 +496,7 @@ const TRY = hi ? 'एक टॉपिक मुफ़्त आज़माए�
       <section class="scene end" data-scene="end">
         <Chotu group="final" size={130} />
         <h2>{hi ? 'चाय ठंडी हो रही है।' : "Chai's getting cold."}</h2>
-        <p class="lede">{hi ? 'ऐप खुला है। एक पूरा टॉपिक मुफ़्त, बिना साइन-अप।' : 'The app is open. One whole topic, free, no sign-up.'}</p>
+        <p class="lede">{hi ? 'ऐप खुला है। एक पूरा टॉपिक फ़्री, बिना साइन-अप।' : 'The app is open. One whole topic, free, no sign-up.'}</p>
         <p class="ctas"><a class="btn primary" href={APP('end')} data-cta="try" data-where="how-end">{TRY}</a></p>
         <p class="hud dim">{hi ? 'पेज का अंत। यहाँ सब कुछ की तरह, यह भी ख़त्म होता है।' : 'END OF THE PAGE. LIKE EVERYTHING HERE, IT ENDS.'}</p>
       </section>

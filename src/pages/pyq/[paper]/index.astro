@@ -1,0 +1,8 @@
+---
+
+import PaperPage from '../../../components/PaperPage.astro';
+import { PAPERS, paperSlug, paperHasHindi } from '../../../lib/content';
+export function getStaticPaths() { return PAPERS.map((p) => ({ params: { paper: paperSlug(p) }, props: { p } })); }
+const { p } = Astro.props;
+---
+<PaperPage p={p} lang="en" />

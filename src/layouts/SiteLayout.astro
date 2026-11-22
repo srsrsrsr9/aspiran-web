@@ -1,6 +1,7 @@
 ---
-// Every page of the site (v5, 22 Nov 2026): header with the free sections, English/Hindi switch and the app button,
-// a footer that links every section and the latest current affairs (good for readers and for search engines).
+// Every page of the site (v6, 22 Nov 2026): header with the free sections, English/Hindi switch and Join free,
+// Chotu's join bar (Dock), the on-page question script, and a footer that links every section and the PYQs by year.
+// The footer shows no dated list (a list of five dates made the site look five days old).
 import '@fontsource/martel/latin-400.css';
 import '@fontsource/martel/latin-700.css';
 import '@fontsource/martel/latin-800.css';
@@ -10,7 +11,9 @@ import '@fontsource/mukta/latin-600.css';
 import '@fontsource/mukta/latin-700.css';
 import '../styles/site.css';
 import BaseLayout from './BaseLayout.astro';
-import { SECTIONS, caDays, dayUrl, longDate, sectionUrl, type Lang } from '../lib/content';
+import Dock from '../components/Dock.astro';
+import { joinUrl } from '../lib/links';
+import { SECTIONS, sectionUrl, pyqHome, pyqYears, pyqCount, type Lang } from '../lib/content';
 
 interface Crumb { name: string; href?: string }
 interface Props {
@@ -23,22 +26,25 @@ interface Props {
   jsonLd?: unknown[];
   ogType?: string;
   current?: string;
+  /** Where on the site this is, for the join links (analytics). */
+  where?: string;
+  /** Chotu's first line on this page. */
+  chotu?: string;
 }
-const { title, description, lang = 'en', alternates, crumbs, jsonLd = [], ogType, current } = Astro.props;
+const { title, description, lang = 'en', alternates, crumbs, jsonLd = [], ogType, current, where = current ?? 'page', chotu } = Astro.props;
 const hi = lang === 'hi';
 const T = (en: string, h: string) => (hi ? h : en);
 const P = hi ? '/hi' : '';
 const other = hi ? alternates?.en : alternates?.hi;
-const app = (where: string) => `https://app.aspiran.in/app/?utm_source=site&utm_medium=${where}${hi ? '&lang=hi' : ''}`;
+const app = (w: string) => joinUrl(w, lang);
 const nav = [
-  { id: 'current-affairs', href: sectionUrl('current-affairs', lang), label: T('Current affairs', 'करेंट अफ़ेयर्स') },
+  { id: 'current-affairs', href: sectionUrl('current-affairs', lang), label: T('Current affairs', 'करंट अफ़ेयर्स') },
+  { id: 'pyq', href: pyqHome(lang), label: 'PYQs' },
   { id: 'notes', href: sectionUrl('notes', lang), label: T('Notes', 'नोट्स') },
-  { id: 'papers', href: 'https://app.aspiran.in/learn/papers', label: T('Past papers', 'पिछले पेपर') },
-  { id: 'mains-answer-writing', href: sectionUrl('mains-answer-writing', lang), label: T('Answer writing', 'उत्तर लेखन') },
-  { id: 'free', href: `${P}/free/`, label: T('All free material', 'सारी मुफ़्त सामग्री') },
+  { id: 'mains-answer-writing', href: sectionUrl('mains-answer-writing', lang), label: T('Answer writing', 'आंसर राइटिंग') },
+  { id: 'free', href: `${P}/free/`, label: T('All free material', 'सारा फ़्री मटीरियल') },
   { id: 'how', href: `${P}/how-it-works/`, label: T('How Aspiran works', 'Aspiran कैसे काम करता है') },
 ];
-const latest = caDays(lang).slice(0, 5);
 const site = 'https://aspiran.in';
 const org = { '@type': 'Organization', '@id': `${site}/#org`, name: 'Aspiran', url: `${site}/`, logo: `${site}/favicon.svg`, email: 'hello@aspiran.in', parentOrganization: { '@type': 'Organization', name: 'SnapSkill LLP' } };
 const crumbLd = crumbs?.length ? [{ '@type': 'BreadcrumbList', itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, ...(c.href ? { item: new URL(c.href, site).toString() } : {}) })) }] : [];
@@ -46,7 +52,7 @@ const ld = { '@context': 'https://schema.org', '@graph': [org, ...crumbLd, ...js
 ---
 
 <BaseLayout title={title} description={description} lang={lang} alternates={alternates} jsonLd={ld} ogType={ogType}>
-  <a class="skip" href="#main">{T('Skip to the page', 'पेज पर जाएँ')}</a>
+  <a class="skip" href="#main">{T('Skip to the page', 'सीधे पेज पर')}</a>
   <header class="top">
     <div class="wrap">
       <a class="brand" href={`${P}/`} aria-label={T('Aspiran home', 'Aspiran होम')}>
@@ -59,19 +65,20 @@ const ld = { '@context': 'https://schema.org', '@graph': [org, ...crumbLd, ...js
       </a>
       <nav class="nav" aria-label={T('Main', 'मुख्य')}>
         {nav.slice(0, 4).map((n) => <a href={n.href} aria-current={current === n.id ? 'page' : undefined}>{n.label}</a>)}
-        <a href={`${P}/free/`} aria-current={current === 'free' ? 'page' : undefined}>{T('More free', 'और मुफ़्त')}</a>
+        <a href={`${P}/free/`} aria-current={current === 'free' ? 'page' : undefined}>{T('More free', 'और फ़्री')}</a>
       </nav>
       <div class="top-r">
         {hi
           ? <a class="lang" href={other ?? '/'} hreflang="en" lang="en">English</a>
           : <a class="lang" href={other ?? '/hi/'} hreflang="hi" lang="hi">हिंदी</a>}
-        <a class="btn primary sm" href={app('nav')} data-cta="app" data-where="nav">{T('Open the app', 'ऐप खोलें')}</a>
+        <a class="btn primary sm" href={app('nav')} data-cta="join" data-where="nav">{T('Join free', 'फ़्री में जुड़ें')}</a>
         <details class="menu">
           <summary>{T('Menu', 'मेन्यू')}</summary>
           <div class="menu-list">
             {nav.map((n) => <a href={n.href}>{n.label}</a>)}
-            <a href={`${P}/for-coaching/`}>{T('For coaching centres', 'कोचिंग संस्थानों के लिए')}</a>
-            <a href={app('menu')} data-cta="app" data-where="menu"><b>{T('Open the app, free', 'ऐप खोलें, मुफ़्त')}</b></a>
+            <a href={`${P}/for-coaching/`}>{T('For coaching institutes', 'कोचिंग इंस्टिट्यूट के लिए')}</a>
+            <a href={app('login')} data-cta="login" data-where="menu">{T('Log in', 'लॉग इन')}</a>
+            <a href={app('menu')} data-cta="join" data-where="menu"><b>{T('Join free', 'फ़्री में जुड़ें')}</b></a>
           </div>
         </details>
       </div>
@@ -93,30 +100,33 @@ const ld = { '@context': 'https://schema.org', '@graph': [org, ...crumbLd, ...js
         <div>
           <a class="brand" href={`${P}/`}>Aspiran</a>
           <p style="margin-top:12px">{T(
-            'A UPSC prep app for self-study, coaching students and working aspirants. Daily revision, answer checking, current affairs and a small study group. English and Hindi.',
-            'सेल्फ़-स्टडी, कोचिंग वाले और नौकरी के साथ तैयारी करने वाले अभ्यर्थियों के लिए UPSC ऐप। रोज़ का रिवीज़न, उत्तर जाँच, करेंट अफ़ेयर्स और एक छोटा स्टडी ग्रुप। हिंदी और अंग्रेज़ी।')}</p>
+            'The UPSC prep app for self-study, coaching students and working aspirants. Daily revision, answer checking, current affairs and a small study pod. English and Hindi.',
+            'सेल्फ़-स्टडी, कोचिंग और जॉब के साथ तैयारी करने वालों के लिए UPSC ऐप। रोज़ का रिवीज़न, आंसर की जाँच, करंट अफ़ेयर्स और एक छोटा स्टडी पॉड। हिंदी और इंग्लिश में।')}</p>
+          <p><a class="btn primary sm" href={app('footer')} data-cta="join" data-where="footer">{T('Join free', 'फ़्री में जुड़ें')}</a></p>
           <p><a href="mailto:hello@aspiran.in">hello@aspiran.in</a></p>
         </div>
         <div>
-          <h3>{T('Study free', 'मुफ़्त पढ़िए')}</h3>
+          <h3>{T('Study free', 'फ़्री में पढ़िए')}</h3>
           <ul>
-            <li><a href={sectionUrl('current-affairs', lang)}>{T('Daily current affairs', 'रोज़ के करेंट अफ़ेयर्स')}</a></li>
+            <li><a href={sectionUrl('current-affairs', lang)}>{T("Today's current affairs", 'आज के करंट अफ़ेयर्स')}</a></li>
             {SECTIONS.map((s) => <li><a href={sectionUrl(s.id, lang)}>{s.name[lang]}</a></li>)}
-            <li><a href="https://app.aspiran.in/learn/papers">{T('UPSC past papers 2016–2026', 'UPSC पिछले पेपर 2016–2026')}</a></li>
             <li><a href="https://app.aspiran.in/learn">{T('Syllabus, topic by topic', 'सिलेबस, टॉपिक दर टॉपिक')}</a></li>
           </ul>
         </div>
         <div>
-          <h3>{T('Latest current affairs', 'ताज़ा करेंट अफ़ेयर्स')}</h3>
-          <ul>{latest.map((d) => <li><a href={dayUrl(d.day, lang)}>{longDate(d.day, lang)}</a></li>)}</ul>
+          <h3>{T(`UPSC PYQs (${pyqCount.toLocaleString('en-IN')})`, `UPSC PYQ (${pyqCount.toLocaleString('en-IN')})`)}</h3>
+          <ul>
+            {pyqYears.slice(0, 6).map((y) => <li><a href={`${pyqHome(lang)}#y${y}`}>{T(`PYQs ${y}`, `PYQ ${y}`)}</a></li>)}
+            <li><a href={pyqHome(lang)}>{T('All years, 2016–2026', 'सभी साल, 2016–2026')}</a></li>
+          </ul>
         </div>
         <div>
           <h3>Aspiran</h3>
           <ul>
             <li><a href={`${P}/how-it-works/`}>{T('How it works', 'कैसे काम करता है')}</a></li>
-            <li><a href={`${P}/#price`}>{T('Free and Plus', 'मुफ़्त और Plus')}</a></li>
-            <li><a href={`${P}/for-coaching/`}>{T('For coaching centres', 'कोचिंग संस्थानों के लिए')}</a></li>
-            <li><a href={app('footer')}>{T('Open the app', 'ऐप खोलें')}</a></li>
+            <li><a href={`${P}/#price`}>{T('Free and Plus', 'फ़्री और Plus')}</a></li>
+            <li><a href={`${P}/for-coaching/`}>{T('For coaching institutes', 'कोचिंग इंस्टिट्यूट के लिए')}</a></li>
+            <li><a href={app('footer-login')}>{T('Log in', 'लॉग इन')}</a></li>
             <li><a href="/privacy">{T('Privacy', 'प्राइवेसी')}</a></li>
             <li><a href="/terms">{T('Terms', 'शर्तें')}</a></li>
           </ul>
@@ -124,11 +134,14 @@ const ld = { '@context': 'https://schema.org', '@graph': [org, ...crumbLd, ...js
       </div>
       <div class="foot-base">
         <span>{T('© 2026 SnapSkill LLP, Mohali, Punjab. Not affiliated with UPSC. Answer marks and Chotu\'s replies can be wrong: check what matters.',
-          '© 2026 SnapSkill LLP, मोहाली, पंजाब। UPSC से संबद्ध नहीं। उत्तर के अंक और Chotu के जवाब ग़लत हो सकते हैं: ज़रूरी बातें जाँच लें।')}</span>
+          '© 2026 SnapSkill LLP, मोहाली, पंजाब। UPSC से जुड़ा नहीं। आंसर के नंबर और छोटू के जवाब ग़लत हो सकते हैं: ज़रूरी बातें ख़ुद जाँच लें।')}</span>
         <button class="theme-switch" type="button" id="theme-switch">{T('Light / dark', 'लाइट / डार्क')}</button>
       </div>
     </div>
   </footer>
+
+  <Dock lang={lang} where={where} line={chotu} />
+  <script>import '../scripts/quiz.ts';</script>
 
   <script>
     // Light or dark: follows the phone until the visitor picks; the pick is remembered (BaseLayout applies it before paint).

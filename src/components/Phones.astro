@@ -1,0 +1,77 @@
+---
+// The hero's three phones (owner, 22 Nov 2026: the screens "offer very little distinction"). Eight real, very different
+// app screens. The centre phone changes every few seconds and the side phones show the ones either side; the chips
+// below jump to any screen. Still with reduced motion (chips still work). Each change tells Chotu what is on screen.
+import { shot, SHOT_NAME, type Shot } from '../lib/links';
+import type { Lang } from '../lib/content';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const hi = lang === 'hi';
+const ORDER: [Shot, string, string][] = [
+  ['gov', "Sit in the Governor's chair and decide. Federalism you won't forget.", 'राज्यपाल की कुर्सी पर बैठकर फ़ैसला लीजिए। ऐसा फ़ेडरलिज़्म जो भूलेगा नहीं।'],
+  ['desk', 'Write an answer, take a photo, get it marked on 5 parts in minutes.', 'आंसर लिखिए, फ़ोटो लीजिए, मिनटों में 5 हिस्सों पर जाँच पाइए।'],
+  ['pyq', 'Real PYQs, and "how sure are you?" before every answer.', 'असली PYQ, और हर जवाब से पहले "कितने पक्के हैं?"'],
+  ['gst', 'Play the GST Council vote. Then the Prelims question is easy.', 'GST काउंसिल का वोट खेलिए। फिर प्रीलिम्स का सवाल आसान।'],
+  ['cards', 'What you read comes back as quick cards, right before you forget.', 'जो पढ़ा, वो छोटे कार्ड बनकर लौटता है, भूलने से ठीक पहले।'],
+  ['sort', 'Sort the Union, State and Concurrent lists with your thumb.', 'संघ, राज्य और समवर्ती सूची अंगूठे से छाँटिए।'],
+  ['essay', 'Essay: skeleton, outline, first page, each one checked.', 'एसे: ढाँचा, आउटलाइन, पहला पेज, हर क़दम की जाँच।'],
+  ['pods', 'A pod of up to 8 aspirants at your stage. Never prep alone.', 'आपके स्टेज के 8 तक साथियों का पॉड। अकेले तैयारी नहीं।'],
+];
+const items = ORDER.map(([s, en, h]) => ({ s, src: shot(s, lang), name: SHOT_NAME[s][lang], say: hi ? h : en }));
+---
+<div class="phones" data-phones>
+  <div class="phones-stage">
+    <figure class="ph side l" aria-hidden="true"><img src={items[items.length - 1].src} alt="" width="520" height="961" decoding="async" /></figure>
+    <figure class="ph main" aria-live="polite">
+      {items.map((it, i) => <img src={it.src} alt={it.name} width="520" height="961" decoding="async" loading={i < 2 ? 'eager' : 'lazy'} class={i === 0 ? 'on' : ''} />)}
+    </figure>
+    <figure class="ph side r" aria-hidden="true"><img src={items[1].src} alt="" width="520" height="961" decoding="async" /></figure>
+  </div>
+  <p class="phones-cap" id="phones-cap">{items[0].say}</p>
+  <div class="phones-chips" role="tablist" aria-label={hi ? 'ऐप के स्क्रीन' : 'Screens from the app'}>
+    {items.map((it, i) => <button type="button" role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-i={i} data-line={it.say} data-src={it.src}>{it.name}</button>)}
+  </div>
+</div>
+
+<style is:global>
+  .phones { display: flex; flex-direction: column; align-items: center; gap: 14px; min-width: 0; }
+  .phones-stage { position: relative; width: 100%; max-width: 460px; aspect-ratio: 460 / 470; }
+  .ph { position: absolute; margin: 0; aspect-ratio: 520 / 961; border-radius: 30px; border: 9px solid #1E1A16; background: #1E1A16; overflow: hidden; box-shadow: 0 30px 60px -24px rgba(30, 26, 22, .55); }
+  .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .ph.main { width: 50%; left: 25%; top: 0; z-index: 2; cursor: pointer; }
+  .ph.main img { opacity: 0; transition: opacity .45s ease; }
+  .ph.main img.on { opacity: 1; }
+  .ph.side { width: 40%; top: 9%; z-index: 1; filter: saturate(.85) brightness(.92); }
+  .ph.side.l { left: 0; transform: rotate(-8deg); }
+  .ph.side.r { right: 0; transform: rotate(8deg); }
+  .phones-cap { min-height: 3em; text-align: center; font-weight: 600; font-size: 17px; line-height: 1.4; max-width: 26em; margin: 0; color: var(--ink); }
+  .phones-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 480px; }
+  .phones-chips button { font: 600 14px var(--sans); border: 1.5px solid var(--line-2); background: var(--card); color: var(--ink-2); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+  .phones-chips button[aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  @media (max-width: 860px) { .phones-stage { max-width: 360px; } }
+  @media (prefers-reduced-motion: reduce) { .ph.main img { transition: none; } }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-phones]').forEach((root) => {
+    const imgs = [...root.querySelectorAll<HTMLImageElement>('.ph.main img')];
+    const chips = [...root.querySelectorAll<HTMLButtonElement>('.phones-chips button')];
+    const l = root.querySelector<HTMLImageElement>('.ph.side.l img')!, r = root.querySelector<HTMLImageElement>('.ph.side.r img')!;
+    const cap = root.querySelector<HTMLElement>('.phones-cap')!;
+    const n = imgs.length;
+    let i = 0, timer = 0 as unknown as ReturnType<typeof setInterval>;
+    const show = (k: number, user = false) => {
+      i = (k + n) % n;
+      imgs.forEach((im, j) => im.classList.toggle('on', j === i));
+      chips.forEach((c, j) => c.setAttribute('aria-selected', String(j === i)));
+      l.src = chips[(i - 1 + n) % n].dataset.src!; r.src = chips[(i + 1) % n].dataset.src!;
+      cap.textContent = chips[i].dataset.line!;
+      if (user) { clearInterval(timer); dispatchEvent(new CustomEvent('chotu', { detail: { say: chips[i].dataset.line } })); (window as any).posthog?.capture?.('site_screen', { s: i }); }
+    };
+    chips.forEach((c, j) => c.addEventListener('click', () => show(j, true)));
+    root.querySelector('.ph.main')!.addEventListener('click', () => show(i + 1, true));
+    root.querySelector('.ph.side.l')!.addEventListener('click', () => show(i - 1, true));
+    root.querySelector('.ph.side.r')!.addEventListener('click', () => show(i + 1, true));
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) timer = setInterval(() => { if (!document.hidden) show(i + 1); }, 3200);
+  });
+</script>

@@ -1,0 +1,39 @@
+---
+// One PYQ: UPSC's words; for Prelims, options you can tap, then "How sure?", then UPSC's answer and why.
+import { type Lang, type Paper, type PyqQ, qIn, qUrl, tx } from '../lib/content';
+interface Props { p: Paper; q: PyqQ; lang: Lang; link?: boolean; heading?: 'h2' | 'h3' }
+const { p, q, lang, link = false, heading = 'h2' } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const v = qIn(q, lang);
+const L = 'abcd';
+const dropped = p.key.dropped?.includes(q.n);
+const keyed = p.exam === 'prelims' && p.key.status === 'official' && typeof q.answer === 'number' && !dropped && (v.options?.length ?? 0) > 1;
+const lines = String(v.q).split('\n').map((x) => x.trim()).filter(Boolean);
+const H = heading;
+---
+<article class={`card pyq ${keyed ? 'mcq' : ''}`} id={`q${q.n}`} data-answer={keyed ? q.answer : undefined} data-kind="pyq" lang={hi && !q.hi?.q ? 'en' : undefined}>
+  <p class="pyq-head"><span class="tag">{T(`Q${q.n}`, `प्रश्न ${q.n}`)}</span>
+    {q.marks && <span class="tag">{T(`${q.marks} marks`, `${q.marks} अंक`)}</span>}
+    {q.words && <span class="tag">{T(`${q.words} words`, `${q.words} शब्द`)}</span>}
+    {dropped && <span class="tag" style="background:var(--wrong-soft)">{T('Dropped by UPSC', 'UPSC ने हटाया')}</span>}</p>
+  <H class="pyq-q">{link ? <a href={qUrl(p, q, lang)}>{lines[0]}</a> : lines[0]}</H>
+  {lines.slice(1).map((l) => <p class="pyq-line">{l}</p>)}
+  {(v.options?.length ?? 0) > 1 && (keyed
+    ? <ol class="mcq-opts">{v.options!.map((o, i) => <li><button type="button" data-i={i}><b>{L[i]}</b><span>{o}</span></button></li>)}</ol>
+    : <ol class="opts">{v.options!.map((o) => <li>{o}</li>)}</ol>)}
+  {keyed && <>
+    <div class="mcq-sure" hidden><span>{T('How sure are you?', 'कितने पक्के हैं?')}</span>
+      <button type="button" data-sure="guess">{T('Guessing', 'तुक्का')}</button><button type="button" data-sure="fair">{T('Fairly sure', 'थोड़ा पक्का')}</button><button type="button" data-sure="certain">{T('Certain', 'पूरा पक्का')}</button></div>
+    <p class="mcq-out" aria-live="polite"></p>
+    <div class="mcq-reveal" hidden>
+      <p><b>{T("UPSC's answer: ", 'UPSC का उत्तर: ')}({L[q.answer!]}) {v.options![q.answer!]}</b>{p.key.provisional && <span class="small"> {T('(provisional key)', '(अस्थायी कुंजी)')}</span>}</p>
+      {q.explain && <>
+        <p>{tx(q.explain.why, lang) || tx(q.explain.why, 'en')}</p>
+        {q.explain.wrong?.length > 0 && <ul class="small">{q.explain.wrong.map((w) => <li><b>({L[w.option]})</b> {(hi && w.hi) || w.en}</li>)}</ul>}
+        {q.explain.trap && <p class="box haldi" style="margin:10px 0 0"><b>{T('The trap: ', 'जाल: ')}</b>{tx(q.explain.trap, lang) || tx(q.explain.trap, 'en')}</p>}
+      </>}
+    </div>
+  </>}
+  {p.exam === 'prelims' && !keyed && !dropped && <p class="small">{T('No UPSC key for this question yet.', 'इस सवाल की UPSC कुंजी अभी नहीं आई।')}</p>}
+</article>

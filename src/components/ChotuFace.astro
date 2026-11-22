@@ -1,0 +1,24 @@
+---
+// Chotu's face, small (the same clay cup as Chotu.astro, without the gestures). sleep: eyes shut, one wisp of steam.
+interface Props { size?: number; sleep?: boolean; class?: string }
+const { size = 48, sleep = false, class: cls = '' } = Astro.props;
+---
+<svg class={`chotu-face ${cls}`} viewBox="20 20 160 200" width={size} height={size * 1.25} aria-hidden="true">
+  <g class="cf-steam" fill="none" stroke="#E9A23B" stroke-width="6" stroke-linecap="round">
+    <path class="cf-s1" d="M80 56c-8-10 8-14 0-26"></path><path class="cf-s2" d="M100 52c-8-10 8-14 0-28"></path><path class="cf-s3" d="M120 56c-8-10 8-14 0-26"></path>
+  </g>
+  <path d="M38 74H162L148 192Q146 208 130 208H70Q54 208 52 192Z" fill="#C8693A"></path>
+  <path d="M45 150H155L148 192Q146 208 130 208H70Q54 208 52 192Z" fill="#9A4A26" opacity=".35"></path>
+  <ellipse cx="100" cy="74" rx="64" ry="12" fill="#E08A55"></ellipse>
+  <ellipse cx="100" cy="74" rx="54" ry="7.5" fill="#6B3A1F"></ellipse>
+  <g class="cf-open" style={sleep ? 'display:none' : undefined}>
+    <ellipse class="cf-eye" cx="76" cy="120" rx="8" ry="11" fill="#2A1B12"></ellipse><circle cx="79" cy="115" r="3" fill="#fff"></circle>
+    <ellipse class="cf-eye" cx="124" cy="120" rx="8" ry="11" fill="#2A1B12"></ellipse><circle cx="127" cy="115" r="3" fill="#fff"></circle>
+    <path d="M88 140Q100 154 112 140" fill="none" stroke="#2A1B12" stroke-width="4" stroke-linecap="round"></path>
+  </g>
+  <g class="cf-shut" style={sleep ? undefined : 'display:none'} fill="none" stroke="#2A1B12" stroke-width="4" stroke-linecap="round">
+    <path d="M68 122q8 6 16 0"></path><path d="M116 122q8 6 16 0"></path><path d="M93 144h14"></path>
+  </g>
+  <ellipse cx="58" cy="142" rx="9" ry="6" fill="#F2A27C" opacity=".75"></ellipse>
+  <ellipse cx="142" cy="142" rx="9" ry="6" fill="#F2A27C" opacity=".75"></ellipse>
+</svg>

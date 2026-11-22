@@ -21,14 +21,14 @@ const T = (en: string, h: string) => (hi ? h : en);
 const title = T('Aspiran: your coaching teaches it, Aspiran makes it stay', 'Aspiran: कोचिंग पढ़ाती है, Aspiran याद रखवाता है');
 const description = T(
   'For UPSC aspirants, on top of any coaching or YouTube prep: what you studied comes back before you forget it, your Mains answers are marked in minutes, and a small pod keeps you company. English and Hindi. ₹3,999 a year, or free. Try one topic free.',
-  'UPSC अभ्यर्थियों के लिए, किसी भी कोचिंग या YouTube की तैयारी के साथ: जो पढ़ा वह भूलने से पहले लौटता है, मेन्स के उत्तर मिनटों में जँचते हैं, और एक छोटा पॉड साथ रहता है। हिंदी और अंग्रेज़ी। ₹3,999 साल, या मुफ़्त। एक टॉपिक मुफ़्त आज़माइए।',
+  'UPSC अभ्यर्थियों के लिए, किसी भी कोचिंग या YouTube की तैयारी के साथ: जो पढ़ा वह भूलने से पहले लौटता है, मेन्स के उत्तर मिनटों में जँचते हैं, और एक छोटा पॉड साथ रहता है। हिंदी और अंग्रेज़ी। ₹3,999 साल, या फ़्री। एक टॉपिक फ़्री आज़माइए।',
 );
 // Try buttons open Federalism's cover; Hindi pages ask for the Hindi demo.
 const app = (where: string, hash = '#try/path-pol-federalism') => `https://app.aspiran.in/app/?utm_source=site&utm_medium=${where}${hi ? '&lang=hi' : ''}${hash}`;
 const how = hi ? '/hi/how-it-works/' : '/how-it-works/';
 const coaching = hi ? '/hi/for-coaching/' : '/for-coaching/';
 const WA_PAY = waUrl(T("Hi Aspiran! I'd like to pay for Plus by UPI.", 'Hi Aspiran! मुझे UPI से Plus लेना है।'));
-const tryLabel = T('Try one topic free', 'एक टॉपिक मुफ़्त आज़माइए');
+const tryLabel = T('Try one topic free', 'एक टॉपिक फ़्री आज़माइए');
 const ticks = hi ? ['साइन-अप नहीं', 'कार्ड नहीं', '15 मिनट: संघवाद, असली PYQ के साथ'] : ['No sign-up', 'No card', '15 minutes: Federalism, with real past-paper questions'];
 
 // What's in the app today, counted on production 15 Nov 2026 (2,063 questions, 257 videos, 11 papers; audio 20.4 h on 16 Nov), rounded down.
@@ -96,7 +96,7 @@ const fit = hi ? {
     ['हिंदी में', 'कहीं-कहीं', 'कहीं-कहीं', 'ज़्यादातर सब कुछ'],
     ['एक साल का ख़र्च', 'दिल्ली क्लासरूम: लगभग ₹1.75–2.1 लाख', '₹0', '₹0, या Plus ₹3,999'],
   ],
-  foot: '* मुफ़्त में हफ़्ते में 3 उत्तर; Plus में असीमित।',
+  foot: '* फ़्री में हफ़्ते में 3 उत्तर; Plus में असीमित।',
 } : {
   cols: ['Coaching / online course', 'YouTube and PDFs', 'Aspiran'],
   rows: [
@@ -168,7 +168,7 @@ const faq = hi ? [
           </p>
           <ul class="sh-ticks">{ticks.map((t) => <li>{t}</li>)}</ul>
         </div>
-        <figure class="sh-phone" aria-label={T('Screens from the free topic', 'मुफ़्त टॉपिक के स्क्रीन')}>
+        <figure class="sh-phone" aria-label={T('Screens from the free topic', 'फ़्री टॉपिक के स्क्रीन')}>
           <div class="sh-phone-frame">
             {shots.map(([src, cap], i) => <img src={src} alt={cap} width="480" height="953" decoding="async" loading={i === 0 ? 'eager' : 'lazy'} class={i === 0 ? 'on' : ''} />)}
           </div>
@@ -198,7 +198,7 @@ const faq = hi ? [
         </div>
         <p class="sh-note">{T(
           'Plus three current-affairs cards a day, each pinned to its syllabus line, and Chotu, a study buddy for everyday doubts.',
-          'साथ में रोज़ तीन करेंट अफ़ेयर्स कार्ड, हर एक अपनी सिलेबस पंक्ति से जुड़ा, और रोज़ की शंकाओं के लिए Chotu, आपका स्टडी साथी।')}</p>
+          'साथ में रोज़ तीन करंट अफ़ेयर्स कार्ड, हर एक अपनी सिलेबस पंक्ति से जुड़ा, और रोज़ की शंकाओं के लिए Chotu, आपका स्टडी साथी।')}</p>
       </section>
 
       <!-- 4. A real marked answer. -->
@@ -221,7 +221,7 @@ const faq = hi ? [
         </div>
         <p class="sh-note">{T(
           'Then you rewrite the weakest part, and the rewrite is marked too. Free: 3 answers a week. Plus: as many as you write.',
-          'फिर आप सबसे कमज़ोर हिस्सा दोबारा लिखते हैं, और वह भी जँचता है। मुफ़्त: हफ़्ते में 3 उत्तर। Plus: जितने आप लिखें।')}</p>
+          'फिर आप सबसे कमज़ोर हिस्सा दोबारा लिखते हैं, और वह भी जँचता है। फ़्री: हफ़्ते में 3 उत्तर। Plus: जितने आप लिखें।')}</p>
       </section>
 
       <!-- 5. Where it fits. -->
@@ -251,7 +251,7 @@ const faq = hi ? [
           <p class="sh-after" id="recall-after" hidden>{T(
             'That small effort of pulling it out is the whole trick. Reading it again would have felt easier and done less. Aspiran does this with everything you study, and brings it back before you forget.',
             'याद से निकालने की वही छोटी मेहनत असली तरकीब है। दोबारा पढ़ना आसान लगता, पर कम काम करता। Aspiran आपकी हर पढ़ाई के साथ यही करता है, और भूलने से पहले वापस लाता है।')}
-            <br /><a class="sh-btn primary" href={app('recall')} data-cta="try" data-where="recall">{T('Do a whole topic this way, free', 'पूरा टॉपिक इसी तरह कीजिए, मुफ़्त')}</a></p>
+            <br /><a class="sh-btn primary" href={app('recall')} data-cta="try" data-where="recall">{T('Do a whole topic this way, free', 'पूरा टॉपिक इसी तरह कीजिए, फ़्री')}</a></p>
         </div>
       </section>
 
@@ -282,9 +282,9 @@ const faq = hi ? [
 
       <!-- 8. Price: ₹3,999 a year, no founding offer (owner, 17 Nov 2026). Paid in the app (Cashfree); UPI over WhatsApp stays as a fallback. -->
       <section class="sh-sec" id="price" aria-labelledby="price-h">
-        <h2 id="price-h">{T('Free to join. Plus if you want more.', 'जुड़ना मुफ़्त। और चाहिए तो Plus।')}</h2>
+        <h2 id="price-h">{T('Free to join. Plus if you want more.', 'जुड़ना फ़्री। और चाहिए तो Plus।')}</h2>
         <div class="sh-grid two">
-          <div class="sh-card"><p class="sh-kick">{T('FREE · NOT A TRIAL', 'मुफ़्त · ट्रायल नहीं')}</p><p class="sh-price">₹0</p>
+          <div class="sh-card"><p class="sh-kick">{T('FREE · NOT A TRIAL', 'फ़्री · ट्रायल नहीं')}</p><p class="sh-price">₹0</p>
             <ul>{(hi ? ['रोज़ का रिव्यू और चाय कार्ड', 'हफ़्ते में 3 उत्तरों की जाँच, महीने में 1 मॉक', 'आपका स्टडी रूम और पॉड', 'रोज़ की शंकाओं के लिए Chotu']
               : ['The daily review and Chai cards', '3 answers marked a week, 1 mock a month', 'Your study room and pod', 'Chotu for everyday doubts']).map((x) => <li>{x}</li>)}</ul>
             <a class="sh-btn ghost" href={app('price')} data-cta="try" data-where="price">{tryLabel}</a></div>

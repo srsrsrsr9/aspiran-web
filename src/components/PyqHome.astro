@@ -1,0 +1,44 @@
+---
+// /pyq/: every UPSC paper on Aspiran, by year. Aspirants call them PYQs (owner, 22 Nov 2026), so the page does too.
+import SiteLayout from '../layouts/SiteLayout.astro';
+import AppBox from './AppBox.astro';
+import { type Lang, papersIn, paperUrl, paperName, pyqCount, pyqYears, examName } from '../lib/content';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const P = hi ? '/hi' : '';
+const papers = papersIn(lang);
+const years = pyqYears.filter((y) => papers.some((p) => p.year === y));
+const title = T(`UPSC PYQs 2016–2026: every question, with UPSC's answer key`, 'UPSC PYQ 2016–2026: हर सवाल, UPSC की आंसर-की के साथ');
+const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: 'PYQ' }];
+const ld = { '@type': 'CollectionPage', name: title, inLanguage: hi ? 'hi-IN' : 'en-IN', isAccessibleForFree: true };
+---
+<SiteLayout title={`${title} | Aspiran`} description={T(`${pyqCount} UPSC Prelims and Mains PYQs from 2016 to 2026, word for word, with UPSC's official answer key, explanations and the trap in each. Try them free.`,
+  `2016 से 2026 तक UPSC प्रीलिम्स और मेन्स के PYQ, जैसे UPSC ने पूछे, UPSC की आंसर-की, व्याख्या और हर सवाल के जाल के साथ। फ़्री में हल कीजिए।`)}
+  lang={lang} alternates={{ en: '/pyq/', hi: '/hi/pyq/' }} crumbs={crumbs} jsonLd={[ld]} current="pyq">
+  <div class="wrap">
+    <header class="sec-head" style="margin-top:8px">
+      <p class="kick">{T(`Free · ${pyqCount.toLocaleString('en-IN')} questions · ${papers.length} papers`, `फ़्री · ${papers.length} पेपर`)}</p>
+      <h1>{title}</h1>
+      <p class="lede">{T("Every question exactly as UPSC asked it. Tap an answer, say how sure you were, then see UPSC's key and why it is right.",
+        'हर सवाल वैसा ही जैसा UPSC ने पूछा। जवाब चुनिए, बताइए कितने पक्के थे, फिर देखिए UPSC की आंसर-की और वो सही क्यों है।')}</p>
+    </header>
+    {years.map((y) => (
+      <section class="index-group" id={`y${y}`} data-say={y === years[1] ? T("Doing PYQs year by year? In the app I'll tell you which topics UPSC keeps coming back to.", 'साल दर साल PYQ कर रहे हैं? ऐप में मैं बताऊँगा UPSC किन टॉपिक पर बार-बार लौटता है।') : undefined}>
+        <h2>{y}</h2>
+        <div class="paper-grid">
+          {papers.filter((p) => p.year === y).map((p) => (
+            <a class="card paper-tile" href={paperUrl(p, lang)}>
+              <span class="tag">{examName(p, lang)}</span>
+              <b>{paperName(p, lang)}</b>
+              <span class="small">{T(`${p.questions.length} questions`, `${p.questions.length} सवाल`)}{p.exam === 'prelims' && p.key.status === 'official' ? T(' · UPSC key', ' · UPSC आंसर-की') : ''}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
+    <div class="narrow"><AppBox lang={lang} where="pyq-home" feature="pyq" /></div>
+  </div>
+  <div style="height:48px"></div>
+</SiteLayout>

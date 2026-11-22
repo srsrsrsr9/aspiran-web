@@ -1,0 +1,38 @@
+---
+// One UPSC paper: every question, answerable on the page (Prelims) or with its frame (Mains).
+import SiteLayout from '../layouts/SiteLayout.astro';
+import AppBox from './AppBox.astro';
+import PyqCard from './PyqCard.astro';
+import { type Lang, type Paper, paperName, paperUrl, paperHasHindi, pyqHome } from '../lib/content';
+interface Props { p: Paper; lang: Lang }
+const { p, lang } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const P = hi ? '/hi' : '';
+const name = paperName(p, lang);
+const qs = hi ? p.questions.filter((q) => q.hi?.q) : p.questions;
+const keyed = p.exam === 'prelims' && p.key.status === 'official';
+const title = T(`UPSC ${name} PYQ: all ${qs.length} questions${keyed ? ' with answer key' : ''}`, `UPSC ${name} PYQ: सभी ${qs.length} सवाल${keyed ? ', आंसर-की के साथ' : ''}`);
+const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: 'PYQ', href: pyqHome(lang) }, { name }];
+const alternates = paperHasHindi(p) ? { en: paperUrl(p, 'en'), hi: paperUrl(p, 'hi') } : undefined;
+const mid = Math.min(10, Math.floor(qs.length / 2));
+---
+<SiteLayout title={`${title} | Aspiran`} description={T(`UPSC ${name}, word for word: ${qs.length} questions${keyed ? " with UPSC's official answers" : ''}. Answer each one on the page and see why the right option is right.`,
+  `UPSC ${name}, जैसा पूछा गया: ${qs.length} सवाल${keyed ? ', UPSC के आधिकारिक उत्तरों के साथ' : ''}। हर सवाल पेज पर हल कीजिए।`)}
+  lang={lang} alternates={alternates} crumbs={crumbs} current="pyq">
+  <div class="wrap narrow">
+    <header class="article-head">
+      <p class="kick">{T('PYQ · word for word from UPSC', 'PYQ · जैसा UPSC ने पूछा')}</p>
+      <h1>{title}</h1>
+      <p class="lede">{keyed ? T('Tap an option, say how sure you were, and see the answer. That habit is what beats negative marking.', 'विकल्प चुनिए, बताइए कितने पक्के थे, और उत्तर देखिए। यही आदत नेगेटिव मार्किंग को हराती है।')
+        : p.exam === 'mains' ? T('UPSC marks written answers, so there is no key. Read the question, plan your answer in your head, then write it in the app and get it marked.', 'UPSC लिखे हुए आंसर जाँचता है, इसलिए आंसर-की नहीं होती। सवाल पढ़िए, आंसर का प्लान बनाइए, फिर ऐप में लिखकर जँचवाइए।')
+        : T('UPSC has not published a key for this paper yet.', 'UPSC ने इस पेपर की आंसर-की अभी जारी नहीं की।')}</p>
+      {p.sourceUrl && <p class="small">{T('Source: ', 'स्रोत: ')}<a href={p.sourceUrl} rel="nofollow noopener" target="_blank">{T("UPSC's question paper", 'UPSC का प्रश्न पत्र')}</a>{p.key.url && <>, <a href={p.key.url} rel="nofollow noopener" target="_blank">{T('answer key', 'आंसर-की')}</a></>}</p>}
+    </header>
+    {qs.slice(0, mid).map((q) => <PyqCard p={p} q={q} lang={lang} link heading="h2" />)}
+    {qs.length > mid && <AppBox lang={lang} where="pyq-paper-mid" feature={p.exam === 'mains' ? 'mark' : 'pyq'} compact />}
+    {qs.slice(mid).map((q) => <PyqCard p={p} q={q} lang={lang} link heading="h2" />)}
+    <AppBox lang={lang} where="pyq-paper" feature={p.exam === 'mains' ? 'mark' : 'pyq'} />
+  </div>
+  <div style="height:48px"></div>
+</SiteLayout>
