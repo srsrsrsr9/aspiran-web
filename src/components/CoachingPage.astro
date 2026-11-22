@@ -139,6 +139,17 @@ const steps = hi ? [
     const store = { get: (k: string) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* private window */ } } };
     const visitorId = store.get('aspiran-vid') ?? `v-${crypto.getRandomValues(new Uint32Array(3)).join('-')}`;
     store.set('aspiran-vid', visitorId);
+    // Where this centre came from (22 Nov 2026): a link with utm tags (the printed pamphlet's QR, a post) is kept for this
+    // visit, so the lead reads e.g. "coaching:pamphlet:centre:print-2026-11:en-colour" in Admin and in the owner's email.
+    // Kept per tab (sessionStorage), so switching to Hindi or reloading doesn't lose it. No tags: just "coaching".
+    const UTM_KEY = 'aspiran-centre-utm';
+    const tags = (() => {
+      const q = new URLSearchParams(location.search);
+      const parts = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].map((k) => (q.get(k) ?? '').replace(/[^\w.-]/g, '').slice(0, 30));
+      const now = parts[0] ? parts.filter(Boolean).join(':') : '';
+      try { if (now) sessionStorage.setItem(UTM_KEY, now); return now || sessionStorage.getItem(UTM_KEY) || ''; } catch { return now; }
+    })();
+    const leadSource = tags ? `coaching:${tags}`.slice(0, 120) : 'coaching';
     const API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'http://localhost:8788' : 'https://app.aspiran.in';
     document.getElementById('centre')!.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -151,11 +162,11 @@ const steps = hi ? [
       out.textContent = HI ? 'भेज रहे हैं…' : 'Sending…';
       try {
         const r = await fetch(`${API}/web/lead`, { method: 'POST', headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ visitorId, contact, consent: true, lang: HI ? 'hi' : 'en', source: 'coaching',
+          body: JSON.stringify({ visitorId, contact, consent: true, lang: HI ? 'hi' : 'en', source: leadSource,
             details: { name: v('name'), role: v('role'), centre: v('centre'), city: v('city'), students: v('students') }, company: v('company') }) });
         if (!r.ok) throw new Error();
         out.textContent = HI ? 'मिल गया। हम दो कामकाजी दिनों में संपर्क करेंगे।' : 'Got it. We\'ll be in touch within two working days.';
-        (window as any).posthog?.capture?.('lead_saved', { kind: 'coaching' });
+        (window as any).posthog?.capture?.('lead_saved', { kind: 'coaching', from: leadSource });
         f.querySelector('button')!.setAttribute('disabled', '');
       } catch { out.textContent = HI ? 'अभी नहीं भेज पाए। hello@aspiran.in पर लिखिए।' : "Couldn't send just now. Please write to hello@aspiran.in."; }
     });
