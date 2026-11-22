@@ -1,8 +1,12 @@
 name: Deploy Aspiran to GitHub Pages
 
+# Builds on every push to main, and every morning at 07:15 IST (01:45 UTC) so the free current-affairs pages pick up
+# the day's cards from the app server (scripts/pull-content.mjs).
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: '45 1 * * *'
   workflow_dispatch:
 
 permissions:

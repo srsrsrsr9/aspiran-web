@@ -1,0 +1,43 @@
+---
+// /current-affairs/: every day, newest first, grouped by month, each with its headlines.
+import SiteLayout from '../layouts/SiteLayout.astro';
+import AppBox from './AppBox.astro';
+import { type Lang, caDays, cardIn, dayUrl, longDate, monthOf, sectionUrl } from '../lib/content';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const P = hi ? '/hi' : '';
+const days = caDays(lang);
+const months = new Map<string, typeof days>();
+for (const d of days) { const m = monthOf(d.day, lang); months.set(m, [...(months.get(m) ?? []), d]); }
+const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: T('Current affairs', 'करेंट अफ़ेयर्स') }];
+const title = T('Daily current affairs for UPSC, free', 'UPSC के लिए रोज़ के करेंट अफ़ेयर्स, मुफ़्त');
+---
+
+<SiteLayout title={`${title} | Aspiran`} description={T('UPSC current affairs every day: the stories that matter for Prelims and Mains, each tied to the syllabus, with key facts and a practice question. Free, in English and Hindi.',
+  'हर दिन UPSC करेंट अफ़ेयर्स: प्रीलिम्स और मेन्स के लिए ज़रूरी ख़बरें, सिलेबस से जुड़ी, मुख्य तथ्य और अभ्यास प्रश्न के साथ। मुफ़्त, हिंदी और अंग्रेज़ी में।')}
+  lang={lang} alternates={{ en: sectionUrl('current-affairs', 'en'), hi: sectionUrl('current-affairs', 'hi') }} crumbs={crumbs} current="current-affairs">
+  <div class="wrap">
+    <header class="sec-head" style="margin-top:8px">
+      <p class="kick">{T('Free · updated every morning', 'मुफ़्त · हर सुबह अपडेट')}</p>
+      <h1>{title}</h1>
+      <p class="lede">{T('Only what matters for the exam: each story tied to a syllabus line, with why it matters, the facts to remember and a question to check yourself. No 40-page monthly PDFs.',
+        'सिर्फ़ वही जो परीक्षा के काम का है: हर ख़बर सिलेबस की एक पंक्ति से जुड़ी, महत्व, याद रखने लायक़ तथ्य और ख़ुद को परखने का सवाल। 40 पेज की मासिक PDF नहीं।')}</p>
+    </header>
+    {[...months.entries()].map(([m, ds]) => (
+      <section class="index-group">
+        <h2>{m}</h2>
+        <ul class="index-list" style="grid-template-columns:1fr">
+          {ds.map((d) => (
+            <li><a href={dayUrl(d.day, lang)}>{longDate(d.day, lang)}</a>
+              <span class="small">{d.cards.map((c) => cardIn(c, lang).headline).join(' · ')}</span></li>
+          ))}
+        </ul>
+      </section>
+    ))}
+    <div class="narrow"><AppBox lang={lang} where="free-ca-index" /></div>
+  </div>
+  <div style="height:48px"></div>
+</SiteLayout>

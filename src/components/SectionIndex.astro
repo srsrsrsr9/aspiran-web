@@ -1,0 +1,39 @@
+---
+// The list page of one free section (/notes/, /essay-topics/ …), grouped (by paper for notes).
+import SiteLayout from '../layouts/SiteLayout.astro';
+import AppBox from './AppBox.astro';
+import { type Lang, type SectionId, sectionById, pagesIn, grouped, pageUrl, sectionUrl } from '../lib/content';
+
+interface Props { id: SectionId; lang: Lang }
+const { id, lang } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const P = hi ? '/hi' : '';
+const sec = sectionById(id)!;
+const pages = pagesIn(id, lang);
+const groups = grouped(pages, lang);
+const enCount = pagesIn(id, 'en').length;
+const alternates = pagesIn(id, 'hi').length ? { en: sectionUrl(id, 'en'), hi: sectionUrl(id, 'hi') } : undefined;
+const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: T('Free study material', 'मुफ़्त सामग्री'), href: `${P}/free/` }, { name: sec.name[lang] }];
+const list = { '@type': 'CollectionPage', name: sec.title[lang], description: sec.blurb[lang], inLanguage: hi ? 'hi-IN' : 'en-IN',
+  mainEntity: { '@type': 'ItemList', numberOfItems: pages.length, itemListElement: pages.slice(0, 100).map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: new URL(pageUrl(p, lang), 'https://aspiran.in').toString(), name: p.title[lang] })) } };
+---
+
+<SiteLayout title={`${sec.title[lang]} | Aspiran`} description={`${sec.blurb[lang]} ${T(`${pages.length} free pages.`, `${pages.length} मुफ़्त पेज।`)}`} lang={lang} alternates={alternates} crumbs={crumbs} jsonLd={[list]} current={id}>
+  <div class="wrap">
+    <header class="sec-head" style="margin-top:8px">
+      <p class="kick">{T(`Free · ${pages.length} ${pages.length === 1 ? sec.one.en : sec.one.en + 's'}`, `मुफ़्त · ${pages.length} ${sec.one.hi}`)}</p>
+      <h1>{sec.title[lang]}</h1>
+      <p class="lede">{sec.blurb[lang]}</p>
+      {hi && pages.length < enCount && <p class="small">{`हिंदी में अभी ${pages.length}, अंग्रेज़ी में ${enCount}। `}<a href={sectionUrl(id, 'en')} lang="en">English</a></p>}
+    </header>
+    {groups.map(([g, ps]) => (
+      <section class="index-group">
+        <h2>{g} <span class="small">({ps.length})</span></h2>
+        <ul class="index-list">{ps.map((p) => <li><a href={pageUrl(p, lang)}>{p.title[lang]}</a>{p.kind === 'read' && p.data.minutes && <span class="small">{T(`${p.data.minutes} min`, `${p.data.minutes} मिनट`)}</span>}</li>)}</ul>
+      </section>
+    ))}
+    <div class="narrow"><AppBox lang={lang} where={`free-${id}-index`} /></div>
+  </div>
+  <div style="height:48px"></div>
+</SiteLayout>

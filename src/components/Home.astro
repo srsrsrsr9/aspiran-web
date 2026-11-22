@@ -1,0 +1,603 @@
+---
+// Home page v5 (22 Nov 2026). Owner: the site undersold the product, the look needed a relook, and the copy should land
+// with any Indian aspirant, plainly. So: say what it is in everyday prep words (revision, PYQs, answer writing, current
+// affairs, Hindi medium), show the whole product, and put the free material up front as proof.
+// Rules kept: no "AI" labels anywhere and never a claim that a person marked something; no toppers, testimonials or
+// promised results; ₹3,999 a year; sound off. English and Hindi side by side (T).
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { waUrl } from '../i18n';
+import { type Lang, caDays, cardIn, dayUrl, longDate, pagesIn, pageUrl, sectionUrl, totals } from '../lib/content';
+
+interface Props { lang?: Lang }
+const { lang = 'en' } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const P = hi ? '/hi' : '';
+const app = (where: string, hash = '#try/path-pol-federalism') => `https://app.aspiran.in/app/?utm_source=site&utm_medium=${where}${hi ? '&lang=hi' : ''}${hash}`;
+const WA_PAY = waUrl(T("Hi Aspiran! I'd like to pay for Plus by UPI.", 'Hi Aspiran! मुझे UPI से Plus लेना है।'));
+
+const today = caDays(lang)[0];
+const todayCard = today ? cardIn(today.cards[0], lang) : null;
+
+// In the app today. Counted on production: past papers, notes and mocks on 22 Nov 2026; questions (2,063) on 15 Nov;
+// videos 257 (15 Nov) + 170 illustrated shorts (20 Nov); recorded notes 20.4 h (16 Nov) + 6.8 h (20 Nov). Rounded down.
+const NUMS: [string, string][] = hi ? [
+  ['56', 'UPSC पेपर, 2016–2026'], [String(Math.floor(totals.notes / 10) * 10) + '+', 'नोट्स'], ['2,000+', 'अभ्यास सवाल'],
+  ['400+', 'छोटे वीडियो'], ['25+ घंटे', 'सुनने वाले नोट्स'], ['35', 'फ़ुल मॉक'],
+] : [
+  ['56', 'UPSC papers, 2016–2026'], [String(Math.floor(totals.notes / 10) * 10) + '+', 'notes'], ['2,000+', 'practice questions'],
+  ['400+', 'short videos'], ['25+ hrs', 'of notes to listen to'], ['35', 'full mocks'],
+];
+
+const shots = hi ? [
+  ['/media/screens/1-guess-hi.webp', 'पढ़ने से पहले अंदाज़ा'], ['/media/screens/2-pyq-hi.webp', 'असली PYQ, "कितने पक्के हैं?"'], ['/media/screens/3-keep-hi.webp', 'जो सीखा, वह लौटकर आएगा'],
+] : [
+  ['/media/screens/1-guess.webp', 'Guess before you read'], ['/media/screens/2-pyq.webp', 'Real PYQs: "how sure are you?"'], ['/media/screens/3-keep.webp', 'What you learn comes back'],
+];
+
+const pains = hi ? [
+  ['"लक्ष्मीकांत दो बार पढ़ ली। आज अनुच्छेद 356 पूछो तो याद नहीं।"', 'Aspiran वही वापस लाता है जो आप पढ़ चुके हैं, ठीक भूलने से पहले: 3 दिन बाद, फिर एक हफ़्ते, फिर महीनों बाद। रोज़ 15 मिनट।'],
+  ['"उत्तर लिखता हूँ, पर जाँचता कोई नहीं।"', 'काग़ज़ पर लिखिए, फ़ोटो लीजिए। कुछ मिनट में पाँच हिस्सों पर अंक और हर हिस्से का एक सुधार। टेस्ट सीरीज़ के हफ़्तों वाले इंतज़ार के बिना।'],
+  ['"कमरे में अकेले, दिन भर। कोई साथ नहीं।"', 'आपके स्टेज के 8 तक अभ्यर्थियों का छोटा पॉड और एक स्टडी रूम। साथ पढ़िए, शंकाएँ पूछिए। न रैंक, न दिखावा।'],
+] : [
+  ['"I\'ve read Laxmikanth twice. Ask me Article 356 today and it\'s gone."', 'Aspiran brings back what you have already studied, just before you would forget it: after 3 days, then a week, then months. 15 minutes a day.'],
+  ['"I write answers, but nobody checks them."', 'Write on paper, take a photo. In a few minutes you get marks on five parts and one fix for each. No waiting weeks for a test series copy.'],
+  ['"Alone in my room all day. Nobody to study with."', 'A small pod of up to 8 aspirants at your stage, and a study room. Study together, ask doubts. No ranks, no showing off.'],
+];
+
+// A day on Aspiran: the order the app suggests, about an hour on top of your own study.
+const day = hi ? [
+  ['सुबह · 10 मिनट', 'चाय के साथ करेंट अफ़ेयर्स', 'रोज़ तीन कार्ड, हर एक सिलेबस की पंक्ति से जुड़ा, महत्व, तथ्य और एक सवाल के साथ। तीन के बाद ख़त्म। 40 पेज की PDF नहीं।'],
+  ['15 मिनट', 'आज का रिवीज़न', 'जो आज लौटना चाहिए, बस वही। हर जवाब से पहले "कितने पक्के हैं?", ताकि नेगेटिव मार्किंग से पहले ही पता चले कि अंदाज़ा कहाँ लगा रहे हैं।'],
+  ['20 मिनट', 'एक उत्तर, जाँच के साथ', 'आज का मेन्स सवाल काग़ज़ पर लिखिए, पहले ख़ुद अंक दीजिए, फिर फ़ोटो। सबसे कमज़ोर हिस्सा दोबारा लिखिए।'],
+  ['शाम', 'अपने पॉड के साथ', 'स्टडी रूम में साथ पढ़ाई, ग्रुप में शंकाएँ, और रोज़ की छोटी बात। Chotu, आपका स्टडी साथी, सुबह 7 से रात 11:30 तक।'],
+] : [
+  ['Morning · 10 min', 'Current affairs with your chai', 'Three cards a day, each tied to a syllabus line, with why it matters, the facts and one question. Then it ends. No 40-page PDF.'],
+  ['15 min', 'Today\'s revision', 'Only what is due today. Before each answer, "how sure are you?", so you learn where you are guessing before negative marking teaches you.'],
+  ['20 min', 'One answer, checked', 'Write today\'s Mains question on paper, mark it yourself first, then take a photo. Rewrite the weakest part.'],
+  ['Evening', 'With your pod', 'Study together in the study room, ask doubts in the group, a short chat at the end of the day. Chotu, your study buddy, is there from 7 am to 11:30 pm.'],
+];
+
+// Everything inside the app.
+const inside = hi ? [
+  ['रिवीज़न जो भूलने नहीं देता', 'आपकी पढ़ाई, आपका सिलेबस, सही समय पर वापस। विज्ञान पर आधारित अंतराल, कोई स्ट्रीक नहीं।'],
+  ['मेन्स उत्तर की जाँच', 'फ़ोटो या टाइप, हिंदी या अंग्रेज़ी। पाँच हिस्सों पर अंक, सुधार, फिर दोबारा लिखना। निबंध तीन तस्वीरों में।'],
+  ['PYQ, 2016 से 2026', 'प्रीलिम्स और मेन्स के 56 पेपर, UPSC की आधिकारिक कुंजी, और सही विकल्प क्यों सही है।'],
+  ['मॉक, −⅓ के साथ', '35 फ़ुल मॉक। नतीजे में आपकी ग़लतियों के प्रकार: जल्दबाज़ी, जाल, या पता ही नहीं था।'],
+  ['नोट्स, सुनने वाले भी', '150 नोट्स, 25+ घंटे की रिकॉर्डिंग। चलते-फिरते या मेट्रो में सुनिए।'],
+  ['400+ छोटे वीडियो', 'कठिन टॉपिक एक-दो मिनट में, चित्रों के साथ। आवाज़ तभी जब आप चलाएँ।'],
+  ['एथिक्स, निबंध, इंटरव्यू', 'GS4 केस, निबंध के विषय और ढाँचे, और इंटरव्यू की मॉक बातचीत।'],
+  ['वैकल्पिक विषय और CSAT', '6 वैकल्पिक विषयों का सिलेबस और प्राथमिकता, CSAT का साप्ताहिक अभ्यास।'],
+  ['हिंदी में, सच में', 'ऐप, नोट्स, अभ्यास और उत्तर जाँच हिंदी में। अनुवाद जैसा नहीं, पढ़ने लायक़।'],
+] : [
+  ['Revision that stops the forgetting', 'Your study, your syllabus, back at the right time. Spacing based on the research, and no streaks.'],
+  ['Mains answer checking', 'Photo or typed, Hindi or English. Marks on five parts, fixes, then a rewrite. Essays in three photos.'],
+  ['PYQs, 2016 to 2026', '56 Prelims and Mains papers with UPSC\'s official keys, and why the right option is right.'],
+  ['Mocks, with the −⅓', '35 full mocks. Your result shows your mistake types: rushed, trapped, or never knew it.'],
+  ['Notes, and notes to listen to', '150 notes and 25+ hours of recordings. Listen on a walk or in the metro.'],
+  ['400+ short videos', 'Hard topics in a minute or two, with pictures. Sound only when you press play.'],
+  ['Ethics, essay, interview', 'GS4 cases, essay topics with outlines, and practice interview conversations.'],
+  ['Optionals and CSAT', 'Syllabus and priorities for 6 optional subjects, and a weekly CSAT set.'],
+  ['Really in Hindi', 'The app, notes, practice and answer checking in Hindi. Written to be read, not translated word for word.'],
+];
+
+// The sample answer: written by us as a typical first attempt, marked by Aspiran's marker on 17 Nov 2026 (150-word
+// mode, typed); the marker's notes trimmed. Question: UPSC CSE Mains 2025, GS2, Q7.
+const sample = {
+  q: T('e-governance projects have a built-in bias towards technology and back-end integration than user-centric designs. Examine.',
+    'ई-गवर्नेंस परियोजनाओं में उपयोगकर्ता-केंद्रित डिज़ाइन के बजाय प्रौद्योगिकी और बैक-एंड एकीकरण की ओर एक अंतर्निहित झुकाव होता है। परीक्षण कीजिए।'),
+  src: T('UPSC Mains 2025 · GS2 · 10 marks, 150 words', 'UPSC मेन्स 2025 · GS2 · 10 अंक, 150 शब्द'),
+  answer: T(
+    'E-governance means using ICT to deliver government services. India has launched many projects like Digital India, DigiLocker, UMANG and CoWIN. These projects have improved efficiency. Aadhaar-based DBT has reduced leakages… However, the focus is often on technology. Many portals are only in English and are hard to use on cheap phones. Biometric failures in ration shops have denied people their rations… In conclusion, e-governance should be citizen-centric for good governance.',
+    'ई-गवर्नेंस का अर्थ है सरकारी सेवाएँ ICT से देना। भारत ने डिजिटल इंडिया, डिजीलॉकर, UMANG और CoWIN जैसी कई परियोजनाएँ शुरू की हैं। इनसे दक्षता बढ़ी है। आधार-आधारित DBT ने लीकेज घटाया है… लेकिन ज़ोर अक्सर तकनीक पर रहता है। कई पोर्टल सिर्फ़ अंग्रेज़ी में हैं और सस्ते फ़ोन पर चलाना कठिन है। राशन दुकानों पर बायोमेट्रिक विफलता से लोगों को राशन नहीं मिला… निष्कर्ष में, सुशासन के लिए ई-गवर्नेंस नागरिक-केंद्रित होना चाहिए।'),
+  areas: hi ? [
+    ['सवाल की माँग', 'झुकाव का ज़िक्र है, पर "परीक्षण" पूरा नहीं: तकनीक पर ज़ोर के कारण और उसके फ़ायदे-नुक़सान नहीं तौले गए।', 'तकनीक पर ज़ोर क्यों है (लागत, पैमाना), यह बताइए और निष्कर्ष से पहले दोनों पक्ष तौलिए।'],
+    ['ढाँचा', 'परिचय, मुख्य भाग और निष्कर्ष हैं, पर उप-शीर्षक या बिंदु नहीं।', 'उप-शीर्षक जोड़िए: "तकनीक पहले", "उपयोगकर्ता की दिक़्क़तें", "सुझाव"।'],
+    ['सामग्री', 'भाषा, फ़ोन और साक्षरता की बात है, पर बैक-एंड एकीकरण, डेटा सुरक्षा और संस्थागत सीमाएँ छूट गईं।', 'बैक-एंड इंटरऑपरेबिलिटी, डेटा प्राइवेसी और विभागों की क्षमता पर एक-एक बिंदु जोड़िए।'],
+    ['उदाहरण', 'बड़ी योजनाओं और विफलताओं के नाम हैं, पर कोई आँकड़ा या आधिकारिक रिपोर्ट नहीं।', 'कोई ठोस आँकड़ा या आधिकारिक रिपोर्ट दीजिए, जैसे e-गवर्नेंस सर्विस डिलीवरी असेसमेंट।'],
+    ['निष्कर्ष', 'एक सामान्य "नागरिक-केंद्रित" पंक्ति; न सार, न आगे के क़दम।', 'मुख्य बातें समेटिए और ठोस क़दम सुझाइए: यूज़र-टेस्टिंग, कई भाषाओं में इंटरफ़ेस।'],
+  ] : [
+    ['What the question asked', 'Mentions the bias but doesn\'t fully examine why the tech-first approach exists or weigh its pros and cons.', 'Say why technology gets the focus (cost, scale) and weigh both sides before you conclude.'],
+    ['Structure', 'A basic intro, body and conclusion, but no sub-headings or points.', 'Add sub-headings: "Technology first", "Gaps for users", "What to change".'],
+    ['Content', 'Covers language, phones and literacy, but leaves out back-end integration, data security and institutional limits.', 'Add a point each on back-end interoperability, data privacy and the capacity of departments.'],
+    ['Examples', 'Names big schemes and failures, but no data or official report.', 'Quote one figure or an official assessment, such as the e-Governance Service Delivery Assessment.'],
+    ['Conclusion', 'A generic "citizen-centric" line, with no summing-up or next steps.', 'Sum up what you found and propose concrete steps: user testing, interfaces in many languages.'],
+  ],
+  verdict: T('At the level of a typical well-scoring answer on all five parts. To go above it: sharper analysis, sub-headings, one piece of data.',
+    'पाँचों हिस्सों पर एक आम अच्छे अंक वाले उत्तर के बराबर। उससे ऊपर जाने के लिए: पैना विश्लेषण, उप-शीर्षक, एक आँकड़ा।'),
+};
+
+// Where Aspiran fits. Categories, not brands. Delhi classroom GS courses list about ₹1.75 to 2.1 lakh a year (Nov 2026).
+const fit = hi ? {
+  cols: ['कोचिंग / ऑनलाइन कोर्स', 'YouTube और PDF', 'Aspiran'],
+  rows: [
+    ['नया टॉपिक पढ़ाना', 'हाँ', 'हाँ', 'नोट्स और वीडियो, पर पढ़ाना उनका काम'],
+    ['भूलने से पहले वापस लाना', 'कम ही', 'नहीं', 'हाँ, रोज़'],
+    ['आपके उत्तर जाँचना', 'टेस्ट सीरीज़ में, अक्सर दिनों बाद', 'नहीं', 'मिनटों में'],
+    ['साथ पढ़ने वाले', 'बड़ा बैच', 'कमेंट सेक्शन', 'आपके स्टेज का छोटा पॉड'],
+    ['हिंदी में', 'कहीं-कहीं', 'कहीं-कहीं', 'लगभग सब कुछ'],
+    ['एक साल का ख़र्च', 'दिल्ली क्लासरूम: लगभग ₹1.75–2.1 लाख', '₹0', '₹0, या Plus ₹3,999'],
+  ],
+} : {
+  cols: ['Coaching / online course', 'YouTube and PDFs', 'Aspiran'],
+  rows: [
+    ['Teaches a new topic', 'Yes', 'Yes', 'Notes and videos, but teaching is their job'],
+    ['Brings it back before you forget', 'Rarely', 'No', 'Yes, daily'],
+    ['Checks your answers', 'In test series, often days later', 'No', 'In minutes'],
+    ['People to prep with', 'A big batch', 'The comments', 'A small pod at your stage'],
+    ['In Hindi', 'Some', 'Some', 'Almost all of it'],
+    ['Cost for a year', 'Delhi classroom: about ₹1.75–2.1 lakh', '₹0', '₹0, or Plus at ₹3,999'],
+  ],
+};
+
+const never = hi
+  ? ['टॉपर्स की फ़ोटो और "100% चयन" के वादे', 'टूटने से डराने वाली स्ट्रीक', 'लीडरबोर्ड और पब्लिक रैंक', '"सिर्फ़ 4 सीटें बचीं" वाली उलटी गिनती', 'पीछा करने वाली नोटिफ़िकेशन', 'कॉल सेंटर को बेचा गया आपका नंबर']
+  : ['Toppers\' photos and "100% selection" promises', 'Streaks you are scared to break', 'Leaderboards and public ranks', '"Only 4 seats left" countdowns', 'Notifications that chase you', 'Your number sold to a call centre'];
+
+const faq = hi ? [
+  ['Aspiran क्या है?', 'UPSC अभ्यर्थियों के लिए एक रोज़ का स्टडी ऐप: रिवीज़न जो भूलने नहीं देता, मेन्स उत्तरों की जाँच मिनटों में, रोज़ के करेंट अफ़ेयर्स, PYQ, मॉक, नोट्स, और एक छोटा स्टडी ग्रुप (पॉड)। हिंदी और अंग्रेज़ी में।'],
+  ['मैं पहले से कोचिंग जाता/जाती हूँ, या YouTube से पढ़ता/पढ़ती हूँ। फिर यह क्यों?', 'कोचिंग एक बार पढ़ाती है। Aspiran उसे टिकाता है: जो आप पढ़ चुके हैं, उस पर रोज़ 15 मिनट का रिवीज़न, और उत्तर लेखन जिसकी जाँच मिनटों में हो। यह कोचिंग के साथ चलता है, उसकी जगह नहीं लेता।'],
+  ['क्या यह मुफ़्त है?', 'हाँ। रोज़ का रिवीज़न, करेंट अफ़ेयर्स, नोट्स, PYQ, पॉड, हफ़्ते में 3 उत्तरों की जाँच और महीने में 1 मॉक मुफ़्त हैं, हमेशा के लिए। Plus (₹3,999 साल) में असीमित उत्तर-जाँच और सारे मॉक।'],
+  ['मेरे उत्तर कैसे जाँचे जाते हैं?', 'पहले आप ख़ुद, हर हिस्से पर। फिर Aspiran का मार्कर उसे UPSC के एक आम अच्छे अंक वाले उत्तर से मिलाता है और पाँच हिस्सों पर बताता है कि आप नीचे हैं, बराबर हैं या ऊपर, साथ में हर हिस्से का एक सुधार। यह ग़लत हो सकता है; इसीलिए पहले आप ख़ुद अंक देते हैं।'],
+  ['क्या हिंदी माध्यम के लिए ठीक है?', 'हाँ। ऐप, नोट्स, अभ्यास, करेंट अफ़ेयर्स और उत्तर जाँच हिंदी में हैं, और अंग्रेज़ी–हिंदी शब्दावली भी। कुछ वीडियो अभी अंग्रेज़ी में हैं।'],
+  ['यह प्रीलिम्स के लिए है या मेन्स के लिए?', 'दोनों, और इंटरव्यू भी। प्रीलिम्स: रोज़ का रिवीज़न, असली PYQ, "कितने पक्के हैं?" से नेगेटिव मार्किंग की समझ, मॉक, CSAT। मेन्स: उत्तर लेखन, जाँच, निबंध, एथिक्स केस। फिर इंटरव्यू की मॉक बातचीत।'],
+  ['फ़ोन पर चलेगा?', 'हाँ। वेब ऐप किसी भी फ़ोन या लैपटॉप के ब्राउज़र में चलता है, कुछ इंस्टॉल नहीं करना। Android ऐप Google Play पर टेस्टिंग में है।'],
+  ['भुगतान कैसे करूँ?', 'ऐप में Plus खोलिए: UPI, कार्ड या नेट बैंकिंग। एक बार का भुगतान, अपने-आप रिन्यू नहीं, 7 दिन में रिफ़ंड।'],
+] : [
+  ['What is Aspiran?', 'A daily study app for UPSC aspirants: revision that stops you forgetting, Mains answers checked in minutes, daily current affairs, PYQs, mocks, notes, and a small study group (a pod). In English and Hindi.'],
+  ['I already go to coaching, or study from YouTube. Why this too?', 'Coaching teaches it once. Aspiran makes it stay: 15 minutes a day of revision on what you have already studied, and answer writing that gets checked in minutes. It works alongside coaching, not instead of it.'],
+  ['Is it free?', 'Yes. Daily revision, current affairs, notes, PYQs, your pod, 3 answers checked a week and 1 mock a month are free, for good. Plus (₹3,999 a year) adds unlimited answer checking and all mocks.'],
+  ['How are my answers marked?', 'By you first, part by part. Then Aspiran\'s marker compares it with a typical well-scoring UPSC answer and tells you, on five parts, whether you are below, at or above it, with one fix for each. It can be wrong, which is why you mark your own first.'],
+  ['Does it work for Hindi medium?', 'Yes. The app, notes, practice, current affairs and answer checking are in Hindi, and there is an English–Hindi glossary. Some videos are in English for now.'],
+  ['Is it for Prelims or Mains?', 'Both, and the interview. Prelims: daily revision, real PYQs, "how sure are you?" so negative marking stops surprising you, mocks and CSAT. Mains: answer writing and checking, essays, ethics cases. Then practice interview conversations.'],
+  ['Does it work on my phone?', 'Yes. The web app runs in the browser on any phone or laptop, nothing to install. The Android app is in testing on Google Play.'],
+  ['How do I pay?', 'Open Plus in the app: UPI, card or net banking. One payment, no auto-renewal, refund within 7 days.'],
+];
+const faqLd = { '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) };
+const appLd = { '@type': 'WebApplication', name: 'Aspiran', url: 'https://app.aspiran.in/app/', applicationCategory: 'EducationalApplication', operatingSystem: 'Any (web), Android',
+  inLanguage: ['en-IN', 'hi-IN'], offers: [{ '@type': 'Offer', price: '0', priceCurrency: 'INR', name: 'Free' }, { '@type': 'Offer', price: '3999', priceCurrency: 'INR', name: 'Plus, one year' }] };
+
+const popular = pagesIn('notes', lang).filter((p) => /federal|preamble|fundamental rights|monsoon|monetary|parliament|governor|inflation|emergency|panchayat/i.test(p.title.en)).slice(0, 6);
+const frames = pagesIn('mains-answer-writing', lang).slice(0, 3);
+const title = T('Aspiran: UPSC prep app for revision, answer writing and current affairs, in English and Hindi',
+  'Aspiran: UPSC तैयारी का ऐप, रिवीज़न, उत्तर लेखन और करेंट अफ़ेयर्स, हिंदी और अंग्रेज़ी में');
+const description = T(
+  'The daily UPSC study app: revision that brings back what you studied before you forget it, Mains answers checked in minutes, current affairs, PYQs 2016–2026, mocks and a small study group. Works with any coaching. Free to start, in English and Hindi.',
+  'UPSC का रोज़ का स्टडी ऐप: रिवीज़न जो पढ़ा हुआ भूलने से पहले लौटाता है, मेन्स उत्तरों की जाँच मिनटों में, करेंट अफ़ेयर्स, PYQ 2016–2026, मॉक और एक छोटा स्टडी ग्रुप। किसी भी कोचिंग के साथ। मुफ़्त शुरुआत, हिंदी और अंग्रेज़ी में।');
+---
+
+<SiteLayout title={title} description={description} lang={lang} alternates={{ en: '/', hi: '/hi/' }} jsonLd={[appLd, faqLd]}>
+  <!-- 1. Hero -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="kick">{T('UPSC CSE · Prelims · Mains · Interview', 'UPSC CSE · प्रीलिम्स · मेन्स · इंटरव्यू')}</p>
+        <h1>{hi ? <>एक बार पढ़िए।<br /><span class="hl">परीक्षा हॉल में याद रहे।</span></> : <>Study once.<br /><span class="hl">Remember it</span> in the exam hall.</>}</h1>
+        <p class="lede">{T(
+          'Aspiran is the daily study app for UPSC. It brings back what you have studied before you forget it, checks your Mains answers in minutes, and gives you a small group to study with. Works with any coaching, YouTube or self-study.',
+          'Aspiran, UPSC का रोज़ का स्टडी ऐप है। जो आपने पढ़ा, उसे भूलने से पहले वापस लाता है, आपके मेन्स उत्तर मिनटों में जाँचता है, और साथ पढ़ने के लिए एक छोटा ग्रुप देता है। किसी भी कोचिंग, YouTube या सेल्फ़-स्टडी के साथ।')}</p>
+        <div class="ctas">
+          <a class="btn primary" href={app('hero')} data-cta="try" data-where="hero">{T('Try a free topic', 'एक टॉपिक मुफ़्त आज़माइए')}</a>
+          {today && <a class="btn ghost" href={dayUrl(today.day, lang)} data-cta="ca" data-where="hero">{T('Read today\'s current affairs', 'आज के करेंट अफ़ेयर्स पढ़िए')}</a>}
+        </div>
+        <ul class="ticks">{(hi ? ['मुफ़्त शुरुआत', 'आज़माने के लिए साइन-अप नहीं', 'हिंदी और English', 'किसी भी फ़ोन पर'] : ['Free to start', 'No sign-up to try', 'English and हिंदी', 'On any phone']).map((t) => <li>{t}</li>)}</ul>
+      </div>
+      <figure class="phone" aria-label={T('Screens from the free topic', 'मुफ़्त टॉपिक के स्क्रीन')}>
+        <div class="phone-frame">
+          {shots.map(([src, cap], i) => <img src={src} alt={cap} width="480" height="953" decoding="async" loading={i === 0 ? 'eager' : 'lazy'} class={i === 0 ? 'on' : ''} />)}
+        </div>
+        <figcaption id="phone-cap">{shots[0][1]}</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 2. What's inside, counted -->
+  <section class="nums" aria-label={T('What is in Aspiran today', 'आज Aspiran में क्या है')}>
+    <div class="wrap"><ul>{NUMS.map(([n, l]) => <li><b>{n}</b><span>{l}</span></li>)}</ul></div>
+  </section>
+
+  <!-- 3. The three things every aspirant says -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>{T('Sound familiar?', 'जाना-पहचाना लगता है?')}</h2>
+        <p>{T('Most aspirants don\'t fail for lack of material. They have too much of it, forget most of it, and practise alone.', 'ज़्यादातर अभ्यर्थी सामग्री की कमी से नहीं चूकते। सामग्री बहुत है, ज़्यादातर भूल जाते हैं, और अभ्यास अकेले करते हैं।')}</p>
+      </div>
+      <div class="grid">{pains.map(([q, a]) => <div class="card pain"><h3>{q}</h3><p class="mute">{a}</p></div>)}</div>
+    </div>
+  </section>
+
+  <!-- 4. A day on Aspiran -->
+  <section class="sec tint">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kick">{T('About an hour, on top of your own study', 'आपकी अपनी पढ़ाई के ऊपर, लगभग एक घंटा')}</p>
+        <h2>{T('Your day on Aspiran', 'Aspiran के साथ आपका दिन')}</h2>
+      </div>
+      <ol class="day">
+        {day.map(([when, h, p], i) => (
+          <li>
+            <span class="when">{when}</span>
+            <div class="card">
+              <h3>{h}</h3><p class="mute">{p}</p>
+              {i === 0 && todayCard && (
+                <a class="mini" href={dayUrl(today!.day, lang)}>
+                  <span class="small">{T('Today\'s first card', 'आज का पहला कार्ड')} · {longDate(today!.day, lang)}</span>
+                  <b>{todayCard.headline}</b>
+                  <span class="more">{T('Read it free', 'मुफ़्त पढ़िए')} →</span>
+                </a>
+              )}
+              {i === 1 && (
+                <div class="mini">
+                  <span class="small">{T('A revision question · GS2 · Preamble', 'रिवीज़न सवाल · GS2 · प्रस्तावना')}</span>
+                  <b>{T('How many times has the Preamble been amended?', 'प्रस्तावना में कितनी बार संशोधन हुआ है?')}</b>
+                  <span class="sure">{T('How sure are you?', 'कितने पक्के हैं?')} <i>{T('Guessing', 'अंदाज़ा')}</i><i>{T('Fairly', 'काफ़ी')}</i><i class="on">{T('Certain', 'पूरा')}</i></span>
+                </div>
+              )}
+              {i === 2 && (
+                <a class="mini" href="#answer">
+                  <span class="small">{T('Back in minutes', 'मिनटों में वापस')}</span>
+                  <b>{T('5 parts marked · 5 fixes · rewrite the weakest', '5 हिस्सों पर अंक · 5 सुधार · सबसे कमज़ोर दोबारा')}</b>
+                  <span class="more">{T('See a checked answer', 'जँचा हुआ उत्तर देखिए')} ↓</span>
+                </a>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- 5. Everything inside -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>{T('Everything for the full exam, in one app', 'पूरी परीक्षा के लिए सब कुछ, एक ऐप में')}</h2>
+        <p>{T('From your first NCERT to the interview board.', 'पहली NCERT से इंटरव्यू बोर्ड तक।')}</p>
+      </div>
+      <div class="grid inside">{inside.map(([h, p], i) => <div class="card"><span class="num">{String(i + 1).padStart(2, '0')}</span><h3>{h}</h3><p class="mute">{p}</p></div>)}</div>
+      <div class="ctas"><a class="btn primary" href={app('inside')} data-cta="try" data-where="inside">{T('Try a free topic, no sign-up', 'एक टॉपिक मुफ़्त आज़माइए, साइन-अप नहीं')}</a>
+        <a class="btn ghost" href={`${P}/how-it-works/`}>{T('How Aspiran teaches', 'Aspiran कैसे पढ़ाता है')}</a></div>
+    </div>
+  </section>
+
+  <!-- 6. A real checked answer -->
+  <section class="sec tint" id="answer">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kick">{T('Sample · an answer we wrote, checked the way yours will be', 'नमूना · हमारा लिखा उत्तर, वैसे ही जँचा जैसे आपका जँचेगा')}</p>
+        <h2>{T('This is what you get back, in minutes', 'यह मिलता है, मिनटों में')}</h2>
+      </div>
+      <div class="grid two ans">
+        <div class="card">
+          <p class="small">{sample.src}</p>
+          <p style="font-size:19px"><b>{sample.q}</b></p>
+          <details class="reveal"><summary>{T('Read the answer (126 words)', 'उत्तर पढ़िए (126 शब्द)')}</summary><p class="mute">{sample.answer}</p></details>
+          <p class="verdict">{sample.verdict}</p>
+        </div>
+        <ol class="areas">
+          {sample.areas.map(([a, note, fix]) => (
+            <li class="card"><p class="area"><b>{a}</b><span class="band">{T('At the level', 'बराबर')}</span></p>
+              <p class="mute">{note}</p><p class="fix"><b>{T('Fix: ', 'सुधार: ')}</b>{fix}</p></li>
+          ))}
+        </ol>
+      </div>
+      <p class="mute" style="margin-top:18px">{T('Then you rewrite the weakest part, and the rewrite is checked too. Free: 3 answers a week. Plus: as many as you write.',
+        'फिर आप सबसे कमज़ोर हिस्सा दोबारा लिखते हैं, और वह भी जँचता है। मुफ़्त: हफ़्ते में 3 उत्तर। Plus: जितने आप लिखें।')}</p>
+    </div>
+  </section>
+
+  <!-- 7. Free to read now: the proof, and the SEO hub -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kick">{T('Free · no sign-up', 'मुफ़्त · साइन-अप नहीं')}</p>
+        <h2>{T('Judge us by the material. Start reading now.', 'सामग्री से परखिए। अभी पढ़ना शुरू कीजिए।')}</h2>
+        <p>{T('The same notes, current affairs and answer frames that are in the app, free on this website.', 'वही नोट्स, करेंट अफ़ेयर्स और उत्तर ढाँचे जो ऐप में हैं, इस वेबसाइट पर मुफ़्त।')}</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h3><a href={sectionUrl('current-affairs', lang)}>{T('Daily current affairs', 'रोज़ के करेंट अफ़ेयर्स')}</a></h3>
+          <ul class="links">{caDays(lang).slice(0, 4).map((d) => <li><a href={dayUrl(d.day, lang)}>{longDate(d.day, lang)}</a><span class="small">{cardIn(d.cards[0], lang).headline}</span></li>)}</ul>
+        </div>
+        <div class="card">
+          <h3><a href={sectionUrl('notes', lang)}>{T(`Notes (${pagesIn('notes', lang).length})`, `नोट्स (${pagesIn('notes', lang).length})`)}</a></h3>
+          <ul class="links">{popular.map((p) => <li><a href={pageUrl(p, lang)}>{p.title[lang]}</a></li>)}</ul>
+        </div>
+        <div class="card">
+          <h3><a href={sectionUrl('mains-answer-writing', lang)}>{T(`Mains answer frames (${pagesIn('mains-answer-writing', lang).length})`, `मेन्स उत्तर ढाँचे (${pagesIn('mains-answer-writing', lang).length})`)}</a></h3>
+          <ul class="links">{frames.map((p) => <li><a href={pageUrl(p, lang)}>{p.title[lang]}</a></li>)}</ul>
+        </div>
+      </div>
+      <ul class="chips">
+        <li><a href="https://app.aspiran.in/learn/papers">{T('PYQs 2016–2026', 'PYQ 2016–2026')}</a></li>
+        <li><a href={sectionUrl('ethics-case-studies', lang)}>{T('Ethics case studies', 'एथिक्स केस स्टडी')}</a></li>
+        <li><a href={sectionUrl('essay-topics', lang)}>{T('Essay topics', 'निबंध विषय')}</a></li>
+        <li><a href={sectionUrl('landmark-judgments', lang)}>{T('Landmark judgments', 'ऐतिहासिक फ़ैसले')}</a></li>
+        <li><a href={sectionUrl('government-schemes', lang)}>{T('Government schemes', 'सरकारी योजनाएँ')}</a></li>
+        <li><a href={sectionUrl('glossary', 'en')}>{T('English–Hindi glossary', 'अंग्रेज़ी–हिंदी शब्दावली')}</a></li>
+        <li><a href="https://app.aspiran.in/learn">{T('Syllabus, topic by topic', 'सिलेबस, टॉपिक दर टॉपिक')}</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 8. Remember the fact? A 20-second proof of the method -->
+  <section class="sec night">
+    <div class="wrap grid two" style="align-items:center">
+      <div>
+        <p class="kick" style="color:#E9B13A">{T('A 20-second experiment', '20 सेकंड का प्रयोग')}</p>
+        <h2>{T('Read this once. Then answer without looking.', 'इसे एक बार पढ़िए। फिर बिना देखे जवाब दीजिए।')}</h2>
+        <p class="mute" id="recall-fact">{hi ? <>प्रस्तावना में ठीक <b>एक बार</b> संशोधन हुआ है: 1976 में, 42वें संशोधन से, जिसने <b>समाजवादी, पंथनिरपेक्ष</b> और <b>अखंडता</b> जोड़े।</>
+          : <>The Preamble has been amended exactly <b>once</b>: in 1976, by the 42nd Amendment, which added <b>socialist, secular</b> and <b>integrity</b>.</>}</p>
+      </div>
+      <div class="card recall" style="background:#1F2130;border-color:#2F3242">
+        <button type="button" class="btn primary" id="recall-go">{T('I\'ve read it. Ask me.', 'पढ़ लिया। पूछिए।')}</button>
+        <div id="recall-q" hidden>
+        <p><b style="color:#F3ECE0">{T('In which year was the Preamble amended?', 'प्रस्तावना में संशोधन किस वर्ष हुआ?')}</b></p>
+        <div class="opts-grid" id="recall-opts" data-right="1976" data-yes={T('Right. 1976, the 42nd Amendment.', 'सही। 1976, 42वाँ संशोधन।')} data-no={T('It was 1976, the 42nd Amendment.', 'यह 1976 था, 42वाँ संशोधन।')}>
+          {['1971', '1976', '1978', T('No idea', 'पता नहीं')].map((o) => <button type="button" data-v={o}>{o}</button>)}
+        </div>
+        </div>
+        <p class="out" id="recall-out" aria-live="polite" style="color:#F3ECE0"></p>
+        <p id="recall-after" hidden style="color:#A9A397">{T('Pulling it out of memory, even when it\'s hard, is what makes it stay. Reading it again feels easier and does less. Aspiran does this with everything you study, and asks again just before you would forget.',
+          'याद से निकालना, मुश्किल हो तब भी, यही उसे टिकाता है। दोबारा पढ़ना आसान लगता है, पर कम काम करता है। Aspiran आपकी हर पढ़ाई के साथ यही करता है, और ठीक भूलने से पहले फिर पूछता है।')}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Where it fits -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head"><h2>{T('It doesn\'t replace your coaching. It makes it count.', 'यह आपकी कोचिंग की जगह नहीं लेता। उसे काम का बनाता है।')}</h2></div>
+      <div class="table" role="table" aria-label={T('Aspiran next to coaching and YouTube', 'कोचिंग और YouTube के साथ Aspiran')}>
+        <div class="tr head" role="row"><span role="columnheader"></span>{fit.cols.map((c, i) => <span role="columnheader" class={i === 2 ? 'us' : ''}>{c}</span>)}</div>
+        {fit.rows.map(([k, a, b, c]) => (
+          <div class="tr" role="row"><span role="rowheader">{k}</span><span role="cell" data-h={fit.cols[0]}>{a}</span><span role="cell" data-h={fit.cols[1]}>{b}</span><span role="cell" class="us" data-h={fit.cols[2]}>{c}</span></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. Honest -->
+  <section class="sec tint">
+    <div class="wrap grid two">
+      <div>
+        <h2>{T('Straight talk', 'सीधी बात')}</h2>
+        <p>{T('Aspiran is made by SnapSkill LLP in Mohali, Punjab. We opened in 2026, so we have no toppers to show you, and we won\'t borrow anyone else\'s. Past-paper answers follow UPSC\'s official keys.',
+          'Aspiran को SnapSkill LLP, मोहाली, पंजाब ने बनाया है। हम 2026 में खुले हैं, इसलिए दिखाने को कोई टॉपर नहीं, और किसी और के उधार नहीं लेंगे। पिछले पेपरों के उत्तर UPSC की आधिकारिक कुंजी के अनुसार हैं।')}</p>
+        <p>{T('The method is not ours either. Testing yourself beats re-reading (Roediger and Karpicke, 2006), and spaced revision beats cramming (Cepeda and others, 2006). We just made it easy to do every day.',
+          'तरीक़ा भी हमारा नहीं है। ख़ुद को परखना दोबारा पढ़ने से बेहतर है (Roediger और Karpicke, 2006), और अंतराल पर रिवीज़न रटने से बेहतर है (Cepeda और साथी, 2006)। हमने बस इसे रोज़ करना आसान बनाया है।')}</p>
+        <p class="small">{T('Questions? Write to ', 'सवाल? लिखिए ')}<a href="mailto:hello@aspiran.in">hello@aspiran.in</a></p>
+      </div>
+      <div class="card">
+        <h3>{T('Things you will never see here', 'जो यहाँ कभी नहीं दिखेगा')}</h3>
+        <ul class="never">{never.map((n) => <li>{n}</li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. Price: ₹3,999 a year, no founding offer (owner, 17 Nov 2026). -->
+  <section class="sec" id="price">
+    <div class="wrap">
+      <div class="sec-head"><h2>{T('Free to use. Plus if you want more.', 'इस्तेमाल मुफ़्त। और चाहिए तो Plus।')}</h2></div>
+      <div class="grid two price">
+        <div class="card">
+          <p class="kick">{T('Free · not a trial', 'मुफ़्त · ट्रायल नहीं')}</p>
+          <p class="amount">₹0</p>
+          <ul>{(hi ? ['रोज़ का रिवीज़न और करेंट अफ़ेयर्स', 'सारे नोट्स, PYQ और वीडियो', 'हफ़्ते में 3 उत्तरों की जाँच, महीने में 1 मॉक', 'आपका पॉड और स्टडी रूम', 'रोज़ की शंकाओं के लिए Chotu']
+            : ['Daily revision and current affairs', 'All notes, PYQs and videos', '3 answers checked a week, 1 mock a month', 'Your pod and study room', 'Chotu for everyday doubts']).map((x) => <li>{x}</li>)}</ul>
+          <a class="btn ghost" href={app('price')} data-cta="try" data-where="price">{T('Start free', 'मुफ़्त शुरू कीजिए')}</a>
+        </div>
+        <div class="card main">
+          <p class="kick">Plus</p>
+          <p class="amount">₹3,999<span>{T(' a year', ' साल')}</span></p>
+          <p class="small">{T('About ₹11 a day. Less than one week of a Delhi classroom course.', 'लगभग ₹11 रोज़। दिल्ली के क्लासरूम कोर्स के एक हफ़्ते से भी कम।')}</p>
+          <ul>{(hi ? ['असीमित उत्तर-जाँच और दोबारा लिखना', 'सारे 35 मॉक, आपकी ग़लतियों के प्रकार के साथ', 'तीन तस्वीरों में निबंध की जाँच', 'Chotu और ज़्यादा']
+            : ['Unlimited answer checking and rewrites', 'All 35 mocks, with your mistake types', 'Essays checked from three photos', 'More of Chotu']).map((x) => <li>{x}</li>)}</ul>
+          <a class="btn primary" href={app('plus', '#plus')} data-cta="plus" data-where="price">{T('Get Plus', 'Plus लीजिए')}</a>
+          <p class="small" style="margin-top:12px">{T('UPI, card or net banking. One payment, no auto-renewal, refund within 7 days. ', 'UPI, कार्ड या नेट बैंकिंग। एक भुगतान, अपने-आप रिन्यू नहीं, 7 दिन में रिफ़ंड। ')}
+            <a href={WA_PAY} target="_blank" rel="noopener" data-cta="whatsapp" data-where="price">{T('Or pay by UPI on WhatsApp', 'या WhatsApp पर UPI से')}</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. Coaching centres -->
+  <section class="sec" style="padding-top:0">
+    <div class="wrap">
+      <a class="card coach" href={`${P}/for-coaching/`} data-cta="coaching" data-where="home">
+        <p class="kick">{T('Run a coaching centre or a study library?', 'कोचिंग संस्थान या स्टडी लाइब्रेरी चलाते हैं?')}</p>
+        <h2>{T('Give your students Aspiran, with your name on it.', 'अपने छात्रों को Aspiran दीजिए, आपके नाम के साथ।')}</h2>
+        <p class="mute">{T('Answer copies checked first by Aspiran, your teachers confirm. Batch chat, doubts, study plans, a weekly report and a list of who has gone quiet. We never sell to your students.',
+          'उत्तर-पुस्तिकाओं की पहली जाँच Aspiran करता है, आपके शिक्षक पक्की करते हैं। बैच चैट, डाउट, स्टडी प्लान, साप्ताहिक रिपोर्ट, और कौन चुप हो गया उसकी सूची। हम आपके छात्रों को कभी कुछ नहीं बेचते।')}</p>
+        <span class="more">{T('See how it works for centres', 'देखिए संस्थानों के लिए कैसे काम करता है')} →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 13. FAQ -->
+  <section class="sec tint">
+    <div class="wrap narrow">
+      <h2>{T('Questions aspirants ask', 'अभ्यर्थी जो पूछते हैं')}</h2>
+      {faq.map(([q, a]) => <details class="faq"><summary>{q}</summary><p>{a}</p></details>)}
+    </div>
+  </section>
+
+  <!-- 14. The same door, and a way to be reminded -->
+  <section class="sec end">
+    <div class="wrap narrow" style="text-align:center">
+      <h2>{T('15 minutes. One topic. See if it stays.', '15 मिनट। एक टॉपिक। देखिए, याद रहता है या नहीं।')}</h2>
+      <p class="mute">{T('Federalism, with real PYQs and Chotu beside you. No account needed.', 'संघवाद, असली PYQ के साथ, और Chotu आपके साथ। अकाउंट की ज़रूरत नहीं।')}</p>
+      <div class="ctas" style="justify-content:center"><a class="btn primary" href={app('end')} data-cta="try" data-where="end">{T('Try a free topic', 'एक टॉपिक मुफ़्त आज़माइए')}</a></div>
+      <form class="later" id="later" novalidate>
+        <label for="later-in">{T('Not now? Leave your email and we\'ll send you the link.', 'अभी नहीं? ईमेल छोड़ दीजिए, हम लिंक भेज देंगे।')}</label>
+        <div class="field-row"><input id="later-in" type="email" autocomplete="email" maxlength="80" placeholder="you@example.com" />
+          <input type="text" name="company" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
+          <button class="btn ghost" type="submit">{T('Send it', 'भेजिए')}</button></div>
+        <p class="small">{T('One email with the link. By sending, you agree we can email you about Aspiran. ', 'लिंक वाला एक ईमेल। भेजकर आप मानते हैं कि हम Aspiran के बारे में आपको ईमेल कर सकते हैं। ')}<a href="/privacy">{T('Privacy', 'प्राइवेसी')}</a>.</p>
+        <p class="out" id="later-out" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <style>
+    .hero { padding: 48px 0 40px; background:
+      radial-gradient(900px 420px at 85% 10%, color-mix(in srgb, var(--haldi) 16%, transparent), transparent 70%),
+      radial-gradient(700px 380px at 0% 100%, color-mix(in srgb, var(--chai) 10%, transparent), transparent 70%); }
+    .hero-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 40px; align-items: center; }
+    @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } .phone { max-width: 280px; margin: 0 auto; } }
+    .hero h1 { font-size: clamp(40px, 6.4vw, 68px); }
+    .phone { margin: 0; text-align: center; }
+    .phone-frame { position: relative; aspect-ratio: 480 / 953; border-radius: 34px; border: 10px solid #1E1A16; background: #1E1A16; overflow: hidden; box-shadow: 0 30px 60px -24px rgba(30, 26, 22, .45); cursor: pointer; transform: rotate(2deg); }
+    .phone-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .5s ease; }
+    .phone-frame img.on { opacity: 1; }
+    @media (prefers-reduced-motion: reduce) { .phone-frame { transform: none; } .phone-frame img { transition: none; } }
+    .phone figcaption { margin-top: 14px; font-size: 15px; color: var(--ink-2); font-weight: 600; }
+
+    .nums { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--card); }
+    .nums ul { list-style: none; margin: 0; padding: 20px 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+    .nums li { display: flex; flex-direction: column; gap: 2px; padding: 0 8px; border-left: 3px solid var(--haldi); }
+    .nums b { font: 800 clamp(22px, 2.6vw, 30px)/1.1 var(--serif); }
+    .nums span { font-size: 15px; color: var(--ink-2); line-height: 1.3; }
+    @media (max-width: 900px) { .nums ul { grid-template-columns: repeat(3, 1fr); row-gap: 18px; } }
+    @media (max-width: 480px) { .nums ul { grid-template-columns: repeat(2, 1fr); } }
+
+    .pain h3 { font-size: 20px; font-style: italic; color: var(--chai-2); }
+
+    .day { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; counter-reset: d; }
+    @media (max-width: 1000px) { .day { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 600px) { .day { grid-template-columns: 1fr; } }
+    .day li { display: flex; flex-direction: column; gap: 10px; }
+    .day .card { flex: 1; display: flex; flex-direction: column; }
+    .when { font: 700 14px/1 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--chai); }
+    html[lang="hi"] .when { letter-spacing: 0; font-size: 15px; }
+    .mini { margin-top: auto; display: flex; flex-direction: column; gap: 4px; background: var(--paper); border: 1px dashed var(--line-2); border-radius: 10px; padding: 12px; color: var(--ink); text-decoration: none; }
+    a.mini:hover { border-color: var(--chai); color: var(--ink); }
+    .mini b { font-size: 16px; line-height: 1.35; }
+    .sure { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 14px; color: var(--ink-2); margin-top: 4px; }
+    .sure i { font-style: normal; border: 1px solid var(--line-2); border-radius: 999px; padding: 2px 10px; }
+    .sure i.on { background: var(--leaf-soft); border-color: var(--leaf); color: var(--leaf); font-weight: 700; }
+
+    .inside .num { font: 800 15px var(--serif); color: var(--chai); display: block; margin-bottom: 6px; }
+
+    .ans .verdict { border-left: 4px solid var(--leaf); padding-left: 12px; font-weight: 600; margin-top: 16px; }
+    .areas { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+    .areas .card { padding: 16px 18px; }
+    .area { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+    .band { font: 700 13px/1 var(--sans); background: var(--leaf-soft); color: var(--leaf); border-radius: 999px; padding: 6px 10px; white-space: nowrap; align-self: flex-start; }
+    .fix { margin: 0; font-size: 16px; }
+
+    .links { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 10px; }
+    .links li { display: flex; flex-direction: column; }
+    .links a { font-weight: 600; }
+    .links .small { line-height: 1.35; }
+    .card h3 a { color: var(--ink); text-decoration: none; }
+    .card h3 a:hover { color: var(--chai-2); text-decoration: underline; }
+    .chips { list-style: none; padding: 0; margin: 22px 0 0; display: flex; flex-wrap: wrap; gap: 10px; }
+    .chips a { display: inline-block; border: 1.5px solid var(--line-2); border-radius: 999px; padding: 8px 14px; color: var(--ink); text-decoration: none; font-weight: 600; font-size: 16px; background: var(--card); }
+    .chips a:hover { border-color: var(--chai); color: var(--chai-2); }
+
+    #recall-go[hidden] { display: none; }
+    #recall-fact.gone { filter: blur(7px); user-select: none; }
+    .opts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0 6px; }
+    .opts-grid button { font: 700 17px var(--sans); color: #F3ECE0; background: transparent; border: 1.5px solid #3A3C48; border-radius: 12px; padding: 12px; min-height: 50px; cursor: pointer; }
+    .opts-grid button:hover:not(:disabled) { border-color: #E9B13A; }
+    .opts-grid button.right { border-color: #7CC79B; background: rgba(124, 199, 155, .16); }
+    .opts-grid button.wrong { border-color: #F08A7B; background: rgba(240, 138, 123, .14); }
+
+    .table { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--card); }
+    .tr { display: grid; grid-template-columns: 1.1fr 1fr 1fr 1fr; border-top: 1px solid var(--line); }
+    .tr:first-child { border-top: 0; }
+    .tr > span { padding: 14px 16px; font-size: 16px; }
+    .tr.head > span { font-weight: 700; background: var(--paper-2); }
+    .tr [role="rowheader"] { font-weight: 700; }
+    .tr .us { background: color-mix(in srgb, var(--haldi) 14%, var(--card)); font-weight: 600; }
+    @media (max-width: 760px) {
+      .tr.head { display: none; }
+      .tr { grid-template-columns: 1fr; padding: 8px 0; }
+      .tr > span { padding: 4px 16px; }
+      .tr > span[data-h]::before { content: attr(data-h) ": "; color: var(--ink-3); font-weight: 500; }
+    }
+
+    .never { list-style: none; padding: 0; margin: 8px 0 0; }
+    .never li { padding: 7px 0 7px 28px; position: relative; color: var(--ink-2); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--wrong) 60%, transparent); }
+    .never li::before { content: "✕"; position: absolute; left: 4px; color: var(--wrong); }
+
+    .price .card { display: flex; flex-direction: column; }
+    .price .card.main { border: 2px solid var(--chai); }
+    .price .amount { font: 800 44px/1.1 var(--serif); margin: 0 0 4px; }
+    .price .amount span { font: 500 18px var(--sans); color: var(--ink-2); }
+    .price ul { padding-left: 20px; margin: 10px 0 20px; }
+    .price li { margin: 6px 0; }
+    .price .btn { align-self: flex-start; margin-top: auto; }
+
+    .coach { background: var(--night); border-color: var(--night); color: var(--night-ink) !important; }
+    .coach h2 { color: var(--night-ink); font-size: clamp(24px, 3vw, 32px); }
+    .coach .mute { color: var(--night-2); }
+    .coach .more { color: #E9B13A; }
+    .coach .kick { color: #E9B13A; }
+
+    .later { max-width: 560px; margin: 30px auto 0; text-align: left; }
+    .later label { display: block; margin-bottom: 8px; color: var(--ink-2); }
+  </style>
+
+  <script>
+    const HI = document.documentElement.lang === 'hi';
+    const ph = (name: string, props: Record<string, unknown> = {}) => (window as any).posthog?.capture?.(name, props);
+
+    // The hero phone: three demo screens, one every 4 seconds, once through. No motion with reduced motion; tap for next.
+    const frame = document.querySelector('.phone-frame');
+    if (frame) {
+      const imgs = [...frame.querySelectorAll('img')];
+      const cap = document.getElementById('phone-cap')!;
+      let i = 0;
+      const show = (n: number) => { i = n; imgs.forEach((im, k) => im.classList.toggle('on', k === n)); cap.textContent = imgs[n].alt; };
+      frame.addEventListener('click', () => show((i + 1) % imgs.length));
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const t = setInterval(() => { if (i >= imgs.length - 1) return clearInterval(t); show(i + 1); }, 4000);
+      }
+    }
+
+    // The recall question: the fact hides first, so it really is from memory.
+    document.getElementById('recall-go')?.addEventListener('click', (e) => {
+      (e.currentTarget as HTMLElement).hidden = true;
+      document.getElementById('recall-fact')!.classList.add('gone');
+      document.getElementById('recall-q')!.hidden = false;
+    });
+    const opts = document.getElementById('recall-opts')!;
+    opts.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest('button');
+      if (!b || opts.dataset.done) return;
+      opts.dataset.done = '1';
+      const right = b.dataset.v === opts.dataset.right;
+      opts.querySelectorAll('button').forEach((x) => { x.disabled = true; if (x.dataset.v === opts.dataset.right) x.classList.add('right'); });
+      if (!right) b.classList.add('wrong');
+      document.getElementById('recall-out')!.textContent = right ? opts.dataset.yes! : opts.dataset.no!;
+      document.getElementById('recall-after')!.hidden = false;
+      ph('recall_answered', { right });
+    });
+
+    // "Send me the link": /web/lead on the app server emails the link at once.
+    const store = { get: (k: string) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* private window */ } } };
+    const visitorId = store.get('aspiran-vid') ?? `v-${crypto.getRandomValues(new Uint32Array(3)).join('-')}`;
+    store.set('aspiran-vid', visitorId);
+    const API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'http://localhost:8788' : 'https://app.aspiran.in';
+    const u = new URL(location.href);
+    const source = ['utm_source', 'utm_medium', 'utm_campaign'].map((k) => u.searchParams.get(k)).filter(Boolean).join('/') || (document.referrer ? new URL(document.referrer).hostname : 'direct');
+    document.getElementById('later')!.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.currentTarget as HTMLFormElement;
+      const out = document.getElementById('later-out')!;
+      const contact = (document.getElementById('later-in') as HTMLInputElement).value.trim();
+      if (!/^\S+@\S+\.\S+$/.test(contact)) { out.textContent = HI ? 'ईमेल पता डालिए।' : 'Add an email address.'; return; }
+      out.textContent = HI ? 'भेज रहे हैं…' : 'Sending…';
+      try {
+        const r = await fetch(`${API}/web/lead`, { method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ visitorId, details: {}, contact, consent: true, lang: HI ? 'hi' : 'en', source, company: (f.elements.namedItem('company') as HTMLInputElement).value }) });
+        if (!r.ok) throw new Error();
+        out.textContent = HI ? 'भेज दिया। अपना इनबॉक्स देखिए।' : 'Sent. Check your inbox.';
+        ph('lead_saved', { kind: 'email' });
+      } catch { out.textContent = HI ? 'अभी नहीं भेज पाए। ऊपर का बटन सीधे ऐप खोलता है।' : "Couldn't send just now. The button above opens the app directly."; }
+    });
+  </script>
+</SiteLayout>

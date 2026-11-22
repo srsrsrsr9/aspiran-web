@@ -1,0 +1,7 @@
+---
+import CaDayPage from '../../components/CaDayPage.astro';
+import { caDays } from '../../lib/content';
+export const getStaticPaths = () => caDays('en').map((day) => ({ params: { day: day.day }, props: { day } }));
+const { day } = Astro.props;
+---
+<CaDayPage day={day} lang="en" />

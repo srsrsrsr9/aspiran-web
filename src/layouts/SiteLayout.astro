@@ -1,0 +1,142 @@
+---
+// Every page of the site (v5, 22 Nov 2026): header with the free sections, English/Hindi switch and the app button,
+// a footer that links every section and the latest current affairs (good for readers and for search engines).
+import '@fontsource/martel/latin-400.css';
+import '@fontsource/martel/latin-700.css';
+import '@fontsource/martel/latin-800.css';
+import '@fontsource/mukta/latin-400.css';
+import '@fontsource/mukta/latin-500.css';
+import '@fontsource/mukta/latin-600.css';
+import '@fontsource/mukta/latin-700.css';
+import '../styles/site.css';
+import BaseLayout from './BaseLayout.astro';
+import { SECTIONS, caDays, dayUrl, longDate, sectionUrl, type Lang } from '../lib/content';
+
+interface Crumb { name: string; href?: string }
+interface Props {
+  title: string;
+  description: string;
+  lang?: Lang;
+  /** Where the same page lives in the other language; omit when there is no twin. */
+  alternates?: { en?: string; hi?: string };
+  crumbs?: Crumb[];
+  jsonLd?: unknown[];
+  ogType?: string;
+  current?: string;
+}
+const { title, description, lang = 'en', alternates, crumbs, jsonLd = [], ogType, current } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const P = hi ? '/hi' : '';
+const other = hi ? alternates?.en : alternates?.hi;
+const app = (where: string) => `https://app.aspiran.in/app/?utm_source=site&utm_medium=${where}${hi ? '&lang=hi' : ''}`;
+const nav = [
+  { id: 'current-affairs', href: sectionUrl('current-affairs', lang), label: T('Current affairs', 'करेंट अफ़ेयर्स') },
+  { id: 'notes', href: sectionUrl('notes', lang), label: T('Notes', 'नोट्स') },
+  { id: 'papers', href: 'https://app.aspiran.in/learn/papers', label: T('Past papers', 'पिछले पेपर') },
+  { id: 'mains-answer-writing', href: sectionUrl('mains-answer-writing', lang), label: T('Answer writing', 'उत्तर लेखन') },
+  { id: 'free', href: `${P}/free/`, label: T('All free material', 'सारी मुफ़्त सामग्री') },
+  { id: 'how', href: `${P}/how-it-works/`, label: T('How Aspiran works', 'Aspiran कैसे काम करता है') },
+];
+const latest = caDays(lang).slice(0, 5);
+const site = 'https://aspiran.in';
+const org = { '@type': 'Organization', '@id': `${site}/#org`, name: 'Aspiran', url: `${site}/`, logo: `${site}/favicon.svg`, email: 'hello@aspiran.in', parentOrganization: { '@type': 'Organization', name: 'SnapSkill LLP' } };
+const crumbLd = crumbs?.length ? [{ '@type': 'BreadcrumbList', itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, ...(c.href ? { item: new URL(c.href, site).toString() } : {}) })) }] : [];
+const ld = { '@context': 'https://schema.org', '@graph': [org, ...crumbLd, ...jsonLd] };
+---
+
+<BaseLayout title={title} description={description} lang={lang} alternates={alternates} jsonLd={ld} ogType={ogType}>
+  <a class="skip" href="#main">{T('Skip to the page', 'पेज पर जाएँ')}</a>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href={`${P}/`} aria-label={T('Aspiran home', 'Aspiran होम')}>
+        <svg aria-hidden="true" width="30" height="30" viewBox="0 0 40 40">
+          <path d="M14 3c-2 3 2 4 0 7M20 2c-2 3 2 4 0 8M26 3c-2 3 2 4 0 7" fill="none" stroke="#E08A55" stroke-width="2" stroke-linecap="round"></path>
+          <path d="M5 15h30l-4.5 20.5a3 3 0 0 1-3 2.5H12.5a3 3 0 0 1-3-2.5z" fill="#B4502A"></path>
+          <rect x="4" y="13" width="32" height="4.5" rx="2.2" fill="#D9764A"></rect>
+        </svg>
+        Aspiran
+      </a>
+      <nav class="nav" aria-label={T('Main', 'मुख्य')}>
+        {nav.slice(0, 4).map((n) => <a href={n.href} aria-current={current === n.id ? 'page' : undefined}>{n.label}</a>)}
+        <a href={`${P}/free/`} aria-current={current === 'free' ? 'page' : undefined}>{T('More free', 'और मुफ़्त')}</a>
+      </nav>
+      <div class="top-r">
+        {hi
+          ? <a class="lang" href={other ?? '/'} hreflang="en" lang="en">English</a>
+          : <a class="lang" href={other ?? '/hi/'} hreflang="hi" lang="hi">हिंदी</a>}
+        <a class="btn primary sm" href={app('nav')} data-cta="app" data-where="nav">{T('Open the app', 'ऐप खोलें')}</a>
+        <details class="menu">
+          <summary>{T('Menu', 'मेन्यू')}</summary>
+          <div class="menu-list">
+            {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+            <a href={`${P}/for-coaching/`}>{T('For coaching centres', 'कोचिंग संस्थानों के लिए')}</a>
+            <a href={app('menu')} data-cta="app" data-where="menu"><b>{T('Open the app, free', 'ऐप खोलें, मुफ़्त')}</b></a>
+          </div>
+        </details>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    {crumbs?.length ? (
+      <div class="wrap"><nav class="crumbs" aria-label={T('You are here', 'आप यहाँ हैं')}><ol>
+        {crumbs.map((c) => <li>{c.href ? <a href={c.href}>{c.name}</a> : <span aria-current="page">{c.name}</span>}</li>)}
+      </ol></nav></div>
+    ) : null}
+    <slot />
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href={`${P}/`}>Aspiran</a>
+          <p style="margin-top:12px">{T(
+            'A UPSC prep app for self-study, coaching students and working aspirants. Daily revision, answer checking, current affairs and a small study group. English and Hindi.',
+            'सेल्फ़-स्टडी, कोचिंग वाले और नौकरी के साथ तैयारी करने वाले अभ्यर्थियों के लिए UPSC ऐप। रोज़ का रिवीज़न, उत्तर जाँच, करेंट अफ़ेयर्स और एक छोटा स्टडी ग्रुप। हिंदी और अंग्रेज़ी।')}</p>
+          <p><a href="mailto:hello@aspiran.in">hello@aspiran.in</a></p>
+        </div>
+        <div>
+          <h3>{T('Study free', 'मुफ़्त पढ़िए')}</h3>
+          <ul>
+            <li><a href={sectionUrl('current-affairs', lang)}>{T('Daily current affairs', 'रोज़ के करेंट अफ़ेयर्स')}</a></li>
+            {SECTIONS.map((s) => <li><a href={sectionUrl(s.id, lang)}>{s.name[lang]}</a></li>)}
+            <li><a href="https://app.aspiran.in/learn/papers">{T('UPSC past papers 2016–2026', 'UPSC पिछले पेपर 2016–2026')}</a></li>
+            <li><a href="https://app.aspiran.in/learn">{T('Syllabus, topic by topic', 'सिलेबस, टॉपिक दर टॉपिक')}</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>{T('Latest current affairs', 'ताज़ा करेंट अफ़ेयर्स')}</h3>
+          <ul>{latest.map((d) => <li><a href={dayUrl(d.day, lang)}>{longDate(d.day, lang)}</a></li>)}</ul>
+        </div>
+        <div>
+          <h3>Aspiran</h3>
+          <ul>
+            <li><a href={`${P}/how-it-works/`}>{T('How it works', 'कैसे काम करता है')}</a></li>
+            <li><a href={`${P}/#price`}>{T('Free and Plus', 'मुफ़्त और Plus')}</a></li>
+            <li><a href={`${P}/for-coaching/`}>{T('For coaching centres', 'कोचिंग संस्थानों के लिए')}</a></li>
+            <li><a href={app('footer')}>{T('Open the app', 'ऐप खोलें')}</a></li>
+            <li><a href="/privacy">{T('Privacy', 'प्राइवेसी')}</a></li>
+            <li><a href="/terms">{T('Terms', 'शर्तें')}</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-base">
+        <span>{T('© 2026 SnapSkill LLP, Mohali, Punjab. Not affiliated with UPSC. Answer marks and Chotu\'s replies can be wrong: check what matters.',
+          '© 2026 SnapSkill LLP, मोहाली, पंजाब। UPSC से संबद्ध नहीं। उत्तर के अंक और Chotu के जवाब ग़लत हो सकते हैं: ज़रूरी बातें जाँच लें।')}</span>
+        <button class="theme-switch" type="button" id="theme-switch">{T('Light / dark', 'लाइट / डार्क')}</button>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Light or dark: follows the phone until the visitor picks; the pick is remembered (BaseLayout applies it before paint).
+    document.getElementById('theme-switch')?.addEventListener('click', () => {
+      const root = document.documentElement;
+      const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      root.dataset.theme = dark ? 'light' : 'dark';
+      try { localStorage.setItem('aspiran-theme', root.dataset.theme); } catch { /* private window */ }
+    });
+  </script>
+</BaseLayout>

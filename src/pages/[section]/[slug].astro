@@ -1,0 +1,7 @@
+---
+import ItemPage from '../../components/ItemPage.astro';
+import { allPages } from '../../lib/content';
+export const getStaticPaths = () => allPages('en').map((page) => ({ params: { section: page.section, slug: page.slug }, props: { page } }));
+const { page } = Astro.props;
+---
+<ItemPage page={page} lang="en" />

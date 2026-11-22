@@ -1,0 +1,22 @@
+---
+// The box at the end of every free page: what the app adds to what they just read.
+import type { Lang } from '../lib/content';
+interface Props { lang: Lang; where: string; title?: string; text?: string; button?: string; hash?: string }
+const { lang, where, title, text, button, hash = '' } = Astro.props;
+const hi = lang === 'hi';
+const href = `https://app.aspiran.in/app/?utm_source=site&utm_medium=${where}${hi ? '&lang=hi' : ''}${hash}`;
+---
+<aside class="appbox">
+  <svg aria-hidden="true" width="64" height="64" viewBox="0 0 40 40">
+    <path d="M14 3c-2 3 2 4 0 7M20 2c-2 3 2 4 0 8M26 3c-2 3 2 4 0 7" fill="none" stroke="#E08A55" stroke-width="2" stroke-linecap="round"></path>
+    <path d="M5 15h30l-4.5 20.5a3 3 0 0 1-3 2.5H12.5a3 3 0 0 1-3-2.5z" fill="#B4502A"></path>
+    <rect x="4" y="13" width="32" height="4.5" rx="2.2" fill="#D9764A"></rect>
+  </svg>
+  <div>
+    <h2>{title ?? (hi ? 'पढ़ लिया। अब याद भी रखिए।' : 'You\'ve read it. Now make sure you remember it.')}</h2>
+    <p>{text ?? (hi
+      ? 'Aspiran ऐप में यही टॉपिक सवालों के साथ लौटता है: 3 दिन बाद, फिर एक हफ़्ते बाद, फिर महीनों बाद, ठीक भूलने से पहले। साथ में मेन्स उत्तरों की जाँच मिनटों में। मुफ़्त, साइन-अप के बिना आज़माइए।'
+      : 'In the Aspiran app this topic comes back as questions: in 3 days, then a week, then months, just before you would forget it. Plus Mains answers checked in minutes. Free, and you can try it without signing up.')}</p>
+    <a class="btn primary" href={href} data-cta="app" data-where={where}>{button ?? (hi ? 'ऐप मुफ़्त खोलिए' : 'Open the app, free')}</a>
+  </div>
+</aside>

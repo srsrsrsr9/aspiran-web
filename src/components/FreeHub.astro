@@ -1,0 +1,73 @@
+---
+// /free/: every free section in one place.
+import SiteLayout from '../layouts/SiteLayout.astro';
+import AppBox from './AppBox.astro';
+import { type Lang, SECTIONS, pagesIn, pageUrl, sectionUrl, caDays, dayUrl, longDate, cardIn } from '../lib/content';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const P = hi ? '/hi' : '';
+const latest = caDays(lang)[0];
+const title = T('Free UPSC study material', 'UPSC की मुफ़्त अध्ययन सामग्री');
+const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: title }];
+---
+
+<SiteLayout title={`${title}: notes, current affairs, answer writing | Aspiran`} description={T('Free UPSC notes, daily current affairs, Mains answer frames for real past questions, GS4 case studies, essay topics, landmark judgments, government schemes and an English–Hindi glossary. No sign-up.',
+  'UPSC के मुफ़्त नोट्स, रोज़ के करेंट अफ़ेयर्स, असली पिछले सवालों के मेन्स उत्तर ढाँचे, GS4 केस स्टडी, निबंध विषय, ऐतिहासिक फ़ैसले, सरकारी योजनाएँ और अंग्रेज़ी–हिंदी शब्दावली। साइन-अप नहीं।')}
+  lang={lang} alternates={{ en: '/free/', hi: '/hi/free/' }} crumbs={crumbs} current="free">
+  <div class="wrap">
+    <header class="sec-head" style="margin-top:8px">
+      <p class="kick">{T('No sign-up · no PDF downloads · no spam', 'साइन-अप नहीं · PDF डाउनलोड नहीं · स्पैम नहीं')}</p>
+      <h1>{title}</h1>
+      <p class="lede">{T('Everything here is free to read, on any phone. It is the same material that is inside the Aspiran app. The app adds the part a website can\'t: bringing it back before you forget, and checking what you write.',
+        'यहाँ सब कुछ मुफ़्त है, किसी भी फ़ोन पर। यह वही सामग्री है जो Aspiran ऐप में है। ऐप वह जोड़ता है जो वेबसाइट नहीं कर सकती: भूलने से पहले वापस लाना, और आपका लिखा जाँचना।')}</p>
+    </header>
+
+    <div class="grid">
+      {latest && (
+        <a class="card" href={sectionUrl('current-affairs', lang)}>
+          <p class="kick">{T('Updated every morning', 'हर सुबह अपडेट')}</p>
+          <h3>{T('Daily current affairs', 'रोज़ के करेंट अफ़ेयर्स')}</h3>
+          <p class="mute">{T('Latest: ', 'ताज़ा: ')}{longDate(latest.day, lang)}. {cardIn(latest.cards[0], lang).headline}</p>
+          <span class="more">{T(`${caDays(lang).length} days`, `${caDays(lang).length} दिन`)} →</span>
+        </a>
+      )}
+      {SECTIONS.map((s) => {
+        const ps = pagesIn(s.id, lang);
+        return ps.length ? (
+          <a class="card" href={sectionUrl(s.id, lang)}>
+            <p class="kick">{T(`${ps.length} free`, `${ps.length} मुफ़्त`)}</p>
+            <h3>{s.name[lang]}</h3>
+            <p class="mute">{s.blurb[lang]}</p>
+            <span class="more">{T('Open', 'खोलिए')} →</span>
+          </a>
+        ) : null;
+      })}
+      <a class="card" href="https://app.aspiran.in/learn/papers">
+        <p class="kick">{T('56 papers · official keys', '56 पेपर · आधिकारिक कुंजी')}</p>
+        <h3>{T('UPSC past papers, 2016 to 2026', 'UPSC पिछले पेपर, 2016 से 2026')}</h3>
+        <p class="mute">{T('Prelims and Mains, every question on its own page, with UPSC\'s official answer and why the right option is right.',
+          'प्रीलिम्स और मेन्स, हर सवाल अलग पेज पर, UPSC के आधिकारिक उत्तर और सही विकल्प के कारण के साथ।')}</p>
+        <span class="more">{T('Open', 'खोलिए')} →</span>
+      </a>
+      <a class="card" href="https://app.aspiran.in/learn">
+        <p class="kick">{T('228 topics', '228 टॉपिक')}</p>
+        <h3>{T('The UPSC syllabus, topic by topic', 'UPSC सिलेबस, टॉपिक दर टॉपिक')}</h3>
+        <p class="mute">{T('Every line of the syllabus in UPSC\'s own words, how often it has been asked, and the past questions on it.',
+          'सिलेबस की हर पंक्ति UPSC के अपने शब्दों में, कितनी बार पूछी गई, और उस पर पिछले सवाल।')}</p>
+        <span class="more">{T('Open', 'खोलिए')} →</span>
+      </a>
+    </div>
+
+    <section class="sec" style="padding-bottom:0">
+      <h2>{T('Start with these', 'इनसे शुरू कीजिए')}</h2>
+      <ul class="index-list">
+        {pagesIn('notes', lang).filter((p) => /federal|preamble|fundamental rights|monsoon|monetary|parliament|governor|inflation/i.test(p.title.en)).slice(0, 10).map((p) => <li><a href={pageUrl(p, lang)}>{p.title[lang]}</a><span class="small">{p.group[lang]}</span></li>)}
+      </ul>
+    </section>
+    <div class="narrow"><AppBox lang={lang} where="free-hub" /></div>
+  </div>
+  <div style="height:48px"></div>
+</SiteLayout>

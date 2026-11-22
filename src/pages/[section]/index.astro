@@ -1,0 +1,7 @@
+---
+import SectionIndex from '../../components/SectionIndex.astro';
+import { SECTIONS, type SectionId } from '../../lib/content';
+export const getStaticPaths = () => SECTIONS.map((s) => ({ params: { section: s.id } }));
+const { section } = Astro.params;
+---
+<SectionIndex id={section as SectionId} lang="en" />

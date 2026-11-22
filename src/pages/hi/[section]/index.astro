@@ -1,0 +1,8 @@
+---
+import '../../../styles/fonts-hi.css';
+import SectionIndex from '../../../components/SectionIndex.astro';
+import { SECTIONS, pagesIn, type SectionId } from '../../../lib/content';
+export const getStaticPaths = () => SECTIONS.filter((s) => pagesIn(s.id, 'hi').length).map((s) => ({ params: { section: s.id } }));
+const { section } = Astro.params;
+---
+<SectionIndex id={section as SectionId} lang="hi" />

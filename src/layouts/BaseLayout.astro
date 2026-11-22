@@ -17,13 +17,20 @@ interface Props {
   description: string;
   themeColor?: string;
   lang?: 'en' | 'hi';
+  /** The page's English and Hindi addresses, when it exists in both: each names the other for search engines. */
+  alternates?: { en?: string; hi?: string };
+  /** Structured data for search engines (schema.org), one object or a list. */
+  jsonLd?: unknown;
+  ogType?: string;
+  noindex?: boolean;
 }
-const { title, description, themeColor = '#F7F2EA', lang = 'en' } = Astro.props;
-// The home page and "How Aspiran teaches" exist in English and Hindi (/hi/...): each names the other for search engines.
+const { title, description, themeColor = '#FBF6EC', lang = 'en', alternates, jsonLd, ogType = 'website', noindex = false } = Astro.props;
+// Pages in both languages pass their two addresses. The older pages (home, How it works, coaching) are worked out here.
 const bare = Astro.url.pathname.replace(/^\/hi(?=\/|$)/, '').replace(/\/$/, '') || '/';
-const home = bare === '/' || bare === '/how-it-works';
-const enPath = bare === '/' ? '/' : bare + '/';
-const hiPath = bare === '/' ? '/hi/' : '/hi' + bare + '/';
+const pair = ['/', '/how-it-works', '/for-coaching'].includes(bare);
+const enPath = alternates ? alternates.en : pair ? (bare === '/' ? '/' : bare + '/') : undefined;
+const hiPath = alternates ? alternates.hi : pair ? (bare === '/' ? '/hi/' : '/hi' + bare + '/') : undefined;
+const home = Boolean(enPath && hiPath);
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL('/og.png', Astro.site);
 
@@ -43,9 +50,10 @@ const POSTHOG_HOST = 'https://us.i.posthog.com';
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {home && <link rel="alternate" hreflang="en" href={new URL(enPath, Astro.site)} />}
-    {home && <link rel="alternate" hreflang="hi" href={new URL(hiPath, Astro.site)} />}
-    {home && <link rel="alternate" hreflang="x-default" href={new URL(enPath, Astro.site)} />}
+    {noindex && <meta name="robots" content="noindex" />}
+    {home && <link rel="alternate" hreflang="en" href={new URL(enPath!, Astro.site)} />}
+    {home && <link rel="alternate" hreflang="hi" href={new URL(hiPath!, Astro.site)} />}
+    {home && <link rel="alternate" hreflang="x-default" href={new URL(enPath!, Astro.site)} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content={themeColor} />
 
@@ -53,7 +61,9 @@ const POSTHOG_HOST = 'https://us.i.posthog.com';
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="Aspiran" />
+    <meta property="og:locale" content={lang === 'hi' ? 'hi_IN' : 'en_IN'} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -62,6 +72,8 @@ const POSTHOG_HOST = 'https://us.i.posthog.com';
     <link rel="preload" as="font" type="font/woff2" href={yatraUrl} crossorigin />
     <link rel="preload" as="font" type="font/woff2" href={martelUrl} crossorigin />
     <link rel="preload" as="font" type="font/woff2" href={muktaUrl} crossorigin />
+
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
     <!-- Set theme before paint so there is no flash. -->
     <script is:inline>

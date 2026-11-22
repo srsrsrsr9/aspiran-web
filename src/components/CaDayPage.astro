@@ -1,0 +1,69 @@
+---
+// One day of current affairs: /current-affairs/<yyyy-mm-dd>/ and its Hindi twin.
+import SiteLayout from '../layouts/SiteLayout.astro';
+import AppBox from './AppBox.astro';
+import { type Lang, type CaDay, caDays, cardIn, dayUrl, longDate, sectionUrl } from '../lib/content';
+
+interface Props { day: CaDay; lang: Lang }
+const { day, lang } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const P = hi ? '/hi' : '';
+const all = caDays(lang);
+const i = all.findIndex((d) => d.day === day.day);
+const newer = all[i - 1], older = all[i + 1];
+const date = longDate(day.day, lang);
+const cards = day.cards.map((c) => ({ c, v: cardIn(c, lang), english: hi && !c.hiOk }));
+const title = T(`UPSC current affairs, ${date}`, `UPSC करेंट अफ़ेयर्स, ${date}`);
+const desc = T(`${date}: ${cards.map((x) => x.v.headline).join('; ')}. With why it matters for UPSC, key facts and a practice question.`,
+  `${date}: ${cards.map((x) => x.v.headline).join('; ')}। UPSC के लिए महत्व, मुख्य तथ्य और अभ्यास प्रश्न के साथ।`).slice(0, 300);
+const alternates = day.hindi ? { en: dayUrl(day.day, 'en'), hi: dayUrl(day.day, 'hi') } : undefined;
+const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: T('Current affairs', 'करेंट अफ़ेयर्स'), href: sectionUrl('current-affairs', lang) }, { name: date }];
+const ld = { '@type': 'NewsArticle', headline: title, description: desc.slice(0, 200), datePublished: day.day, dateModified: day.day, inLanguage: hi ? 'hi-IN' : 'en-IN', author: { '@id': 'https://aspiran.in/#org' }, publisher: { '@id': 'https://aspiran.in/#org' }, isAccessibleForFree: true };
+const L = 'ABCD';
+---
+
+<SiteLayout title={`${title} | Aspiran`} description={desc} lang={lang} alternates={alternates} crumbs={crumbs} jsonLd={[ld]} ogType="article" current="current-affairs">
+  <article class="wrap narrow article">
+    <header class="article-head">
+      <p class="kick">{T('Chai · current affairs for UPSC', 'चाय · UPSC के लिए करेंट अफ़ेयर्स')}</p>
+      <h1>{title}</h1>
+      <p class="lede">{T(`${cards.length} ${cards.length === 1 ? 'story' : 'stories'} worth knowing today, each tied to the syllabus, with why it matters and a question to check yourself.`,
+        `आज की ${cards.length} ख़बरें जो जानना ज़रूरी है, हर एक सिलेबस से जुड़ी, महत्व और ख़ुद को परखने वाले सवाल के साथ।`)}</p>
+    </header>
+
+    {cards.map(({ c, v, english }, n) => (
+      <section class="card" style="margin-bottom:22px" lang={english ? 'en' : undefined}>
+        <p>{c.gsPaper && <span class="tag">{c.gsPaper}</span>}{c.topic && <span class="tag green">{c.topic}</span>}{c.examType && <span class="tag">{c.examType === 'both' ? T('Prelims + Mains', 'प्रीलिम्स + मेन्स') : c.examType}</span>}</p>
+        <h2 style="font-size:26px">{n + 1}. {v.headline}</h2>
+        {english && <p class="small">हिंदी में यह कार्ड अभी उपलब्ध नहीं, अंग्रेज़ी में पढ़िए।</p>}
+        <div class="prose">{String(v.summary).split(/\n+/).map((x) => <p>{x}</p>)}</div>
+        {v.why?.length > 0 && <><h3>{T('Why it matters for UPSC', 'UPSC के लिए क्यों ज़रूरी')}</h3><ul>{v.why.map((x: string) => <li>{x}</li>)}</ul></>}
+        {v.facts?.length > 0 && <div class="box haldi"><h3>{T('Key facts', 'मुख्य तथ्य')}</h3><ul>{v.facts.map((x: string) => <li>{x}</li>)}</ul></div>}
+        {v.mcq?.question && (
+          <div class="box">
+            <h3>{T('Check yourself', 'ख़ुद को परखिए')}</h3>
+            <p><b>{v.mcq.question}</b></p>
+            <ol class="opts">{(v.mcq.options ?? []).map((o: string) => <li>{o}</li>)}</ol>
+            <details class="reveal"><summary>{T('Show the answer', 'उत्तर देखिए')}</summary>
+              <p><b>{T('Answer: ', 'उत्तर: ')}{L[v.mcq.answerIndex] ?? ''}{v.mcq.options?.[v.mcq.answerIndex] ? ` (${v.mcq.options[v.mcq.answerIndex]})` : ''}</b></p>
+              {v.mcq.explanation && <p>{v.mcq.explanation}</p>}
+            </details>
+          </div>
+        )}
+        {v.mains && <p><b>{T('Mains angle: ', 'मेन्स का नज़रिया: ')}</b>{typeof v.mains === 'string' ? v.mains : v.mains.question ?? ''}</p>}
+        {c.sources?.length > 0 && <p class="small"><b>{T('Source: ', 'स्रोत: ')}</b>{c.sources.map((s: any, k: number) => <>{k > 0 && ', '}{s.url ? <a href={s.url} rel="nofollow noopener" target="_blank">{s.name}</a> : s.name}</>)}</p>}
+      </section>
+    ))}
+
+    <nav class="field-row" style="justify-content:space-between;margin:28px 0" aria-label={T('Other days', 'दूसरे दिन')}>
+      {older ? <a class="btn ghost sm" href={dayUrl(older.day, lang)}>← {longDate(older.day, lang)}</a> : <span></span>}
+      {newer ? <a class="btn ghost sm" href={dayUrl(newer.day, lang)}>{longDate(newer.day, lang)} →</a> : <span></span>}
+    </nav>
+
+    <AppBox lang={lang} where="free-ca" title={T('Three cards with your morning chai', 'सुबह की चाय के साथ तीन कार्ड')}
+      text={T('In the Aspiran app these come every morning, and the facts you mark come back in your revision a few days later, so current affairs do not slip away by Prelims.',
+        'Aspiran ऐप में ये हर सुबह आते हैं, और जो तथ्य आप चुनते हैं वे कुछ दिन बाद रिवीज़न में लौटते हैं, ताकि प्रीलिम्स तक करेंट अफ़ेयर्स भूले नहीं।')}
+      button={T('Get them daily, free', 'रोज़ पाइए, मुफ़्त')} />
+  </article>
+</SiteLayout>

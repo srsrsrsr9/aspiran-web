@@ -1,0 +1,187 @@
+---
+// One free reading page: a note, an answer frame, an ethics case, an essay topic, a judgment, a scheme or a term list.
+// Same component for /<section>/<slug>/ and /hi/<section>/<slug>/.
+import SiteLayout from '../layouts/SiteLayout.astro';
+import AppBox from './AppBox.astro';
+import { type Lang, type Page, sectionById, pageUrl, sectionUrl, related, tx, has, paras, generatedAt } from '../lib/content';
+
+interface Props { page: Page; lang: Lang }
+const { page: p, lang } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const d = p.data;
+const sec = sectionById(p.section)!;
+const P = hi ? '/hi' : '';
+const t = (v: any) => tx(v, lang);
+const L = (o: any) => (o?.[lang] ?? o?.en ?? {}) as any; // for { en: {...}, hi: {...} } blocks
+const alternates = p.hindi ? { en: pageUrl(p, 'en'), hi: pageUrl(p, 'hi') } : undefined;
+const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: T('Free study material', 'मुफ़्त सामग्री'), href: `${P}/free/` }, { name: sec.name[lang], href: sectionUrl(p.section, lang) }, { name: p.title[lang] }];
+const more = related(p, lang, 6);
+const updated = (p.updatedAt || generatedAt || '').slice(0, 10);
+const article = { '@type': p.section === 'notes' ? 'Article' : 'LearningResource', headline: p.title[lang].slice(0, 110), description: p.desc[lang], inLanguage: hi ? 'hi-IN' : 'en-IN',
+  dateModified: updated, author: { '@id': 'https://aspiran.in/#org' }, publisher: { '@id': 'https://aspiran.in/#org' }, mainEntityOfPage: new URL(pageUrl(p, lang), 'https://aspiran.in').toString(),
+  educationalLevel: 'UPSC Civil Services Examination', isAccessibleForFree: true };
+
+// Notes: the sections in this language.
+const sections: { heading: string; body: string }[] = p.kind === 'read' ? (d.sections?.[lang] ?? d.sections?.en ?? []) : [];
+const recall: string[] = p.kind === 'read' ? (d.recall?.[lang] ?? d.recall?.en ?? []) : [];
+// Essay outlines read better one part per line: "Intro: …", "P1: …", "Turn: …", "Close: …".
+const outline = (s: string) => s.split(/\s(?=(?:Intro|P\d+|Turn|Close|Conclusion|भूमिका|अनुच्छेद \d+|मोड़|समापन|निष्कर्ष)\s?:)/).map((x) => x.trim()).filter(Boolean);
+const srcList = (v: any): { name: string; url?: string }[] => Array.isArray(v) ? v.filter((x) => x?.name).map((x) => ({ name: x.name, url: x.url })) : has(v, lang) ? [{ name: t(v) }] : [];
+const asked = d.asked;
+---
+
+<SiteLayout title={`${p.title[lang]} | ${sec.name[lang]} | Aspiran`} description={p.desc[lang]} lang={lang} alternates={alternates} crumbs={crumbs} jsonLd={[article]} ogType="article" current={p.section}>
+  <article class="wrap narrow article">
+    <header class="article-head">
+      <p class="kick">{sec.name[lang]} · {p.group[lang]}</p>
+      <h1>{p.kind === 'mains-skeleton' ? t(asked ?? d.question) : p.title[lang]}</h1>
+      {p.kind === 'read' && has(d.dek, lang) && <p class="lede">{t(d.dek)}</p>}
+      <div class="meta">
+        {p.kind === 'read' && d.minutes && <span>{T(`${d.minutes} min read`, `${d.minutes} मिनट की पढ़ाई`)}</span>}
+        {p.kind === 'mains-skeleton' && asked && <span>{T(`UPSC Mains ${asked.year} · ${String(asked.paper).toUpperCase()} · ${asked.marks} marks · ${asked.words} words`, `UPSC मेन्स ${asked.year} · ${String(asked.paper).toUpperCase()} · ${asked.marks} अंक · ${asked.words} शब्द`)}</span>}
+        {p.kind === 'landmark-case' && <span>{T(`Decided in ${d.year}`, `फ़ैसला: ${d.year}`)}</span>}
+        {p.kind === 'scheme-snapshot' && d.launched && <span>{T(`Launched ${d.launched}`, `शुरुआत: ${d.launched}`)}</span>}
+        {p.kind === 'terms' && <span>{T(`${d.terms?.length ?? 0} terms`, `${d.terms?.length ?? 0} शब्द`)}</span>}
+        {updated && <span>{T('Updated ', 'अपडेट: ')}{updated}</span>}
+      </div>
+    </header>
+
+    <div class="prose">
+      {p.kind === 'read' && (
+        <>
+          {sections.length > 3 && (
+            <nav class="box toc" aria-label={T('In this note', 'इस नोट में')}>
+              <b>{T('In this note', 'इस नोट में')}</b>
+              <ol>{sections.map((s, i) => <li><a href={`#s${i + 1}`}>{s.heading}</a></li>)}</ol>
+            </nav>
+          )}
+          {sections.map((s, i) => (
+            <section>
+              <h2 id={`s${i + 1}`}>{s.heading}</h2>
+              {paras(s.body).map((x) => (/^[-•]\s/m.test(x) ? <ul>{x.split('\n').map((li) => <li>{li.replace(/^[-•]\s*/, '')}</li>)}</ul> : <p>{x}</p>))}
+            </section>
+          ))}
+          {recall.length > 0 && (
+            <div class="box haldi">
+              <h2>{T('Test yourself (no peeking)', 'ख़ुद को परखिए (ऊपर देखे बिना)')}</h2>
+              <p class="mute">{T('Try to answer each one from memory, out loud or on paper. The effort of pulling it out is what makes it stay.',
+                'हर सवाल का जवाब याद से दीजिए, बोलकर या काग़ज़ पर। याद से निकालने की यही मेहनत उसे टिकाती है।')}</p>
+              <ol>{recall.map((q) => <li>{q}</li>)}</ol>
+            </div>
+          )}
+          {srcList(d.sources).length > 0 && <p class="small"><b>{T('Sources: ', 'स्रोत: ')}</b>{srcList(d.sources).map((s) => s.name).join('; ')}</p>}
+          {p.node && <p class="small">{T('Syllabus topic: ', 'सिलेबस टॉपिक: ')}<a href={`https://app.aspiran.in${p.node.learn}`}>{p.node.name}</a>{T(' (with UPSC past questions on it)', ' (इस पर UPSC के पिछले सवालों के साथ)')}</p>}
+        </>
+      )}
+
+      {p.kind === 'mains-skeleton' && (
+        <>
+          {has(d.directive, lang) && <div class="box"><h3>{T('What the question wants', 'सवाल क्या माँगता है')}</h3><p>{t(d.directive)}</p></div>}
+          <h2>{T('Introduction', 'भूमिका')}</h2>
+          <p>{t(d.intro)}</p>
+          <h2>{T('Body: the points to cover', 'मुख्य भाग: कवर करने के बिंदु')}</h2>
+          <ol>{(d.headings ?? []).map((h: any) => <li>{t(h)}</li>)}</ol>
+          {has(d.example, lang) && <div class="box green"><h3>{T('An example or fact to use', 'इस्तेमाल करने लायक़ उदाहरण या तथ्य')}</h3><p>{t(d.example)}</p></div>}
+          <h2>{T('Conclusion', 'निष्कर्ष')}</h2>
+          <p>{t(d.wayForward)}</p>
+          {has(d.commonMistake, lang) && <div class="box chai"><h3>{T('The mistake most people make', 'सबसे आम ग़लती')}</h3><p>{t(d.commonMistake)}</p></div>}
+          {has(d.missed, lang) && <div class="box"><h3>{T('What most answers miss', 'ज़्यादातर उत्तर क्या छोड़ देते हैं')}</h3><p>{t(d.missed)}</p></div>}
+          {srcList(d.sources).length > 0 && <p class="small"><b>{T('Sources: ', 'स्रोत: ')}</b>{srcList(d.sources).map((s, i) => <>{i > 0 && '; '}{s.url ? <a href={s.url} rel="nofollow noopener" target="_blank">{s.name}</a> : s.name}</>)}</p>}
+          <p class="small">{T('This is a frame, not a model answer: write it in your own words, with your own examples.', 'यह ढाँचा है, आदर्श उत्तर नहीं: इसे अपने शब्दों और अपने उदाहरणों में लिखिए।')}</p>
+        </>
+      )}
+
+      {p.kind === 'gs4-case' && (
+        <>
+          {paras(t(d.case)).map((x) => <p>{x}</p>)}
+          <div class="box haldi"><p><b>{t(d.question)}</b></p></div>
+          <details class="box reveal">
+            <summary>{T('Try it yourself first, then open the worked answer', 'पहले ख़ुद सोचिए, फिर हल खोलिए')}</summary>
+            {d.circle?.stakeholders?.length > 0 && (<>
+              <h3>{T('Who has a stake', 'किसका क्या दाँव पर है')}</h3>
+              <ul>{d.circle.stakeholders.map((s: any) => <li><b>{t(s.who)}:</b> {t(s.stake)}</li>)}</ul>
+            </>)}
+            {has(d.circle?.inTension, lang) && <><h3>{T('What pulls against what', 'किसका किससे टकराव')}</h3><p>{t(d.circle.inTension)}</p></>}
+            {d.circle?.options?.length > 0 && <><h3>{T('The options', 'विकल्प')}</h3><ol>{d.circle.options.map((o: any) => <li>{t(o)}</li>)}</ol></>}
+            {has(d.circle?.choice, lang) && <><h3>{T('One reasoned choice', 'एक तर्कपूर्ण चुनाव')}</h3><p>{t(d.circle.choice)}</p></>}
+            {d.seasoning?.length > 0 && <><h3>{T('Values and terms to use in your answer', 'उत्तर में इस्तेमाल करने लायक़ मूल्य और शब्द')}</h3><ul>{d.seasoning.map((s: any) => <li>{t(s)}</li>)}</ul></>}
+          </details>
+        </>
+      )}
+
+      {p.kind === 'ethics-dilemma' && (
+        <>
+          {paras(L(d).scenario).map((x) => <p>{x}</p>)}
+          <div class="box haldi"><p><b>{L(d).question}</b></p></div>
+          <h2>{T('Three ways to act', 'तीन रास्ते')}</h2>
+          {(L(d).options ?? []).map((o: any, i: number) => (
+            <div class="box"><h3>{i + 1}. {o.label}</h3><p>{o.outcome}</p><p class="small"><b>{T('Values: ', 'मूल्य: ')}</b>{o.values}</p></div>
+          ))}
+          {L(d).reflect && <div class="box chai"><h3>{T('Think about it', 'सोचिए')}</h3><p>{L(d).reflect}</p></div>}
+        </>
+      )}
+
+      {p.kind === 'essay' && (
+        <>
+          <div class="box haldi"><h3>{T('Your stand', 'आपका पक्ष')}</h3><p>{t(d.snap1Skeleton)}</p></div>
+          <h2>{T('An outline', 'एक रूपरेखा')}</h2>
+          <ul>{outline(t(d.snap2Outline)).map((x) => <li>{x}</li>)}</ul>
+          {d.angles?.length > 0 && <><h2>{T('Angles to cover', 'कवर करने लायक़ आयाम')}</h2><ul>{d.angles.map((a: any) => <li>{t(a)}</li>)}</ul></>}
+          {d.openers?.length > 0 && <><h2>{T('Ways to open', 'शुरुआत के तरीक़े')}</h2><ul>{d.openers.map((a: any) => <li>{t(a)}</li>)}</ul></>}
+          {has(d.snap3Watch, lang) && <div class="box chai"><h3>{T('Watch out', 'इनसे बचिए')}</h3>{t(d.snap3Watch).split(/\s(?=\d\.\s)/).map((x) => <p>{x}</p>)}</div>}
+        </>
+      )}
+
+      {p.kind === 'landmark-case' && (
+        <>
+          <h2>{T('The question before the court', 'अदालत के सामने सवाल')}</h2><p>{L(d).question}</p>
+          <h2>{T('What the court held', 'अदालत ने क्या कहा')}</h2><p>{L(d).held}</p>
+          <div class="box haldi"><h3>{T('Why it matters for UPSC', 'UPSC के लिए क्यों ज़रूरी')}</h3><p>{L(d).matters}</p></div>
+          {has(d.sources, lang) && <p class="small"><b>{T('Sources: ', 'स्रोत: ')}</b>{t(d.sources)}</p>}
+        </>
+      )}
+
+      {p.kind === 'scheme-snapshot' && (
+        <>
+          <dl class="box">
+            {[[T('Ministry', 'मंत्रालय'), L(d).ministry], [T('Launched', 'शुरुआत'), d.launched], [T('Aim', 'उद्देश्य'), L(d).aim], [T('Who it covers', 'किसके लिए'), L(d).who]].filter(([, v]) => v).map(([k, v]) => <><dt><b>{k}</b></dt><dd style="margin:0 0 12px">{v}</dd></>)}
+          </dl>
+          {L(d).keyNumber && <div class="box haldi"><h3>{T('The number to remember', 'याद रखने लायक़ आँकड़ा')}</h3><p>{L(d).keyNumber}</p></div>}
+          {L(d).examAngle && <><h2>{T('The exam angle', 'परीक्षा का नज़रिया')}</h2><p>{L(d).examAngle}</p></>}
+          {has(d.sources, lang) && <p class="small"><b>{T('Sources: ', 'स्रोत: ')}</b>{t(d.sources)}</p>}
+        </>
+      )}
+
+      {p.kind === 'terms' && (
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:17px">
+            <thead><tr><th style="text-align:left;padding:8px;border-bottom:2px solid var(--line)">English</th><th style="text-align:left;padding:8px;border-bottom:2px solid var(--line)">हिंदी</th><th style="text-align:left;padding:8px;border-bottom:2px solid var(--line)">{T('Meaning', 'अर्थ')}</th></tr></thead>
+            <tbody>{(d.terms ?? []).map((x: any) => (
+              <tr><td style="padding:8px;border-bottom:1px solid var(--line);font-weight:600">{x.en}</td><td style="padding:8px;border-bottom:1px solid var(--line)" lang="hi">{x.hi}{x.hiAlt && <span class="small"> / {x.hiAlt}</span>}</td><td style="padding:8px;border-bottom:1px solid var(--line)">{t(x.meaning)}</td></tr>
+            ))}</tbody>
+          </table>
+        </div>
+      )}
+    </div>
+
+    {p.kind === 'mains-skeleton'
+      ? <AppBox lang={lang} where={`free-${p.section}`} title={T('Now write it. Get it checked in minutes.', 'अब लिखिए। मिनटों में जँचवाइए।')}
+          text={T('Write this answer on paper, take a photo in the Aspiran app, and get marks on five parts (what the question asked, structure, content, examples, conclusion) with one fix for each. Three answers a week are free.',
+            'यह उत्तर काग़ज़ पर लिखिए, Aspiran ऐप में फ़ोटो लीजिए, और पाँच हिस्सों पर अंक पाइए (सवाल की माँग, ढाँचा, सामग्री, उदाहरण, निष्कर्ष), हर एक के लिए एक सुधार के साथ। हफ़्ते में तीन उत्तर मुफ़्त।')}
+          button={T('Get my answer checked', 'मेरा उत्तर जँचवाइए')} />
+      : p.section === 'ethics-case-studies'
+        ? <AppBox lang={lang} where={`free-${p.section}`} title={T('Write your answer to this case', 'इस केस पर अपना उत्तर लिखिए')}
+            text={T('In the Aspiran app you can write your GS4 answer, photo it, and get it checked in minutes against what a well-scoring answer does. Three answers a week are free.',
+              'Aspiran ऐप में अपना GS4 उत्तर लिखिए, फ़ोटो लीजिए, और मिनटों में जाँच पाइए कि अच्छे अंक वाला उत्तर क्या करता है। हफ़्ते में तीन उत्तर मुफ़्त।')} button={T('Try it free', 'मुफ़्त आज़माइए')} />
+        : <AppBox lang={lang} where={`free-${p.section}`} />}
+
+    {more.length > 0 && (
+      <section>
+        <h2 style="font-size:24px;margin-top:40px">{T(`More ${sec.name.en.toLowerCase()}`, `और ${sec.name.hi}`)}</h2>
+        <ul class="index-list">{more.map((m) => <li><a href={pageUrl(m, lang)}>{m.title[lang]}</a><span class="small">{m.group[lang]}</span></li>)}</ul>
+        <p style="margin-top:16px"><a href={sectionUrl(p.section, lang)}>{T(`All ${sec.name.en.toLowerCase()}`, `सभी ${sec.name.hi}`)} →</a></p>
+      </section>
+    )}
+  </article>
+</SiteLayout>
