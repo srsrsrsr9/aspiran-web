@@ -1,0 +1,42 @@
+---
+// A cover picture for a free page or a current-affairs story, drawn from its data (lib/visual.ts). `shape`:
+// banner (wide, top of a page), card (the Chai tray) or thumb (index tiles). Decorative: alt-free, aria-hidden.
+import { ICONS, type Motif, paletteFor, hash } from '../lib/visual';
+interface Props { seed: string; motif: Motif; shape?: 'banner' | 'card' | 'thumb'; tone?: string; badge?: string; class?: string }
+const { seed, motif, shape = 'banner', tone, badge, class: cls = '' } = Astro.props;
+const pal = paletteFor(seed, tone);
+const quiet = /tragic/i.test(tone ?? '');
+const h = hash(seed);
+const W = shape === 'banner' ? 720 : shape === 'card' ? 320 : 240;
+const H = shape === 'banner' ? 230 : shape === 'card' ? 180 : 150;
+const id = `a${h.toString(36)}${shape[0]}`;
+const icon = ICONS[motif] ?? ICONS.chai;
+// The big motif sits to the right on banners, centred on thumbs; a ring of accent behind it; small echoes scattered.
+const big = shape === 'banner' ? 4.1 : shape === 'card' ? 2.6 : 2.1;
+const bx = shape === 'banner' ? W - 48 * big - 46 : shape === 'card' ? W - 48 * big - 22 : (W - 48 * big) / 2;
+const by = (H - 48 * big) / 2 + (shape === 'banner' ? 4 : 6);
+const cx = bx + 24 * big, cy = by + 24 * big;
+const rnd = (k: number) => ((Math.imul(h ^ Math.imul(k + 1, 0x9e3779b9), 2654435761) >>> 0) % 1000) / 1000;
+const echoes = quiet || shape === 'thumb' ? [] : [0, 1, 2, 3].map((k) => ({ x: 18 + rnd(k) * (shape === 'banner' ? W * 0.45 : W * 0.5), y: 12 + rnd(k + 9) * (H - 60), s: 0.7 + rnd(k + 3) * 0.6, r: Math.round(rnd(k + 5) * 40 - 20) }));
+const sparks = quiet || shape === 'thumb' ? [] : [0, 1, 2, 3, 4].map((k) => ({ x: rnd(k + 11) * W, y: rnd(k + 17) * H, r: 2 + rnd(k + 2) * 4 }));
+const tilt = quiet ? 0 : Math.round(rnd(4) * 14 - 7);
+---
+<svg class={`art art-${shape} ${cls}`} viewBox={`0 0 ${W} ${H}`} role="presentation" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id={`${id}g`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color={pal.a} /><stop offset="1" stop-color={pal.b} /></linearGradient>
+    <pattern id={`${id}d`} width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.3" fill={pal.ink} opacity=".13" /></pattern>
+  </defs>
+  <rect width={W} height={H} fill={`url(#${id}g)`} />
+  <rect width={W} height={H} fill={`url(#${id}d)`} />
+  {!quiet && <circle cx={cx} cy={cy} r={24 * big * 0.92} fill={pal.acc} opacity=".38" />}
+  {!quiet && <circle cx={cx} cy={cy} r={24 * big * 1.25} fill="none" stroke={pal.ink} stroke-opacity=".16" stroke-width="1.5" stroke-dasharray="3 7" />}
+  {echoes.map((e) => <g transform={`translate(${e.x} ${e.y}) rotate(${e.r} 24 24) scale(${e.s})`} fill="none" stroke={pal.ink} stroke-opacity=".16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={icon} />)}
+  {sparks.map((s) => <circle cx={s.x} cy={s.y} r={s.r} fill={pal.acc} opacity=".55" />)}
+  <g transform={`translate(${bx} ${by}) rotate(${tilt} 24 24) scale(${big})`} fill="none" stroke={pal.ink} stroke-width={shape === 'banner' ? 1.5 : 1.8} stroke-linecap="round" stroke-linejoin="round" set:html={icon} />
+  {badge && (
+    <g>
+      <rect x="16" y={H - 44} rx="14" height="28" width={badge.length * 8.6 + 26} fill={pal.ink} />
+      <text x="29" y={H - 25} fill={pal.a} font-family="Mukta, system-ui, sans-serif" font-weight="700" font-size="15">{badge}</text>
+    </g>
+  )}
+</svg>

@@ -1,0 +1,29 @@
+---
+// Why the app brings things back: the usual forgetting pattern after one reading, against a topic that comes back at
+// 3 days, 10 days and a month. An illustration of the method, not anyone's data; the caption says so.
+import type { Lang } from '../../lib/content';
+interface Props { lang: Lang }
+const hi = Astro.props.lang === 'hi';
+const W = 600, H = 210, X0 = 40, X1 = W - 14, Y0 = 38, Y1 = H - 34, D = 40;
+const x = (t: number) => X0 + (t / D) * (X1 - X0);
+const y = (r: number) => Y1 - (r / 100) * (Y1 - Y0);
+const once = (t: number) => 22 + 78 * Math.exp(-t / 5);
+const reviews = [0, 3, 10, 30];
+const strength = [5, 14, 45, 160];
+const path = (f: (t: number) => number) => { let d = ''; for (let t = 0; t <= D; t += 0.25) { const r = Math.max(0, Math.min(100, f(t))); d += `${t ? 'L' : 'M'}${x(t).toFixed(1)} ${y(r).toFixed(1)}`; } return d; };
+const app = (t: number) => { let k = 0; for (let i = 0; i < reviews.length; i++) if (t >= reviews[i]) k = i; return 100 * Math.exp(-(t - reviews[k]) / strength[k]); };
+const labels = hi ? ['3 दिन', '10 दिन', '1 महीना'] : ['3 days', '10 days', 'a month'];
+---
+<figure class="curve">
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={hi ? 'एक बार पढ़ने पर याद तेज़ी से घटती है; 3 दिन, एक हफ़्ते और एक महीने पर दोहराने से टिकी रहती है।' : 'After one reading, memory drops fast; brought back at 3 days, a week and a month, it stays high.'}>
+    <path d={`M${X0} ${Y1}H${X1}`} stroke="var(--line-2)" stroke-width="1.5" />
+    <text x={X0} y={H - 10} font-size="13" fill="var(--ink-3)">{hi ? 'आज' : 'Today'}</text>
+    <text x={X1} y={H - 10} font-size="13" fill="var(--ink-3)" text-anchor="end">{hi ? '40 दिन' : '40 days'}</text>
+    <path d={path(once)} fill="none" stroke="var(--ink-3)" stroke-width="2.5" stroke-dasharray="6 6" />
+    <path d={path(app)} fill="none" stroke="var(--leaf)" stroke-width="3.5" stroke-linejoin="round" />
+    {reviews.slice(1).map((t, i) => <g><circle cx={x(t)} cy={y(100)} r="7" fill="var(--haldi)" stroke="var(--ink)" stroke-width="1.5" /><text x={x(t)} y={y(100) - 13} text-anchor="middle" font-size="13" font-weight="700" fill="var(--ink-2)">{labels[i]}</text></g>)}
+    <text x={x(D) - 4} y={y(app(D)) + 22} text-anchor="end" font-size="14" font-weight="700" fill="var(--leaf)">{hi ? 'Aspiran के साथ' : 'With Aspiran'}</text>
+    <text x={x(D) - 4} y={y(once(D)) + 22} text-anchor="end" font-size="14" font-weight="700" fill="var(--ink-3)">{hi ? 'एक बार पढ़ा' : 'Read once'}</text>
+  </svg>
+  <figcaption class="small">{hi ? 'याद आम तौर पर ऐसे घटती है। सही समय पर दोहराने से टिकती है, और ऐप यही समय याद रखता है।' : 'How memory usually fades, and what bringing it back at the right time does. The app keeps that timetable for you.'}</figcaption>
+</figure>

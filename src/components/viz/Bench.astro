@@ -1,0 +1,23 @@
+---
+// A judgment's bench as dots: the majority filled, the dissent hollow. Read from the "held" line ("Bench of 13 judges;
+// majority of 7 to 6", "nine-judge bench, by 8:1", "unanimously"). Nothing is drawn when the line doesn't say.
+import type { Lang } from '../../lib/content';
+interface Props { lang: Lang; held: string }
+const { lang, held } = Astro.props;
+const hi = lang === 'hi';
+const WORDS: Record<string, number> = { two: 2, three: 3, five: 5, seven: 7, nine: 9, eleven: 11, thirteen: 13 };
+const sz = /(\d+|two|three|five|seven|nine|eleven|thirteen)[- ]judge/i.exec(held) ?? /bench of (\d+)/i.exec(held);
+const size = sz ? (WORDS[sz[1].toLowerCase()] ?? Number(sz[1])) : 0;
+const split = /(\d+)\s?(?::|to|–|-)\s?(\d+)/.exec(held);
+const una = /unanim/i.test(held);
+let maj = 0, min = 0;
+if (split && Number(split[1]) + Number(split[2]) === size) { maj = Number(split[1]); min = Number(split[2]); }
+else if (una && size) { maj = size; }
+---
+{size > 0 && maj > 0 && (
+  <figure class="bench">
+    <div class="bench-dots" aria-hidden="true">{Array.from({ length: size }, (_, i) => <i class={i < maj ? 'maj' : 'min'}></i>)}</div>
+    <figcaption><b>{hi ? `${size} जजों की बेंच` : `A bench of ${size}`}</b> · {min ? (hi ? `फ़ैसला ${maj}–${min} से` : `decided ${maj}–${min}`) : (hi ? 'सर्वसम्मति से' : 'unanimous')}
+      {min > 0 && maj - min <= 1 && <span class="small"> {hi ? '· बेहद क़रीबी फ़ैसला' : '· a one-vote margin'}</span>}</figcaption>
+  </figure>
+)}

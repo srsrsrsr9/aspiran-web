@@ -2,7 +2,9 @@
 // /current-affairs/: every day, newest first, grouped by month, each with its headlines.
 import SiteLayout from '../layouts/SiteLayout.astro';
 import AppBox from './AppBox.astro';
-import { type Lang, caDays, cardIn, dayUrl, longDate, monthOf, sectionUrl } from '../lib/content';
+import CaTray from './viz/CaTray.astro';
+import CaWall from './viz/CaWall.astro';
+import { type Lang, caDays, longDate, sectionUrl } from '../lib/content';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -10,8 +12,6 @@ const hi = lang === 'hi';
 const T = (en: string, h: string) => (hi ? h : en);
 const P = hi ? '/hi' : '';
 const days = caDays(lang);
-const months = new Map<string, typeof days>();
-for (const d of days) { const m = monthOf(d.day, lang); months.set(m, [...(months.get(m) ?? []), d]); }
 const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: T('Current affairs', 'करंट अफ़ेयर्स') }];
 const title = T('Daily current affairs for UPSC, free', 'UPSC के लिए रोज़ के करंट अफ़ेयर्स, फ़्री');
 ---
@@ -26,17 +26,8 @@ const title = T('Daily current affairs for UPSC, free', 'UPSC के लिए �
       <p class="lede">{T('Only what matters for the exam: each story tied to a syllabus line, with why it matters, the facts to remember and a question to check yourself. No 40-page monthly PDFs.',
         'सिर्फ़ वही जो परीक्षा के काम का है: हर ख़बर सिलेबस की एक पंक्ति से जुड़ी, महत्व, याद रखने लायक़ तथ्य और ख़ुद को परखने का सवाल। 40 पेज की मासिक PDF नहीं।')}</p>
     </header>
-    {[...months.entries()].map(([m, ds]) => (
-      <section class="index-group">
-        <h2>{m}</h2>
-        <ul class="index-list" style="grid-template-columns:1fr">
-          {ds.map((d) => (
-            <li><a href={dayUrl(d.day, lang)}>{longDate(d.day, lang)}</a>
-              <span class="small">{d.cards.map((c) => cardIn(c, lang).headline).join(' · ')}</span></li>
-          ))}
-        </ul>
-      </section>
-    ))}
+    {days[0] && <section class="today"><h2>{T(`Latest: ${longDate(days[0].day, lang)}`, `ताज़ा: ${longDate(days[0].day, lang)}`)}</h2><CaTray day={days[0]} lang={lang} link="day" /></section>}
+    <CaWall days={days} lang={lang} />
     <div class="narrow"><AppBox lang={lang} where="free-ca-index" feature="ca" /></div>
   </div>
   <div style="height:48px"></div>

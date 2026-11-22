@@ -1,0 +1,20 @@
+---
+// Who has a stake in a GS4 case, as a circle around "you". Before the worked answer opens, the names are hidden and
+// the visitor is asked to name them (the effort is the point); inside the answer, the same circle with names.
+import type { Lang } from '../../lib/content';
+interface Props { lang: Lang; names: string[]; hidden?: boolean; center?: string }
+const { lang, names, hidden = false, center } = Astro.props;
+const hi = lang === 'hi';
+const n = names.length;
+const pos = names.map((_, i) => { const a = -Math.PI / 2 + (i * 2 * Math.PI) / n; return { x: 50 + 38 * Math.cos(a), y: 50 + 36 * Math.sin(a) }; });
+---
+<figure class={`stake ${hidden ? 'stake-hidden' : ''}`}>
+  <div class="stake-ring">
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      {pos.map((p) => <line x1="50" y1="50" x2={p.x} y2={p.y} stroke="var(--line-2)" stroke-width=".6" stroke-dasharray="1.5 1.5" vector-effect="non-scaling-stroke" />)}
+    </svg>
+    <span class="stake-me" style="left:50%;top:50%">{center ?? (hi ? 'आप' : 'You')}</span>
+    {pos.map((p, i) => <span class="stake-node" style={`left:${p.x}%;top:${p.y}%`}>{hidden ? '?' : names[i]}</span>)}
+  </div>
+  {hidden && <figcaption><b>{hi ? `इस केस में ${n} पक्षों का कुछ दाँव पर है।` : `${n} parties have something at stake here.`}</b> {hi ? 'हल खोलने से पहले सबके नाम बताइए।' : 'Name them all before you open the answer.'}</figcaption>}
+</figure>

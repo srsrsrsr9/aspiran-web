@@ -3,7 +3,18 @@
 // Same component for /<section>/<slug>/ and /hi/<section>/<slug>/.
 import SiteLayout from '../layouts/SiteLayout.astro';
 import AppBox, { type Feature } from './AppBox.astro';
-import { PAPERS, qUrl } from '../lib/content';
+import { PAPERS, qUrl, pagesIn } from '../lib/content';
+import Art from './Art.astro';
+import NumPop from './viz/NumPop.astro';
+import PyqPulse from './viz/PyqPulse.astro';
+import MemoryCurve from './viz/MemoryCurve.astro';
+import AnswerShape from './viz/AnswerShape.astro';
+import StakeCircle from './viz/StakeCircle.astro';
+import Bench from './viz/Bench.astro';
+import YearLine from './viz/YearLine.astro';
+import PathSteps from './viz/PathSteps.astro';
+import Fork from './viz/Fork.astro';
+import { pageArt, bigNumber } from '../lib/visual';
 import { type Lang, type Page, sectionById, pageUrl, sectionUrl, related, tx, has, paras, generatedAt } from '../lib/content';
 
 interface Props { page: Page; lang: Lang }
@@ -40,6 +51,11 @@ const pyqPaper = pyqM ? PAPERS.find((x) => x.id === pyqM[1]) : undefined;
 const pyqQ = pyqPaper?.questions.find((q) => Number(q.n) === Number(pyqM![2]));
 const pyqHref = pyqPaper && pyqQ && (lang === 'en' || pyqQ.hi?.q) ? qUrl(pyqPaper, pyqQ, lang) : undefined;
 const midAt = sections.length >= 4 ? Math.floor(sections.length / 2) : -1;
+const art = pageArt(p, lang);
+const nodes: string[] = [...new Set([d.node, ...(d.nodes ?? [])].filter(Boolean))] as string[];
+const stakeNames: string[] = (d.circle?.stakeholders ?? []).map((s: any) => t(s.who)).filter(Boolean);
+const yearItems = (sid: 'landmark-judgments' | 'government-schemes', key: string) => pagesIn(sid, lang).map((x) => ({ year: Number(x.data[key]) || 0, href: pageUrl(x, lang), title: x.title[lang], me: x === p }));
+const schemeNum = p.kind === 'scheme-snapshot' && L(d).keyNumber ? (bigNumber([L(d).keyNumber]) ?? { big: '', line: L(d).keyNumber }) : null;
 ---
 
 <SiteLayout title={`${p.title[lang]} | ${sec.name[lang]} | Aspiran`} description={p.desc[lang]} lang={lang} alternates={alternates} crumbs={crumbs} jsonLd={[article]} ogType="article" current={p.section}>
@@ -56,6 +72,7 @@ const midAt = sections.length >= 4 ? Math.floor(sections.length / 2) : -1;
         {p.kind === 'terms' && <span>{T(`${d.terms?.length ?? 0} terms`, `${d.terms?.length ?? 0} शब्द`)}</span>}
         {updated && <span>{T('Updated ', 'अपडेट: ')}{updated}</span>}
       </div>
+      <Art {...art} shape="banner" class="head-art" />
     </header>
 
     <div class="prose">
@@ -67,6 +84,7 @@ const midAt = sections.length >= 4 ? Math.floor(sections.length / 2) : -1;
               <ol>{sections.map((s, i) => <li><a href={`#s${i + 1}`}>{s.heading}</a></li>)}</ol>
             </nav>
           )}
+          <PyqPulse nodes={nodes} lang={lang} about={`${p.title.en} ${tx(d.dek, 'en')} ${sections.map((x) => x.heading).join(' ')} ${d.asked?.en ?? ''}`} />
           {sections.map((s, i) => (
             <>
             <section>
@@ -82,6 +100,7 @@ const midAt = sections.length >= 4 ? Math.floor(sections.length / 2) : -1;
               <p class="mute">{T('Try to answer each one from memory, out loud or on paper. The effort of pulling it out is what makes it stay.',
                 'हर सवाल का जवाब याद से दीजिए, बोलकर या काग़ज़ पर। याद से निकालने की यही मेहनत उसे टिकाती है।')}</p>
               <ol>{recall.map((q) => <li>{q}</li>)}</ol>
+              <MemoryCurve lang={lang} />
             </div>
           )}
           {srcList(d.sources).length > 0 && <p class="small"><b>{T('Sources: ', 'स्रोत: ')}</b>{srcList(d.sources).map((s) => s.name).join('; ')}</p>}
@@ -93,6 +112,7 @@ const midAt = sections.length >= 4 ? Math.floor(sections.length / 2) : -1;
         <>
           {pyqHref && <p class="small"><a href={pyqHref}>{T('See this PYQ in the UPSC paper', 'UPSC पेपर में यह PYQ देखिए')} →</a></p>}
           {has(d.directive, lang) && <div class="box"><h3>{T('What the question wants', 'सवाल क्या माँगता है')}</h3><p>{t(d.directive)}</p></div>}
+          <AnswerShape lang={lang} words={Number(asked?.words ?? d.words) || 150} marks={Number(asked?.marks ?? d.marks) || undefined} headings={(d.headings ?? []).map((h: any) => t(h)).filter(Boolean)} />
           <h2>{T('Introduction', 'भूमिका')}</h2>
           <p>{t(d.intro)}</p>
           <h2>{T('Body: the points to cover', 'मुख्य भाग: कवर करने के बिंदु')}</h2>
@@ -103,6 +123,7 @@ const midAt = sections.length >= 4 ? Math.floor(sections.length / 2) : -1;
           {has(d.commonMistake, lang) && <div class="box chai" data-say={T("Knowing the mistake isn't the same as not making it. Write this one in the app and I'll check.", 'ग़लती जानना और ग़लती न करना अलग बातें हैं। ऐप में ये आंसर लिखिए, मैं जाँच दूँगा।')}><h3>{T('The mistake most people make', 'सबसे आम ग़लती')}</h3><p>{t(d.commonMistake)}</p></div>}
           {has(d.missed, lang) && <div class="box"><h3>{T('What most answers miss', 'ज़्यादातर उत्तर क्या छोड़ देते हैं')}</h3><p>{t(d.missed)}</p></div>}
           {srcList(d.sources).length > 0 && <p class="small"><b>{T('Sources: ', 'स्रोत: ')}</b>{srcList(d.sources).map((s, i) => <>{i > 0 && '; '}{s.url ? <a href={s.url} rel="nofollow noopener" target="_blank">{s.name}</a> : s.name}</>)}</p>}
+          <PyqPulse nodes={nodes} lang={lang} about={`${p.title.en} ${tx(d.dek, 'en')} ${sections.map((x) => x.heading).join(' ')} ${d.asked?.en ?? ''}`} />
           <p class="small">{T('This is a frame, not a model answer: write it in your own words, with your own examples.', 'यह ढाँचा है, आदर्श उत्तर नहीं: इसे अपने शब्दों और अपने उदाहरणों में लिखिए।')}</p>
         </>
       )}
@@ -111,10 +132,12 @@ const midAt = sections.length >= 4 ? Math.floor(sections.length / 2) : -1;
         <>
           {paras(t(d.case)).map((x) => <p>{x}</p>)}
           <div class="box haldi"><p><b>{t(d.question)}</b></p></div>
+          {stakeNames.length >= 2 && <StakeCircle lang={lang} names={stakeNames} hidden />}
           <details class="box reveal" data-chotu={T("Did your answer have the same stakeholders? In the app you write yours and I mark it on 5 parts.", 'आपके आंसर में भी यही हितधारक थे? ऐप में आप अपना लिखिए, मैं 5 हिस्सों पर जाँचूँगा।')}>
             <summary>{T('Try it yourself first, then open the worked answer', 'पहले ख़ुद सोचिए, फिर हल खोलिए')}</summary>
             {d.circle?.stakeholders?.length > 0 && (<>
               <h3>{T('Who has a stake', 'किसका क्या दाँव पर है')}</h3>
+              <StakeCircle lang={lang} names={stakeNames} />
               <ul>{d.circle.stakeholders.map((s: any) => <li><b>{t(s.who)}:</b> {t(s.stake)}</li>)}</ul>
             </>)}
             {has(d.circle?.inTension, lang) && <><h3>{T('What pulls against what', 'किसका किससे टकराव')}</h3><p>{t(d.circle.inTension)}</p></>}
@@ -130,6 +153,7 @@ const midAt = sections.length >= 4 ? Math.floor(sections.length / 2) : -1;
           {paras(L(d).scenario).map((x) => <p>{x}</p>)}
           <div class="box haldi"><p><b>{L(d).question}</b></p></div>
           <h2>{T('Three ways to act', 'तीन रास्ते')}</h2>
+          {(L(d).options ?? []).length >= 2 && <Fork lang={lang} options={(L(d).options ?? []).map((o: any) => o.label)} />}
           {(L(d).options ?? []).map((o: any, i: number) => (
             <div class="box"><h3>{i + 1}. {o.label}</h3><p>{o.outcome}</p><p class="small"><b>{T('Values: ', 'मूल्य: ')}</b>{o.values}</p></div>
           ))}
@@ -141,7 +165,7 @@ const midAt = sections.length >= 4 ? Math.floor(sections.length / 2) : -1;
         <>
           <div class="box haldi"><h3>{T('Your stand', 'आपका पक्ष')}</h3><p>{t(d.snap1Skeleton)}</p></div>
           <h2>{T('An outline', 'एक रूपरेखा')}</h2>
-          <ul>{outline(t(d.snap2Outline)).map((x) => <li>{x}</li>)}</ul>
+          <PathSteps parts={outline(t(d.snap2Outline))} />
           {d.angles?.length > 0 && <><h2>{T('Angles to cover', 'कवर करने लायक़ आयाम')}</h2><ul>{d.angles.map((a: any) => <li>{t(a)}</li>)}</ul></>}
           {d.openers?.length > 0 && <><h2>{T('Ways to open', 'शुरुआत के तरीक़े')}</h2><ul>{d.openers.map((a: any) => <li>{t(a)}</li>)}</ul></>}
           {has(d.snap3Watch, lang) && <div class="box chai"><h3>{T('Watch out', 'इनसे बचिए')}</h3>{t(d.snap3Watch).split(/\s(?=\d\.\s)/).map((x) => <p>{x}</p>)}</div>}
@@ -151,8 +175,11 @@ const midAt = sections.length >= 4 ? Math.floor(sections.length / 2) : -1;
       {p.kind === 'landmark-case' && (
         <>
           <h2>{T('The question before the court', 'अदालत के सामने सवाल')}</h2><p>{L(d).question}</p>
-          <h2>{T('What the court held', 'अदालत ने क्या कहा')}</h2><p>{L(d).held}</p>
+          <h2>{T('What the court held', 'अदालत ने क्या कहा')}</h2>
+          <Bench lang={lang} held={d.en?.held ?? ''} />
+          <p>{L(d).held}</p>
           <div class="box haldi"><h3>{T('Why it matters for UPSC', 'UPSC के लिए क्यों ज़रूरी')}</h3><p>{L(d).matters}</p></div>
+          <YearLine lang={lang} items={yearItems('landmark-judgments', 'year')} label={T(`All ${pagesIn('landmark-judgments', lang).length} landmark judgments, by year`, `सभी ${pagesIn('landmark-judgments', lang).length} लैंडमार्क जजमेंट, साल के हिसाब से`)} />
           {has(d.sources, lang) && <p class="small"><b>{T('Sources: ', 'स्रोत: ')}</b>{t(d.sources)}</p>}
         </>
       )}
@@ -162,8 +189,9 @@ const midAt = sections.length >= 4 ? Math.floor(sections.length / 2) : -1;
           <dl class="box">
             {[[T('Ministry', 'मंत्रालय'), L(d).ministry], [T('Launched', 'शुरुआत'), d.launched], [T('Aim', 'उद्देश्य'), L(d).aim], [T('Who it covers', 'किसके लिए'), L(d).who]].filter(([, v]) => v).map(([k, v]) => <><dt><b>{k}</b></dt><dd style="margin:0 0 12px">{v}</dd></>)}
           </dl>
-          {L(d).keyNumber && <div class="box haldi"><h3>{T('The number to remember', 'याद रखने लायक़ आँकड़ा')}</h3><p>{L(d).keyNumber}</p></div>}
+          {schemeNum && (schemeNum.big ? <NumPop n={schemeNum} lang={lang} /> : <div class="box haldi"><h3>{T('The number to remember', 'याद रखने लायक़ आँकड़ा')}</h3><p>{L(d).keyNumber}</p></div>)}
           {L(d).examAngle && <><h2>{T('The exam angle', 'परीक्षा का नज़रिया')}</h2><p>{L(d).examAngle}</p></>}
+          <YearLine lang={lang} items={yearItems('government-schemes', 'launched')} label={T(`All ${pagesIn('government-schemes', lang).length} schemes, by launch year`, `सभी ${pagesIn('government-schemes', lang).length} योजनाएँ, शुरुआत के साल से`)} />
           {has(d.sources, lang) && <p class="small"><b>{T('Sources: ', 'स्रोत: ')}</b>{t(d.sources)}</p>}
         </>
       )}
@@ -185,7 +213,7 @@ const midAt = sections.length >= 4 ? Math.floor(sections.length / 2) : -1;
     {more.length > 0 && (
       <section>
         <h2 style="font-size:24px;margin-top:40px">{T(`More ${sec.name.en.toLowerCase()}`, `और ${sec.name.hi}`)}</h2>
-        <ul class="index-list">{more.map((m) => <li><a href={pageUrl(m, lang)}>{m.title[lang]}</a><span class="small">{m.group[lang]}</span></li>)}</ul>
+        <ul class="tiles">{more.map((m) => <li><a href={pageUrl(m, lang)}><Art {...pageArt(m, lang)} shape="thumb" badge={undefined} /><span class="tile-t">{m.title[lang]}</span><span class="small">{m.group[lang]}</span></a></li>)}</ul>
         <p style="margin-top:16px"><a href={sectionUrl(p.section, lang)}>{T(`All ${sec.name.en.toLowerCase()}`, `सभी ${sec.name.hi}`)} →</a></p>
       </section>
     )}

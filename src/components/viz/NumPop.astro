@@ -1,0 +1,19 @@
+---
+// The number worth remembering, big: a ring when it is a percentage. Chotu says why numbers matter while it is on screen.
+import type { BigNum } from '../../lib/visual';
+import type { Lang } from '../../lib/content';
+interface Props { n: BigNum; lang: Lang; label?: string }
+const { n, lang, label } = Astro.props;
+const hi = lang === 'hi';
+const C = 2 * Math.PI * 46;
+---
+<figure class="numpop" data-say={hi ? 'ऐसे आँकड़े प्रीलिम्स में ख़ूब पूछे जाते हैं। ऐप में मैं एग्ज़ाम से पहले यही आँकड़ा आपसे फिर पूछूँगा।' : "Numbers like this are Prelims favourites. In the app I'll ask you this one again before the exam."}>
+  {n.pct != null ? (
+    <svg viewBox="0 0 120 120" class="numpop-ring" aria-hidden="true">
+      <circle cx="60" cy="60" r="46" fill="none" stroke="var(--line)" stroke-width="14" />
+      <circle cx="60" cy="60" r="46" fill="none" stroke="var(--chai)" stroke-width="14" stroke-linecap="round" stroke-dasharray={`${(C * n.pct) / 100} ${C}`} transform="rotate(-90 60 60)" />
+      <text x="60" y="68" text-anchor="middle" font-family="Martel, Georgia, serif" font-weight="800" font-size={n.big.length > 4 ? 21 : 26} fill="var(--ink)">{n.big}</text>
+    </svg>
+  ) : <p class="numpop-big">{n.big}</p>}
+  <figcaption><span class="kick">{label ?? (hi ? 'याद रखने लायक़ आँकड़ा' : 'The number to remember')}</span>{n.line}</figcaption>
+</figure>

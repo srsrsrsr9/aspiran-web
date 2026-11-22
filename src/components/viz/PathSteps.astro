@@ -1,0 +1,9 @@
+---
+// An essay outline as a path of stepping stones: each part a stone, its label on the stone, its line beside it.
+interface Props { parts: string[] }
+const { parts } = Astro.props;
+const split = (s: string) => { const m = /^([^:]{1,18}):\s*(.*)$/s.exec(s); return m ? { k: m[1], v: m[2] } : { k: '', v: s }; };
+---
+<ol class="steps">
+  {parts.map((p, i) => { const { k, v } = split(p); return <li class={/turn|मोड़/i.test(k) ? 'turn' : /intro|भूमिका/i.test(k) ? 'first' : /close|conclusion|समापन|निष्कर्ष/i.test(k) ? 'last' : ''}><span class="stone">{k || i + 1}</span><p>{v}</p></li>; })}
+</ol>

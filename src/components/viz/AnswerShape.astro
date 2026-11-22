@@ -1,0 +1,33 @@
+---
+// A Mains answer frame as a picture: the word budget for each part, then a sample of how the app returns a marked
+// answer (the five parts the marker uses: directive, structure, content, examples, conclusion). The sample is labelled.
+import type { Lang } from '../../lib/content';
+interface Props { lang: Lang; words: number; marks?: number; headings: string[] }
+const { lang, words, marks, headings } = Astro.props;
+const hi = lang === 'hi';
+const W = words || 150;
+const intro = Math.round((W * 0.12) / 5) * 5, close = Math.round((W * 0.13) / 5) * 5;
+const each = Math.max(10, Math.round((W - intro - close) / Math.max(1, headings.length) / 5) * 5);
+const rows = [
+  { k: hi ? 'भूमिका' : 'Intro', w: intro, c: 'var(--haldi)' },
+  ...headings.map((h, i) => ({ k: h.length > 54 ? h.slice(0, 52).replace(/\s\S*$/, '') + '…' : h, w: each, c: i % 2 ? 'var(--chai)' : 'color-mix(in srgb, var(--chai) 70%, var(--haldi))' })),
+  { k: hi ? 'निष्कर्ष' : 'Conclusion', w: close, c: 'var(--leaf)' },
+];
+const top = Math.max(...rows.map((r) => r.w));
+const parts = hi ? ['निर्देश शब्द', 'ढाँचा', 'विषय-वस्तु', 'उदाहरण', 'निष्कर्ष'] : ['Directive', 'Structure', 'Content', 'Examples', 'Conclusion'];
+const sample = [1, 0, 2, 0, 1];
+const bands = hi ? ['कम', 'बराबर', 'ऊपर'] : ['Below', 'At', 'Above'];
+---
+<div class="shape">
+  <figure class="shape-sheet">
+    <p class="kick">{hi ? `${W} शब्दों का बँटवारा${marks ? ` · ${marks} अंक` : ''}` : `Where your ${W} words go${marks ? ` · ${marks} marks` : ''}`}</p>
+    {rows.map((r) => <div class="shape-row"><span class="shape-k">{r.k}</span><span class="shape-bar" style={`--w:${Math.round((r.w / top) * 100)}%;--c:${r.c}`}></span><span class="shape-n">~{r.w}</span></div>)}
+  </figure>
+  <figure class="shape-mark" data-say={hi ? 'ऐसे लौटता है आपका आंसर: 5 हिस्से, हर एक का सुधार। ऐप में लिखिए, मिनटों में अपना देखिए।' : "This is how your answer comes back: 5 parts, a fix for each. Write it in the app and see yours in minutes."}>
+    <p class="kick">{hi ? 'ऐप में जाँच ऐसी दिखती है (नमूना)' : 'How the app marks it (a sample)'}</p>
+    {parts.map((p, i) => (
+      <div class="mark-row"><span>{p}</span><span class="mark-dots">{bands.map((b, j) => <i class={j === sample[i] ? `on b${j}` : ''} title={b}></i>)}</span></div>
+    ))}
+    <p class="mark-legend small">{bands.join(' · ')} {hi ? '(अच्छे नंबर वाले UPSC आंसर के मुक़ाबले)' : '(against a well-scoring UPSC answer)'}</p>
+  </figure>
+</div>

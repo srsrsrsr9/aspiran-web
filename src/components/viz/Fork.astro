@@ -1,0 +1,15 @@
+---
+// A dilemma's choices as a fork in the road: you at the start, a branch for each way to act.
+import type { Lang } from '../../lib/content';
+interface Props { lang: Lang; options: string[] }
+const { lang, options } = Astro.props;
+const hi = lang === 'hi';
+const n = options.length;
+---
+<figure class="fork" data-say={hi ? 'हर रास्ते की एक क़ीमत है। ऐप में अपना जवाब लिखिए, मैं बताऊँगा आपका तर्क कहाँ टिकता है।' : 'Every road here costs something. Write your answer in the app and I will show you where your reasoning holds.'}>
+  <svg viewBox={`0 0 300 ${n * 70}`} aria-hidden="true" preserveAspectRatio="none">
+    {options.map((_, i) => <path d={`M0 ${(n * 70) / 2} C 150 ${(n * 70) / 2}, 150 ${i * 70 + 35}, 300 ${i * 70 + 35}`} fill="none" stroke={['var(--leaf)', 'var(--haldi)', 'var(--chai)', 'var(--ink-3)'][i % 4]} stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke" />)}
+  </svg>
+  <span class="fork-me">{hi ? 'आप' : 'You'}</span>
+  <ol class="fork-opts">{options.map((o, i) => <li style={`--c:${['var(--leaf)', 'var(--haldi)', 'var(--chai)', 'var(--ink-3)'][i % 4]}`}><b>{i + 1}</b>{o}</li>)}</ol>
+</figure>

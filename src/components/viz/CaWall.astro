@@ -1,0 +1,22 @@
+---
+// The current-affairs archive as a wall of story tiles, newest first, each with its picture, headline and day; a tile
+// opens that day. Replaces the plain list and a calendar (a calendar shows the days without stories; the site doesn't
+// point at gaps).
+import Art from '../Art.astro';
+import { storyMotif } from '../../lib/visual';
+import { type Lang, type CaDay, cardIn, dayUrl, longDate, monthOf } from '../../lib/content';
+interface Props { days: CaDay[]; lang: Lang }
+const { days, lang } = Astro.props;
+const months = new Map<string, CaDay[]>();
+for (const d of days) { const m = monthOf(d.day, lang); months.set(m, [...(months.get(m) ?? []), d]); }
+---
+{[...months.entries()].map(([m, ds]) => (
+  <section class="index-group">
+    <h2>{m}</h2>
+    <ul class="tiles">
+      {ds.flatMap((d) => d.cards.map((c, i) => { const v = cardIn(c, lang); return (
+        <li><a href={`${dayUrl(d.day, lang)}#c${i + 1}`}><Art seed={c.id ?? v.headline} motif={storyMotif(c)} shape="thumb" tone={c.tone} /><span class="tile-t">{v.headline}</span><span class="small">{longDate(d.day, lang)}</span></a></li>
+      ); }))}
+    </ul>
+  </section>
+))}

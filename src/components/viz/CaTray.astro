@@ -1,0 +1,19 @@
+---
+// A day's stories as the app's morning tray: fanned cards with a picture each, tapping one jumps to it (or to the day).
+import Art from '../Art.astro';
+import { storyMotif } from '../../lib/visual';
+import { type Lang, type CaDay, cardIn, dayUrl } from '../../lib/content';
+interface Props { day: CaDay; lang: Lang; link?: 'anchor' | 'day' }
+const { day, lang, link = 'anchor' } = Astro.props;
+const hi = lang === 'hi';
+const cards = day.cards.slice(0, 6).map((c, i) => ({ c, v: cardIn(c, lang), i }));
+const paper = (g: any) => (/^\d$/.test(String(g)) ? `GS${g}` : String(g || 'GS'));
+---
+<div class="tray" data-say={hi ? 'ऐप में ये कार्ड हर सुबह आते हैं। आप जो तथ्य चुनेंगे, वो प्रीलिम्स से पहले लौटेंगे।' : "In the app these come every morning, with your chai. The facts you keep come back before Prelims."}>
+  {cards.map(({ c, v, i }) => (
+    <a class="tray-card" href={link === 'anchor' ? `#c${i + 1}` : dayUrl(day.day, lang)} style={`--r:${(i - (cards.length - 1) / 2) * 3}deg`}>
+      <Art seed={c.id ?? v.headline} motif={storyMotif(c)} shape="card" tone={c.tone} badge={paper(c.gsPaper)} />
+      <span class="tray-h">{v.headline}</span>
+    </a>
+  ))}
+</div>

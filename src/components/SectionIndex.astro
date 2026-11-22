@@ -2,6 +2,8 @@
 // The list page of one free section (/notes/, /essay-topics/ …), grouped (by paper for notes).
 import SiteLayout from '../layouts/SiteLayout.astro';
 import AppBox from './AppBox.astro';
+import Art from './Art.astro';
+import { pageArt } from '../lib/visual';
 import { type Lang, type SectionId, sectionById, pagesIn, grouped, pageUrl, sectionUrl } from '../lib/content';
 
 interface Props { id: SectionId; lang: Lang }
@@ -30,7 +32,9 @@ const list = { '@type': 'CollectionPage', name: sec.title[lang], description: se
     {groups.map(([g, ps]) => (
       <section class="index-group">
         <h2>{g} <span class="small">({ps.length})</span></h2>
-        <ul class="index-list">{ps.map((p) => <li><a href={pageUrl(p, lang)}>{p.title[lang]}</a>{p.kind === 'read' && p.data.minutes && <span class="small">{T(`${p.data.minutes} min`, `${p.data.minutes} मिनट`)}</span>}</li>)}</ul>
+        {id === 'glossary'
+          ? <ul class="index-list">{ps.map((p) => <li><a href={pageUrl(p, lang)}>{p.title[lang]}</a></li>)}</ul>
+          : <ul class="tiles">{ps.map((p) => <li><a href={pageUrl(p, lang)}><Art {...pageArt(p, lang)} shape="thumb" badge={undefined} /><span class="tile-t">{p.title[lang]}</span>{p.kind === 'read' && p.data.minutes && <span class="small">{T(`${p.data.minutes} min`, `${p.data.minutes} मिनट`)}</span>}</a></li>)}</ul>}
       </section>
     ))}
     <div class="narrow"><AppBox lang={lang} where={`free-${id}-index`} feature={({ 'mains-answer-writing': 'mark', 'ethics-case-studies': 'ethics', 'essay-topics': 'essay' } as const)[id as string] ?? 'revise'} /></div>

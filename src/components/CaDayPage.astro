@@ -2,6 +2,10 @@
 // One day of current affairs: /current-affairs/<yyyy-mm-dd>/ and its Hindi twin.
 import SiteLayout from '../layouts/SiteLayout.astro';
 import AppBox from './AppBox.astro';
+import Art from './Art.astro';
+import CaTray from './viz/CaTray.astro';
+import NumPop from './viz/NumPop.astro';
+import { storyMotif, bigNumber } from '../lib/visual';
 import { type Lang, type CaDay, caDays, cardIn, dayUrl, longDate, sectionUrl } from '../lib/content';
 
 interface Props { day: CaDay; lang: Lang }
@@ -21,6 +25,7 @@ const alternates = day.hindi ? { en: dayUrl(day.day, 'en'), hi: dayUrl(day.day, 
 const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: T('Current affairs', 'करंट अफ़ेयर्स'), href: sectionUrl('current-affairs', lang) }, { name: date }];
 const ld = { '@type': 'NewsArticle', headline: title, description: desc.slice(0, 200), datePublished: day.day, dateModified: day.day, inLanguage: hi ? 'hi-IN' : 'en-IN', author: { '@id': 'https://aspiran.in/#org' }, publisher: { '@id': 'https://aspiran.in/#org' }, isAccessibleForFree: true };
 const L = 'ABCD';
+const paper = (g: any) => (/^\d$/.test(String(g)) ? `GS${g}` : String(g || ''));
 ---
 
 <SiteLayout title={`${title} | Aspiran`} description={desc} lang={lang} alternates={alternates} crumbs={crumbs} jsonLd={[ld]} ogType="article" current="current-affairs">
@@ -31,13 +36,16 @@ const L = 'ABCD';
       <p class="lede">{T(`${cards.length} ${cards.length === 1 ? 'story' : 'stories'} worth knowing today, each tied to the syllabus, with why it matters and a question to check yourself.`,
         `आज की ${cards.length} ख़बरें जो जानना ज़रूरी है, हर एक सिलेबस से जुड़ी, महत्व और ख़ुद को परखने वाले सवाल के साथ।`)}</p>
     </header>
+    <CaTray day={day} lang={lang} />
 
     {cards.map(({ c, v, english }, n) => (
-      <section class="card" style="margin-bottom:22px" lang={english ? 'en' : undefined}>
-        <p>{c.gsPaper && <span class="tag">{c.gsPaper}</span>}{c.topic && <span class="tag green">{c.topic}</span>}{c.examType && <span class="tag">{c.examType === 'both' ? T('Prelims + Mains', 'प्रीलिम्स + मेन्स') : c.examType}</span>}</p>
+      <section class="card ca-card" id={`c${n + 1}`} lang={english ? 'en' : undefined}>
+        <Art seed={c.id ?? v.headline} motif={storyMotif(c)} tone={c.tone} class="card-art" />
+        <p>{c.gsPaper && <span class="tag">{paper(c.gsPaper)}</span>}{c.topic && <span class="tag green">{c.topic}</span>}{c.examType && <span class="tag">{c.examType === 'both' ? T('Prelims + Mains', 'प्रीलिम्स + मेन्स') : c.examType}</span>}</p>
         <h2 style="font-size:26px">{n + 1}. {v.headline}</h2>
         {english && <p class="small">हिंदी में यह कार्ड अभी उपलब्ध नहीं, अंग्रेज़ी में पढ़िए।</p>}
         <div class="prose">{String(v.summary).split(/\n+/).map((x) => <p>{x}</p>)}</div>
+        {(() => { const b = !/tragic/i.test(c.tone ?? '') && bigNumber([...(v.facts ?? []), ...String(v.summary).split(/(?<=\.)\s+/)]); return b ? <NumPop n={b} lang={english ? 'en' : lang} /> : null; })()}
         {v.why?.length > 0 && <><h3>{T('Why it matters for UPSC', 'UPSC के लिए क्यों ज़रूरी')}</h3><ul>{v.why.map((x: string) => <li>{x}</li>)}</ul></>}
         {v.facts?.length > 0 && <div class="box haldi"><h3>{T('Key facts', 'मुख्य तथ्य')}</h3><ul>{v.facts.map((x: string) => <li>{x}</li>)}</ul></div>}
         {v.mcq?.question && (
