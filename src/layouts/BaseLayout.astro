@@ -32,7 +32,7 @@ const enPath = alternates ? alternates.en : pair ? (bare === '/' ? '/' : bare + 
 const hiPath = alternates ? alternates.hi : pair ? (bare === '/' ? '/hi/' : '/hi' + bare + '/') : undefined;
 const home = Boolean(enPath && hiPath);
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImage = new URL('/og.png', Astro.site);
+const ogImage = new URL('/og-2026-11.png', Astro.site);
 
 // Analytics: PostHog (visits, where people click, how far they scroll, and session replays). Paste the project key
 // from PostHog (Project settings; it starts with "phc_" and is public by design) here and every page picks it up.
