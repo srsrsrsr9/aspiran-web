@@ -4,6 +4,7 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 import AppBox from './AppBox.astro';
 import Art from './Art.astro';
 import { pageArt, type Motif } from '../lib/visual';
+import { shortsIn, starters, cut } from '../lib/shorts';
 import { type Lang, SECTIONS, pagesIn, pageUrl, sectionUrl, caDays, dayUrl, longDate, cardIn, pyqHome, pyqCount } from '../lib/content';
 
 interface Props { lang: Lang }
@@ -57,6 +58,14 @@ const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: title }
         <p class="mute">{T("Prelims and Mains, word for word. Answer on the page, say how sure you were, and see UPSC's key and why.",
           'प्रीलिम्स और मेन्स, जैसे UPSC ने पूछे। पेज पर जवाब दीजिए, बताइए कितने पक्के थे, और देखिए UPSC की आंसर-की और वजह।')}</p>
         <span class="more">{T('Open', 'खोलिए')} →</span>
+      </a>
+      <a class="card hub-card hub-binge" href={`${P}/binge/`}>
+        <span class="hub-binge-pics" aria-hidden="true">{starters(lang).slice(0, 3).map((s) => <img src={cut(s, lang).poster} alt="" loading="lazy" width="720" height="1280" />)}</span>
+        <p class="kick">{T(`${shortsIn(lang).length} two-minute stories`, `दो मिनट की ${shortsIn(lang).length} कहानियाँ`)}</p>
+        <h3>{T('Binge: UPSC in short videos', 'बिंज: छोटे वीडियो में UPSC')}</h3>
+        <p class="mute">{T("Illustrated stories from the syllabus, each ending with one quick question. Sound only when you turn it on.",
+          'सिलेबस की चित्र-कहानियाँ, हर एक के अंत में एक छोटा सवाल। आवाज़ तभी जब आप चालू करें।')}</p>
+        <span class="more">{T('Watch', 'देखिए')} ▶</span>
       </a>
       <a class="card hub-card" href="https://app.aspiran.in/learn">
         <Art seed="hub-learn" motif="leaf" shape="thumb" class="card-art" />

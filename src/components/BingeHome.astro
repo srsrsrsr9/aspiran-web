@@ -1,0 +1,92 @@
+---
+// /binge/: the app's short videos as a shelf you can lose an evening to (owner, 22 Nov 2026: "use people's
+// inclination to get entertained"). Beauty first (the posters), then the hook: every short ends on a question, and the
+// app brings its facts back. Tap a poster and the full-screen feed opens (BingeFeed + scripts/binge.ts).
+import SiteLayout from '../layouts/SiteLayout.astro';
+import AppBox from './AppBox.astro';
+import ShortTile from './ShortTile.astro';
+import BingeFeed from './BingeFeed.astro';
+import type { Lang } from '../lib/content';
+import { SHELVES, MINUTE, shortsIn, starters, cut, feedItem, shortUrl, shortsAt } from '../lib/shorts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const P = hi ? '/hi' : '';
+const all = shortsIn(lang);
+const first = starters(lang);
+const order = [...first, ...all.filter((s) => !first.includes(s))];
+const minute = hi ? [] : MINUTE;
+const items = [...order, ...minute].map((s) => feedItem(s, lang));
+const hours = Math.round(all.reduce((t, s) => t + cut(s, lang).dur, 0) / 360) / 10;
+const fan = first.slice(0, 3);
+const title = T('Binge UPSC: 100 two-minute stories', 'UPSC बिंज: दो मिनट की 100 कहानियाँ');
+const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: T('Binge', 'बिंज') }];
+const ld = { '@type': 'ItemList', name: title, itemListElement: order.slice(0, 30).map((s, i) => ({ '@type': 'ListItem', position: i + 1, url: new URL(shortUrl(s, lang), 'https://aspiran.in').toString(), name: cut(s, lang).title })) };
+---
+
+<SiteLayout title={`${title} | Aspiran`} description={T(`Short illustrated videos on the UPSC syllabus: an emperor who regretted a war, a pillar that hasn't rusted, gold on a plane. ${all.length} stories, about two minutes each, free, in English and Hindi.`,
+  `UPSC सिलेबस पर छोटे चित्र-वीडियो: युद्ध पर पछताने वाला सम्राट, कभी न जंग लगने वाला स्तंभ, विमान में सोना। ${all.length} कहानियाँ, लगभग दो-दो मिनट, फ़्री, हिंदी और इंग्लिश में।`)}
+  lang={lang} alternates={{ en: '/binge/', hi: '/hi/binge/' }} crumbs={crumbs} jsonLd={[ld]} current="binge"
+  chotu={T("Go on, watch one. Each is about two minutes, and each ends with one quick question.", 'चलिए, एक देखिए। हर एक लगभग दो मिनट का है, और आख़िर में एक छोटा सवाल।')}>
+  <div class="wrap">
+    <header class="binge-hero">
+      <div class="binge-hero-text">
+        <p class="kick">{T('Free · no sign-up · sound off until you want it', 'फ़्री · साइन-अप नहीं · आवाज़ तभी जब आप चाहें')}</p>
+        <h1>{T('Binge. But it counts.', 'बिंज कीजिए। पर काम का।')}</h1>
+        <p class="lede">{T(`${all.length} illustrated stories from the UPSC syllabus, about two minutes each. The emperor who regretted a war. The pillar that hasn't rusted in 1,600 years. The radio that broadcast from hiding in 1942. Watch like it's your feed; it's quietly Prelims and Mains.`,
+          `UPSC सिलेबस की ${all.length} चित्र-कहानियाँ, हर एक लगभग दो मिनट की। युद्ध पर पछताने वाला सम्राट। 1,600 साल से बिना जंग का स्तंभ। 1942 में छिपकर चलने वाला रेडियो। अपनी फ़ीड की तरह देखिए; असल में ये प्रीलिम्स और मेन्स है।`)}</p>
+        <p class="ctas"><button class="btn primary" type="button" data-feed-start>▶ {T('Start watching', 'देखना शुरू करें')}</button>
+          <a class="btn ghost" href="#shelves">{T('Browse the shelves', 'शेल्फ़ देखिए')}</a></p>
+        <ul class="binge-facts">
+          <li><b>{all.length}</b> {T('stories', 'कहानियाँ')}</li>
+          <li><b>{hours}</b> {T('hours', 'घंटे')}</li>
+          <li><b>{T('2', '2')}</b> {T('minutes each', 'मिनट हर एक')}</li>
+          <li><b>EN · हिं</b> {T('every one', 'हर एक')}</li>
+        </ul>
+      </div>
+      <div class="binge-fan" aria-hidden="true">
+        {fan.map((s, i) => <a class={`fan fan-${i}`} href={shortUrl(s, lang)} data-short={s.id} tabindex="-1"><img src={cut(s, lang).poster} alt="" width="720" height="1280" loading="eager" decoding="async" /></a>)}
+      </div>
+    </header>
+
+    <section class="shelf" data-say={T("Start anywhere. These have the best openings.", 'कहीं से भी शुरू कीजिए। इनकी शुरुआत सबसे दमदार है।')}>
+      <div class="shelf-head"><h2>{T('Start with these', 'इनसे शुरू कीजिए')}</h2></div>
+      <div class="shelf-row">{first.map((s, i) => <ShortTile s={s} lang={lang} eager={i < 4} />)}</div>
+    </section>
+
+    <div id="shelves"></div>
+    {SHELVES.map((sh) => {
+      const row = all.filter((s) => sh.formats.includes(s.format));
+      return row.length ? (
+        <section class="shelf" id={sh.id}>
+          <div class="shelf-head"><h2>{sh[lang][0]}</h2><p class="mute">{sh[lang][1]}</p></div>
+          <div class="shelf-row">{row.map((s) => <ShortTile s={s} lang={lang} />)}</div>
+        </section>
+      ) : null;
+    })}
+
+    <section class="binge-why" data-say={T("Watching is the easy part. In the app, I turn every video into three quick questions that come back over the next month.", 'देखना आसान हिस्सा है। ऐप में मैं हर वीडियो को तीन छोटे सवालों में बदलता हूँ, जो अगले महीने भर लौटते हैं।')}>
+      <div><p class="kick">{T('Why this works', 'ये काम क्यों करता है')}</p>
+        <h2>{T('A story sticks. A story you are quizzed on, sticks for the exam.', 'कहानी याद रहती है। जिस कहानी पर सवाल पूछा जाए, वो एग्ज़ाम तक याद रहती है।')}</h2></div>
+      <ol class="binge-steps">
+        <li><b>{T('Watch', 'देखिए')}</b><span>{T('Two minutes, a real story, captions on.', 'दो मिनट, असली कहानी, कैप्शन के साथ।')}</span></li>
+        <li><b>{T('Answer one', 'एक जवाब')}</b><span>{T('Every short ends with a quick question.', 'हर शॉर्ट एक छोटे सवाल पर ख़त्म।')}</span></li>
+        <li><b>{T('Get it back', 'फिर याद')}</b><span>{T('In the app, its facts return in 3 days, a week, a month.', 'ऐप में उसके तथ्य 3 दिन, हफ़्ते, महीने बाद लौटते हैं।')}</span></li>
+      </ol>
+    </section>
+
+    {minute.length > 0 && (
+      <section class="shelf" id="one-minute">
+        <div class="shelf-head"><h2>One minute, one idea</h2><p class="mute">Short explainers on the GS syllabus: one fact or one method, in about a minute.</p></div>
+        <div class="shelf-row">{minute.map((s) => <ShortTile s={s} lang={lang} size="sm" />)}</div>
+      </section>
+    )}
+
+    <div class="narrow"><AppBox lang={lang} where="binge" feature="play" title={T('400+ videos like these, and they come back to you.', 'ऐसे 400+ वीडियो, और ये आपके पास लौटकर आते हैं।')} /></div>
+    <p class="small mute" style="text-align:center">{T('Updated', 'अपडेट')} {new Date(shortsAt).toLocaleDateString(hi ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+  </div>
+  <BingeFeed lang={lang} items={items} />
+  <div style="height:48px"></div>
+</SiteLayout>

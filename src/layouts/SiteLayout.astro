@@ -40,6 +40,7 @@ const app = (w: string) => joinUrl(w, lang);
 const nav = [
   { id: 'current-affairs', href: sectionUrl('current-affairs', lang), label: T('Current affairs', 'करंट अफ़ेयर्स') },
   { id: 'pyq', href: pyqHome(lang), label: 'PYQs' },
+  { id: 'binge', href: `${P}/binge/`, label: T('Binge ▶', 'बिंज ▶') },
   { id: 'notes', href: sectionUrl('notes', lang), label: T('Notes', 'नोट्स') },
   { id: 'mains-answer-writing', href: sectionUrl('mains-answer-writing', lang), label: T('Answer writing', 'आंसर राइटिंग') },
   { id: 'free', href: `${P}/free/`, label: T('All free material', 'सारा फ़्री मटीरियल') },
@@ -64,7 +65,7 @@ const ld = { '@context': 'https://schema.org', '@graph': [org, ...crumbLd, ...js
         Aspiran
       </a>
       <nav class="nav" aria-label={T('Main', 'मुख्य')}>
-        {nav.slice(0, 4).map((n) => <a href={n.href} aria-current={current === n.id ? 'page' : undefined}>{n.label}</a>)}
+        {nav.slice(0, 5).map((n) => <a href={n.href} aria-current={current === n.id ? 'page' : undefined}>{n.label}</a>)}
         <a href={`${P}/free/`} aria-current={current === 'free' ? 'page' : undefined}>{T('More free', 'और फ़्री')}</a>
       </nav>
       <div class="top-r">
@@ -118,6 +119,7 @@ const ld = { '@context': 'https://schema.org', '@graph': [org, ...crumbLd, ...js
           <ul>
             {pyqYears.slice(0, 6).map((y) => <li><a href={`${pyqHome(lang)}#y${y}`}>{T(`PYQs ${y}`, `PYQ ${y}`)}</a></li>)}
             <li><a href={pyqHome(lang)}>{T('All years, 2016–2026', 'सभी साल, 2016–2026')}</a></li>
+            <li><a href={`${P}/binge/`}>{T('Binge: 2-minute stories', 'बिंज: 2 मिनट की कहानियाँ')}</a></li>
           </ul>
         </div>
         <div>

@@ -1,0 +1,14 @@
+---
+// One short as a tall poster. The link goes to the short's own page; on /binge/ the feed (scripts/binge.ts) catches the
+// tap and opens the full-screen player at this short instead.
+import { type Short, cut, shortUrl, mins } from '../lib/shorts';
+import type { Lang } from '../lib/content';
+interface Props { s: Short; lang: Lang; size?: 'sm' | 'md'; eager?: boolean }
+const { s, lang, size = 'md', eager = false } = Astro.props;
+const c = cut(s, lang);
+---
+<a class={`stile stile-${size}`} href={shortUrl(s, lang)} data-short={s.id}>
+  <span class="stile-pic"><img src={c.poster} alt="" width="720" height="1280" loading={eager ? 'eager' : 'lazy'} decoding="async" />
+    <span class="stile-play" aria-hidden="true">▶</span><span class="stile-dur">{mins(c.dur)}</span></span>
+  <span class="stile-t">{c.title}</span>
+</a>

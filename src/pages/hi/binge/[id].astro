@@ -1,0 +1,7 @@
+---
+import ShortPage from '../../../components/ShortPage.astro';
+import { SHORTS } from '../../../lib/shorts';
+export function getStaticPaths() { return SHORTS.filter((s) => s.hi).map((s) => ({ params: { id: s.id }, props: { s } })); }
+const { s } = Astro.props;
+---
+<ShortPage s={s} lang="hi" />

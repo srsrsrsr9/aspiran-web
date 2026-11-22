@@ -1,0 +1,26 @@
+---
+// The full-screen, swipe-up player for /binge/ (scripts/binge.ts). Hidden until a poster is tapped. The list of shorts
+// rides along as JSON. Nothing plays by itself: each short starts on a tap, with sound off until the viewer turns it on,
+// and captions on. Every few shorts a Join free card sits in the feed.
+import type { Lang } from '../lib/content';
+import { joinUrl } from '../lib/links';
+interface Props { lang: Lang; items: unknown[] }
+const { lang, items } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const words = {
+  play: T('Play', 'चलाइए'), sound: T('Sound on', 'आवाज़ चालू'), mute: T('Sound off', 'आवाज़ बंद'), close: T('Close', 'बंद करें'),
+  next: T('Swipe up for the next one', 'अगले के लिए ऊपर स्वाइप करें'), quick: T('Quick one before the next:', 'अगले से पहले एक छोटा सवाल:'),
+  right: T('Right!', 'सही!'), wrong: T('Not quite.', 'पूरा सही नहीं।'), page: T('Read it instead', 'पढ़ना है? यहाँ'),
+  joinH: T('Enjoying these?', 'मज़ा आ रहा है?'),
+  joinP: T("The app has 400+ short videos like these, and after each one I bring its facts back before you forget them. Free, in English and Hindi.",
+    'ऐप में ऐसे 400+ छोटे वीडियो हैं, और हर वीडियो के बाद मैं उसके तथ्य भूलने से पहले वापस लाता हूँ। फ़्री, हिंदी और इंग्लिश में।'),
+  joinB: T('Join free', 'फ़्री में जुड़ें'), keep: T('Keep watching ↓', 'देखते रहिए ↓'),
+};
+---
+<div class="feed" id="feed" hidden role="dialog" aria-modal="true" aria-label={T('Short videos', 'छोटे वीडियो')}>
+  <button class="feed-x" type="button" data-feed-close aria-label={words.close}>✕</button>
+  <div class="feed-list" tabindex="-1"></div>
+</div>
+<script type="application/json" id="feed-data" set:html={JSON.stringify({ items, words, join: joinUrl('binge-feed', lang) }).replace(/</g, '\\u003c')} />
+<script>import '../scripts/binge.ts';</script>

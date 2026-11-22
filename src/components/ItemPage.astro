@@ -14,6 +14,7 @@ import Bench from './viz/Bench.astro';
 import YearLine from './viz/YearLine.astro';
 import PathSteps from './viz/PathSteps.astro';
 import Fork from './viz/Fork.astro';
+import WatchStrip from './WatchStrip.astro';
 import { pageArt, bigNumber } from '../lib/visual';
 import { type Lang, type Page, sectionById, pageUrl, sectionUrl, related, tx, has, paras, generatedAt } from '../lib/content';
 
@@ -208,6 +209,7 @@ const schemeNum = p.kind === 'scheme-snapshot' && L(d).keyNumber ? (bigNumber([L
       )}
     </div>
 
+    <WatchStrip nodes={nodes} lang={lang} />
     <AppBox lang={lang} where={`free-${p.section}`} feature={feat} />
 
     {more.length > 0 && (

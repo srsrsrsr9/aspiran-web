@@ -1,0 +1,77 @@
+---
+// /binge/<id>/: one short on its own page, for search and for sharing. The video (muted until the viewer turns the sound
+// on, never starts by itself, captions on), its quick questions, the full transcript, how often UPSC asks this part of the
+// syllabus, and what to watch next.
+import SiteLayout from '../layouts/SiteLayout.astro';
+import AppBox from './AppBox.astro';
+import ShortTile from './ShortTile.astro';
+import PyqPulse from './viz/PyqPulse.astro';
+import type { Lang } from '../lib/content';
+import { type Short, cut, shortUrl, bingeHome, shortsFor, shortsIn, mins, isoDur, shortsAt, SHELVES } from '../lib/shorts';
+
+interface Props { s: Short; lang: Lang }
+const { s, lang } = Astro.props;
+const hi = lang === 'hi';
+const T = (en: string, h: string) => (hi ? h : en);
+const P = hi ? '/hi' : '';
+const c = cut(s, lang);
+const shelf = SHELVES.find((x) => x.formats.includes(s.format));
+const pool = shortsIn(lang);
+const more = shortsFor(s.nodes, lang, 6, s.id);
+const next = more.length >= 4 ? more : [...more, ...pool.filter((x) => x.id !== s.id && !more.includes(x)).slice(s.n % 40, s.n % 40 + 6 - more.length)];
+const L = 'abcd';
+const clip = (t: string, n: number) => (t.length > n ? t.slice(0, t.lastIndexOf(' ', n)) + '…' : t);
+const minute = s.format === 'minute';
+const alternates = s.hi ? { en: `/binge/${s.id}/`, hi: `/hi/binge/${s.id}/` } : { en: `/binge/${s.id}/` };
+const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: T('Binge', 'बिंज'), href: bingeHome(lang) }, { name: c.title }];
+const ld = { '@type': 'VideoObject', name: c.title, description: clip(c.transcript, 240) || c.title, thumbnailUrl: [c.poster], uploadDate: shortsAt,
+  duration: isoDur(c.dur), contentUrl: c.mp4, inLanguage: hi ? 'hi' : 'en', isAccessibleForFree: true, transcript: c.transcript || undefined, publisher: { '@id': 'https://aspiran.in/#org' } };
+---
+
+<SiteLayout title={`${c.title} | ${T('UPSC in two minutes', 'दो मिनट में UPSC')} | Aspiran`} description={clip(c.transcript, 155) || c.title}
+  lang={lang} alternates={alternates} crumbs={crumbs} jsonLd={[ld]} ogType="video.other" current="binge"
+  chotu={T('Tap play. Sound is off until you turn it on, and the captions are on.', 'प्ले दबाइए। आवाज़ तब तक बंद है जब तक आप चालू न करें, और कैप्शन चालू हैं।')}>
+  <div class="wrap short-page">
+    <div class="short-player">
+      <video controls muted playsinline preload="none" poster={c.poster} crossorigin="anonymous" width="720" height="1280">
+        <source src={c.mp4} type="video/mp4" />
+        <track kind="captions" src={c.vtt} srclang={hi && s.hi ? 'hi' : 'en'} label={T('Captions', 'कैप्शन')} default />
+      </video>
+    </div>
+    <div class="short-side">
+      <p class="kick">{shelf ? shelf[lang][0] : T('One minute, one idea', 'एक मिनट, एक बात')} · {mins(c.dur)}</p>
+      <h1>{c.title}</h1>
+      <p class="small mute">{T('Sound is off until you turn it on. Captions are on.', 'आवाज़ तब तक बंद है जब तक आप चालू न करें। कैप्शन चालू हैं।')}</p>
+
+      {c.quiz.map((q, k) => (
+        <article class="card mcq short-q" data-answer={q.answerIndex} data-kind="short">
+          <p class="pyq-head"><span class="tag">{T(`Quick question ${k + 1}`, `छोटा सवाल ${k + 1}`)}</span></p>
+          <h2 class="pyq-q">{q.q}</h2>
+          <ol class="mcq-opts">{q.options.map((o, i) => <li><button type="button" data-i={i}><b>{L[i]}</b><span>{o}</span></button></li>)}</ol>
+          <p class="mcq-out" aria-live="polite"></p>
+          <div class="mcq-reveal" hidden><p>{q.why}</p></div>
+        </article>
+      ))}
+      <p><a class="btn ghost sm" href={bingeHome(lang)}>▶ {T('All the shorts', 'सारे शॉर्ट्स')}</a></p>
+    </div>
+  </div>
+
+  <div class="wrap narrow">
+    {c.transcript && (
+      <details class="card transcript">
+        <summary><b>{T('Read it instead', 'पढ़ना है? पूरा पाठ')}</b> <span class="small mute">{T('the full narration', 'पूरा वाचन')}</span></summary>
+        <p>{c.transcript}</p>
+      </details>
+    )}
+    {s.nodes.length > 0 && <PyqPulse nodes={s.nodes} lang={lang} about={`${c.title} ${c.transcript.slice(0, 400)}`} />}
+  </div>
+
+  {next.length > 0 && (
+    <section class="wrap shelf" data-say={T('One more? These are on the same part of the syllabus.', 'एक और? ये सिलेबस के इसी हिस्से से हैं।')}>
+      <div class="shelf-head"><h2>{T('Watch next', 'अगला देखिए')}</h2></div>
+      <div class="shelf-row">{next.map((x) => <ShortTile s={x} lang={lang} />)}</div>
+    </section>
+  )}
+  <div class="wrap narrow"><AppBox lang={lang} where={`binge-${s.id}`} feature="play" title={T('Watched it. Will you remember it in May?', 'देख लिया। मई में याद रहेगा?')} /></div>
+  <div style="height:48px"></div>
+</SiteLayout>

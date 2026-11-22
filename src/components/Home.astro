@@ -11,6 +11,8 @@ import Phones from './Phones.astro';
 import Garden from './Garden.astro';
 import PyqCard from './PyqCard.astro';
 import ChotuFace from './ChotuFace.astro';
+import ShortTile from './ShortTile.astro';
+import { starters, shortsIn } from '../lib/shorts';
 import { waUrl } from '../i18n';
 import { joinUrl, tourUrl, shot, type Shot } from '../lib/links';
 import { type Lang, caDays, cardIn, dayUrl, pagesIn, sectionUrl, totals, PAPERS, pyqCount, pyqHome, paperUrl } from '../lib/content';
@@ -251,6 +253,17 @@ const description = T(
             <a href={WA_PAY} target="_blank" rel="noopener" data-cta="whatsapp" data-where="price">{T('Or pay by UPI on WhatsApp', 'या WhatsApp पर UPI से')}</a>.</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section class="sec" data-say={T("Two minutes each, and every one is on the syllabus. Careful, they're hard to stop.", 'हर एक दो मिनट का, और हर एक सिलेबस से। ध्यान रहे, रुकना मुश्किल है।')}>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kick">{T(`Binge · ${shortsIn(lang).length} two-minute stories`, `बिंज · दो मिनट की ${shortsIn(lang).length} कहानियाँ`)}</p>
+        <h2>{T('Scroll like it\'s your feed. Learn like it\'s the syllabus.', 'फ़ीड की तरह स्क्रॉल कीजिए। सिलेबस की तरह सीखिए।')}</h2>
+      </div>
+      <div class="shelf-row">{starters(lang).slice(0, 8).map((s) => <ShortTile s={s} lang={lang} />)}</div>
+      <p><a class="btn primary" href={`${P}/binge/`}>▶ {T('Open Binge', 'बिंज खोलिए')}</a></p>
     </div>
   </section>
 
