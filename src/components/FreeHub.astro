@@ -2,6 +2,8 @@
 // /free/: every free section in one place.
 import SiteLayout from '../layouts/SiteLayout.astro';
 import AppBox from './AppBox.astro';
+import Art from './Art.astro';
+import { pageArt, type Motif } from '../lib/visual';
 import { type Lang, SECTIONS, pagesIn, pageUrl, sectionUrl, caDays, dayUrl, longDate, cardIn, pyqHome, pyqCount } from '../lib/content';
 
 interface Props { lang: Lang }
@@ -11,6 +13,7 @@ const T = (en: string, h: string) => (hi ? h : en);
 const P = hi ? '/hi' : '';
 const latest = caDays(lang)[0];
 const title = T('Free UPSC study material', 'UPSC की फ़्री अध्ययन सामग्री');
+const SEC_MOTIF: Record<string, Motif> = { notes: 'page', 'mains-answer-writing': 'quill', 'ethics-case-studies': 'scales', 'essay-topics': 'quill', 'landmark-judgments': 'gavel', 'government-schemes': 'coins', glossary: 'letters' };
 const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: title }];
 ---
 
@@ -27,7 +30,8 @@ const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: title }
 
     <div class="grid">
       {latest && (
-        <a class="card" href={sectionUrl('current-affairs', lang)}>
+        <a class="card hub-card" href={sectionUrl('current-affairs', lang)}>
+          <Art seed="hub-ca" motif="chai" shape="thumb" class="card-art" />
           <p class="kick">{T('Updated every morning', 'हर सुबह अपडेट')}</p>
           <h3>{T('Daily current affairs', 'रोज़ के करंट अफ़ेयर्स')}</h3>
           <p class="mute">{T('Latest: ', 'ताज़ा: ')}{longDate(latest.day, lang)}. {cardIn(latest.cards[0], lang).headline}</p>
@@ -37,7 +41,8 @@ const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: title }
       {SECTIONS.map((s) => {
         const ps = pagesIn(s.id, lang);
         return ps.length ? (
-          <a class="card" href={sectionUrl(s.id, lang)}>
+          <a class="card hub-card" href={sectionUrl(s.id, lang)}>
+            <Art seed={`hub-${s.id}`} motif={s.id === 'mains-answer-writing' ? 'page' : SEC_MOTIF[s.id]} shape="thumb" class="card-art" />
             <p class="kick">{T(`${ps.length} free`, `${ps.length} फ़्री`)}</p>
             <h3>{s.name[lang]}</h3>
             <p class="mute">{s.blurb[lang]}</p>
@@ -45,14 +50,16 @@ const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: title }
           </a>
         ) : null;
       })}
-      <a class="card" href={pyqHome(lang)}>
+      <a class="card hub-card" href={pyqHome(lang)}>
+        <Art seed="hub-pyq" motif="bars" shape="thumb" class="card-art" />
         <p class="kick">{T(`${pyqCount.toLocaleString('en-IN')} questions · UPSC's keys`, `${pyqCount.toLocaleString('en-IN')} सवाल · UPSC की आंसर-की`)}</p>
         <h3>{T('UPSC PYQs, 2016 to 2026', 'UPSC PYQ, 2016 से 2026')}</h3>
         <p class="mute">{T("Prelims and Mains, word for word. Answer on the page, say how sure you were, and see UPSC's key and why.",
           'प्रीलिम्स और मेन्स, जैसे UPSC ने पूछे। पेज पर जवाब दीजिए, बताइए कितने पक्के थे, और देखिए UPSC की आंसर-की और वजह।')}</p>
         <span class="more">{T('Open', 'खोलिए')} →</span>
       </a>
-      <a class="card" href="https://app.aspiran.in/learn">
+      <a class="card hub-card" href="https://app.aspiran.in/learn">
+        <Art seed="hub-learn" motif="leaf" shape="thumb" class="card-art" />
         <p class="kick">{T('228 topics', '228 टॉपिक')}</p>
         <h3>{T('The UPSC syllabus, topic by topic', 'UPSC सिलेबस, टॉपिक दर टॉपिक')}</h3>
         <p class="mute">{T('Every line of the syllabus in UPSC\'s own words, how often it has been asked, and the PYQs on it.',
@@ -63,8 +70,8 @@ const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: title }
 
     <section class="sec" style="padding-bottom:0">
       <h2>{T('Start with these', 'इनसे शुरू कीजिए')}</h2>
-      <ul class="index-list">
-        {pagesIn('notes', lang).filter((p) => /federal|preamble|fundamental rights|monsoon|monetary|parliament|governor|inflation/i.test(p.title.en)).slice(0, 10).map((p) => <li><a href={pageUrl(p, lang)}>{p.title[lang]}</a><span class="small">{p.group[lang]}</span></li>)}
+      <ul class="tiles">
+        {pagesIn('notes', lang).filter((p) => /federal|preamble|fundamental rights|monsoon|monetary|parliament|governor|inflation/i.test(p.title.en)).slice(0, 8).map((p) => <li><a href={pageUrl(p, lang)}><Art {...pageArt(p, lang)} shape="thumb" badge={undefined} /><span class="tile-t">{p.title[lang]}</span><span class="small">{p.group[lang]}</span></a></li>)}
       </ul>
     </section>
     <div class="narrow"><AppBox lang={lang} where="free-hub" /></div>

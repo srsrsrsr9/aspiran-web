@@ -1,0 +1,14 @@
+---
+// A private running score while you answer a Prelims paper on the page (quiz.ts fills it). Only on this page, nothing
+// is saved, nobody else sees it: no public scores (content rules). It shows what the app tracks for you: guesses.
+import type { Lang } from '../../lib/content';
+interface Props { lang: Lang }
+const hi = Astro.props.lang === 'hi';
+---
+<aside class="tally" id="tally" hidden>
+  <div><b data-t="done">0</b><span>{hi ? 'हल किए' : 'answered'}</span></div>
+  <div><b data-t="right">0</b><span>{hi ? 'सही' : 'right'}</span></div>
+  <div><b data-t="guess">0</b><span>{hi ? 'सही, पर तुक्के से' : 'right by guessing'}</span></div>
+  <div><b data-t="net">0</b><span>{hi ? 'अंक (−⅓ के साथ)' : 'marks (with −⅓)'}</span></div>
+  <p class="small">{hi ? 'सिर्फ़ आपको दिखता है, कहीं सेव नहीं होता। ऐप में यही हिसाब हर सवाल पर रहता है।' : 'Only you see this, and nothing is saved. In the app, this is kept for every question you do.'}</p>
+</aside>

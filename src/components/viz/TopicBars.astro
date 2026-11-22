@@ -1,0 +1,21 @@
+---
+// Syllabus lines as horizontal bars (most asked first), each linking to its topic page with the PYQs on it.
+import { nodeLabel, nodeHref } from '../../lib/visual';
+import type { Lang } from '../../lib/content';
+interface Props { lang: Lang; rows: { id: string; count: number }[]; title: string; note?: string; unit?: [string, string]; say?: string }
+const { lang, rows, title, note, unit = ['Qs', 'सवाल'], say } = Astro.props;
+const hi = lang === 'hi';
+const max = Math.max(1, ...rows.map((r) => r.count));
+---
+<figure class="tbars" data-say={say}>
+  <p class="kick">{title}</p>
+  <ol>
+    {rows.map((r, i) => { const h = nodeHref(r.id); const label = nodeLabel(r.id, lang); return (
+      <li>
+        {h ? <a href={h} lang={hi && /^[\x00-\x7F]+$/.test(label) ? 'en' : undefined}>{label}</a> : <span>{label}</span>}
+        <span class="tbar"><i style={`--w:${Math.round((r.count / max) * 100)}%;--c:${['var(--chai)', 'var(--haldi)', 'var(--leaf)', '#4F6BD8'][i % 4]}`}></i><b>{r.count}<small> {hi ? unit[1] : unit[0]}</small></b></span>
+      </li>
+    ); })}
+  </ol>
+  {note && <figcaption class="small">{note}</figcaption>}
+</figure>

@@ -15,6 +15,8 @@ const LINES = {
   wrong: t('Missed it. In the app, a missed fact comes back tomorrow, and again, until it sticks.', 'चूक गए। ऐप में छूटा हुआ तथ्य कल फिर आता है, और फिर, जब तक याद न हो जाए।'),
 };
 
+const T = { done: 0, right: 0, wrong: 0, guess: 0 };
+
 function finish(box: HTMLElement, chosen: number, sure: string | null) {
   const ans = Number(box.dataset.answer);
   const right = chosen === ans;
@@ -28,9 +30,21 @@ function finish(box: HTMLElement, chosen: number, sure: string | null) {
   if (out) out.textContent = right ? t('Correct.', 'सही जवाब।') : t('Not this one.', 'यह नहीं।');
   box.querySelector<HTMLElement>('.mcq-reveal')?.removeAttribute('hidden');
   box.dataset.done = '1';
-  const say = sure ? (right ? (sure === 'guess' ? LINES.rightGuess : LINES.rightSure) : (sure === 'certain' ? LINES.wrongSure : LINES.wrongGuess)) : (right ? LINES.right : LINES.wrong);
-  dispatchEvent(new CustomEvent('chotu', { detail: { say } }));
+  let say = sure ? (right ? (sure === 'guess' ? LINES.rightGuess : LINES.rightSure) : (sure === 'certain' ? LINES.wrongSure : LINES.wrongGuess)) : (right ? LINES.right : LINES.wrong);
   ph('site_answered', { kind: box.dataset.kind, right, sure });
+  // The paper's private tally (components/viz/Tally.astro): marks as UPSC counts them, 2 per right, −⅔ per wrong.
+  const tally = document.getElementById('tally');
+  if (tally && box.dataset.kind === 'pyq') {
+    T.done++; if (right) { T.right++; if (sure === 'guess') T.guess++; } else T.wrong++;
+    tally.hidden = false;
+    const set = (k: string, v: number | string) => { const el = tally.querySelector(`[data-t="${k}"]`); if (el) el.textContent = String(v); };
+    set('done', T.done); set('right', T.right); set('guess', T.guess); set('net', (Math.round((T.right * 2 - T.wrong * (2 / 3)) * 100) / 100).toString());
+    if (T.done % 5 === 0) {
+      say = t(`${T.done} done, ${T.right} right${T.guess ? `, ${T.guess} of them guesses` : ''}. In the app I keep this for every question, and bring back the guesses.`,
+        `${T.done} हल, ${T.right} सही${T.guess ? `, जिनमें ${T.guess} तुक्के` : ''}। ऐप में मैं हर सवाल का यही हिसाब रखता हूँ, और तुक्के वाले सवाल दोबारा पूछता हूँ।`);
+    }
+  }
+  dispatchEvent(new CustomEvent('chotu', { detail: { say } }));
 }
 
 document.querySelectorAll<HTMLElement>('.mcq[data-answer]').forEach((box) => {

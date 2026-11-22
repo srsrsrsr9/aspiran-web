@@ -2,7 +2,7 @@
 // beauty, gain intent with the muscle, and earn trust with the coverage and depth"). No image files: every cover is a
 // small SVG built from a motif (picked from the words on the page) and a palette (picked from the page's id), so two
 // pages side by side rarely look the same. Tragic pieces get a plain, quiet cover (content rules).
-import { PAPERS, type Page, type Lang, tx } from './content';
+import { PAPERS, type Page, type Lang, tx, nodeName } from './content';
 
 export const hash = (s: string) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
 
@@ -142,4 +142,27 @@ export function pageArt(p: Page, lang: Lang): { seed: string; motif: Motif; badg
     case 'scheme-snapshot': return { seed, tone, motif: motifFor(`${d.en?.name ?? ''} ${d.en?.aim ?? ''}`, '', 'coins'), badge: d.launched ? (hi ? `${d.launched} से` : `Since ${d.launched}`) : undefined };
     default: return { seed, tone, motif: 'letters', badge: hi ? 'इंग्लिश–हिंदी' : 'English–Hindi' };
   }
+}
+
+// ---- PYQ pictures (22 Nov 2026, v7b) -------------------------------------------------------------------------------
+export const PAPER_MOTIF: Record<string, Motif> = { prelims: 'bars', csat: 'bars', gs1: 'arch', gs2: 'pillars', gs3: 'coins', gs4: 'scales', essay: 'quill' };
+// Prelims subjects in Hindi (the syllabus lines themselves are only in English).
+const PRE_HI: Record<string, string> = { 'pre-1': 'राष्ट्रीय और अंतरराष्ट्रीय करंट अफ़ेयर्स', 'pre-2': 'भारत का इतिहास और राष्ट्रीय आंदोलन', 'pre-3': 'भारत और विश्व का भूगोल',
+  'pre-4': 'भारतीय राजव्यवस्था और शासन', 'pre-5': 'आर्थिक और सामाजिक विकास', 'pre-6': 'पर्यावरण, जैव विविधता और जलवायु परिवर्तन', 'pre-7': 'सामान्य विज्ञान' };
+export const nodeLabel = (id: string, lang: Lang) => (lang === 'hi' && PRE_HI[id]) || NODE_NAMES.get(id) || id;
+const NODE_NAMES = new Map<string, string>();
+export const nodeHref = (id: string) => { const n = nodeName(id); return n ? `https://app.aspiran.in${n.learn}` : undefined; };
+for (const p of PAPERS) for (const q of p.questions) for (const id of q.nodes ?? []) if (!NODE_NAMES.has(id)) { const n = nodeName(id); if (n) NODE_NAMES.set(id, n.name); }
+
+/** Which syllabus lines one paper asked on, most first. */
+export function paperMix(paper: (typeof PAPERS)[number]) {
+  const m = new Map<string, number>();
+  for (const q of paper.questions) for (const id of q.nodes ?? []) m.set(id, (m.get(id) ?? 0) + 1);
+  return [...m.entries()].map(([id, count]) => ({ id, count })).sort((a, b) => b.count - a.count);
+}
+/** Across all papers of one exam: the syllabus lines UPSC has asked on most. */
+export function mostAsked(exam: 'prelims' | 'mains', n = 8) {
+  const m = new Map<string, number>();
+  for (const p of PAPERS) if (p.exam === exam) for (const q of p.questions) for (const id of q.nodes ?? []) if (id !== 'essay-1') m.set(id, (m.get(id) ?? 0) + 1);
+  return [...m.entries()].map(([id, count]) => ({ id, count })).sort((a, b) => b.count - a.count).slice(0, n);
 }

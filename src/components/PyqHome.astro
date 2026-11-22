@@ -2,6 +2,11 @@
 // /pyq/: every UPSC paper on Aspiran, by year. Aspirants call them PYQs (owner, 22 Nov 2026), so the page does too.
 import SiteLayout from '../layouts/SiteLayout.astro';
 import AppBox from './AppBox.astro';
+import Art from './Art.astro';
+import PyqCard from './PyqCard.astro';
+import TopicBars from './viz/TopicBars.astro';
+import { PAPER_MOTIF, mostAsked } from '../lib/visual';
+import { PAPERS } from '../lib/content';
 import { type Lang, papersIn, paperUrl, paperName, pyqCount, pyqYears, examName } from '../lib/content';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -10,6 +15,9 @@ const T = (en: string, h: string) => (hi ? h : en);
 const P = hi ? '/hi' : '';
 const papers = papersIn(lang);
 const years = pyqYears.filter((y) => papers.some((p) => p.year === y));
+// One real question to try right here: the newest keyed Prelims question that has a full explanation and a trap.
+const featP = PAPERS.filter((p) => p.exam === 'prelims' && p.key.status === 'official').sort((a, b) => b.year - a.year).find((p) => p.questions.some((q) => q.explain?.trap && (!hi || q.hi?.q)));
+const featQ = featP?.questions.find((q) => q.explain?.trap && (!hi || q.hi?.q));
 const title = T(`UPSC PYQs 2016–2026: every question, with UPSC's answer key`, 'UPSC PYQ 2016–2026: हर सवाल, UPSC की आंसर-की के साथ');
 const crumbs = [{ name: T('Home', 'होम'), href: `${P}/` }, { name: 'PYQ' }];
 const ld = { '@type': 'CollectionPage', name: title, inLanguage: hi ? 'hi-IN' : 'en-IN', isAccessibleForFree: true };
@@ -24,12 +32,24 @@ const ld = { '@type': 'CollectionPage', name: title, inLanguage: hi ? 'hi-IN' : 
       <p class="lede">{T("Every question exactly as UPSC asked it. Tap an answer, say how sure you were, then see UPSC's key and why it is right.",
         'हर सवाल वैसा ही जैसा UPSC ने पूछा। जवाब चुनिए, बताइए कितने पक्के थे, फिर देखिए UPSC की आंसर-की और वो सही क्यों है।')}</p>
     </header>
+    {featP && featQ && (
+      <section class="pyq-try" id="try">
+        <h2>{T('Try one now', 'अभी एक हल कीजिए')}</h2>
+        <PyqCard p={featP} q={featQ} lang={lang} link heading="h3" />
+      </section>
+    )}
+    <div class="tbars-2">
+      <TopicBars lang={lang} rows={mostAsked('mains', 8)} title={T('What UPSC asks most in Mains, 2016–2026', 'मेन्स में UPSC सबसे ज़्यादा क्या पूछता है, 2016–2026')}
+        say={T("This is where Mains marks come from. In the app, these topics get more of your time.", 'मेन्स के नंबर यहीं से आते हैं। ऐप में इन टॉपिक पर आपका ज़्यादा समय लगता है।')} />
+      <TopicBars lang={lang} rows={mostAsked('prelims', 7)} title={T('Prelims, by subject', 'प्रीलिम्स, विषय के हिसाब से')} />
+    </div>
     {years.map((y) => (
       <section class="index-group" id={`y${y}`} data-say={y === years[1] ? T("Doing PYQs year by year? In the app I'll tell you which topics UPSC keeps coming back to.", 'साल दर साल PYQ कर रहे हैं? ऐप में मैं बताऊँगा UPSC किन टॉपिक पर बार-बार लौटता है।') : undefined}>
         <h2>{y}</h2>
         <div class="paper-grid">
           {papers.filter((p) => p.year === y).map((p) => (
             <a class="card paper-tile" href={paperUrl(p, lang)}>
+              <Art seed={p.id} motif={PAPER_MOTIF[p.paper] ?? 'page'} shape="thumb" class="paper-art" />
               <span class="tag">{examName(p, lang)}</span>
               <b>{paperName(p, lang)}</b>
               <span class="small">{T(`${p.questions.length} questions`, `${p.questions.length} सवाल`)}{p.exam === 'prelims' && p.key.status === 'official' ? T(' · UPSC key', ' · UPSC आंसर-की') : ''}</span>

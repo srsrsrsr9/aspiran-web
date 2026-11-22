@@ -3,12 +3,12 @@
 // on its subject), and links to the latest of those PYQs on this site. Trust through depth.
 import { pyqPulse, YEARS } from '../../lib/visual';
 import { type Lang, qUrl, paperName, nodeName } from '../../lib/content';
-interface Props { nodes: string[]; lang: Lang; about?: string }
-const { nodes, lang, about = '' } = Astro.props;
+interface Props { nodes: string[]; lang: Lang; about?: string; skip?: string }
+const { nodes, lang, about = '', skip } = Astro.props;
 const hi = lang === 'hi';
 const { mains, pre, mHits, pHits, preNode, total } = pyqPulse(nodes);
 const max = Math.max(1, ...YEARS.map((y) => (mains.get(y) ?? 0) + (pre.get(y) ?? 0)));
-const ok = (x: (typeof mHits)[number]) => !hi || x.q.hi?.q;
+const ok = (x: (typeof mHits)[number]) => (!hi || x.q.hi?.q) && `${x.paper.id}-${x.q.n}` !== skip;
 // The examples shown: the PYQs sharing the most words with this page, newest first among equals.
 const STOP = new Set(['which', 'following', 'statements', 'statement', 'correct', 'given', 'about', 'consider', 'select', 'answer', 'below', 'using', 'there', 'their', 'these', 'those', 'other', 'discuss', 'examine', 'explain', 'india', 'indian', 'words', 'marks', 'their', 'under', 'between', 'what', 'where', 'while', 'should']);
 const words = new Set((about.toLowerCase().match(/[a-z]{5,}/g) ?? []).filter((w) => !STOP.has(w)));

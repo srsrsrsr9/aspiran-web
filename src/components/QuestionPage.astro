@@ -3,6 +3,7 @@
 import SiteLayout from '../layouts/SiteLayout.astro';
 import AppBox from './AppBox.astro';
 import PyqCard from './PyqCard.astro';
+import PyqPulse from './viz/PyqPulse.astro';
 import { type Lang, type Paper, type PyqQ, paperName, paperUrl, qUrl, qIn, pyqHome, clip, nodeName, allPages, pageUrl } from '../lib/content';
 interface Props { p: Paper; q: PyqQ; lang: Lang }
 const { p, q, lang } = Astro.props;
@@ -29,6 +30,7 @@ const ld = { '@type': 'Quiz', name: `${name} Q${q.n}`, inLanguage: hi ? 'hi-IN' 
     <PyqCard p={p} q={q} lang={lang} heading="h2" />
     {topics.length > 0 && <p class="small">{T('Syllabus: ', 'सिलेबस: ')}{topics.map((n, k) => <>{k > 0 && ', '}<a href={`https://app.aspiran.in${n!.learn}`}>{n!.name}</a></>)}</p>}
     {frame && <p class="box green"><b>{T('How to frame this answer: ', 'यह आंसर कैसे लिखें: ')}</b><a href={pageUrl(frame, lang)}>{T('intro, points, example and conclusion', 'भूमिका, पॉइंट, उदाहरण और निष्कर्ष')}</a></p>}
+    <PyqPulse nodes={q.nodes} lang={lang} about={q.en.q} skip={`${p.id}-${q.n}`} />
     <AppBox lang={lang} where="pyq-q" feature={p.exam === 'mains' ? 'mark' : 'pyq'} />
     <nav class="field-row" style="justify-content:space-between;margin:24px 0" aria-label={T('Other questions', 'दूसरे सवाल')}>
       {prev ? <a class="btn ghost sm" href={qUrl(p, prev, lang)}>← {T(`Q${prev.n}`, `प्रश्न ${prev.n}`)}</a> : <span></span>}

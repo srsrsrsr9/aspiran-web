@@ -3,6 +3,10 @@
 import SiteLayout from '../layouts/SiteLayout.astro';
 import AppBox from './AppBox.astro';
 import PyqCard from './PyqCard.astro';
+import Art from './Art.astro';
+import TopicBars from './viz/TopicBars.astro';
+import Tally from './viz/Tally.astro';
+import { PAPER_MOTIF, paperMix } from '../lib/visual';
 import { type Lang, type Paper, paperName, paperUrl, paperHasHindi, pyqHome } from '../lib/content';
 interface Props { p: Paper; lang: Lang }
 const { p, lang } = Astro.props;
@@ -27,8 +31,11 @@ const mid = Math.min(10, Math.floor(qs.length / 2));
       <p class="lede">{keyed ? T('Tap an option, say how sure you were, and see the answer. That habit is what beats negative marking.', 'विकल्प चुनिए, बताइए कितने पक्के थे, और उत्तर देखिए। यही आदत नेगेटिव मार्किंग को हराती है।')
         : p.exam === 'mains' ? T('UPSC marks written answers, so there is no key. Read the question, plan your answer in your head, then write it in the app and get it marked.', 'UPSC लिखे हुए आंसर जाँचता है, इसलिए आंसर-की नहीं होती। सवाल पढ़िए, आंसर का प्लान बनाइए, फिर ऐप में लिखकर जँचवाइए।')
         : T('UPSC has not published a key for this paper yet.', 'UPSC ने इस पेपर की आंसर-की अभी जारी नहीं की।')}</p>
+      <Art seed={p.id} motif={PAPER_MOTIF[p.paper] ?? 'page'} shape="banner" class="head-art" badge={T(`${qs.length} questions`, `${qs.length} सवाल`)} />
       {p.sourceUrl && <p class="small">{T('Source: ', 'स्रोत: ')}<a href={p.sourceUrl} rel="nofollow noopener" target="_blank">{T("UPSC's question paper", 'UPSC का प्रश्न पत्र')}</a>{p.key.url && <>, <a href={p.key.url} rel="nofollow noopener" target="_blank">{T('answer key', 'आंसर-की')}</a></>}</p>}
     </header>
+    {p.paper !== 'essay' && <TopicBars lang={lang} rows={paperMix(p).slice(0, 8)} title={T('What this paper asked, by syllabus line', 'इस पेपर ने क्या पूछा, सिलेबस के हिसाब से')} note={T('Tap a line to see every PYQ on it.', 'किसी लाइन पर टैप करके उस पर आए सारे PYQ देखिए।')} />}
+    {keyed && <Tally lang={lang} />}
     {qs.slice(0, mid).map((q) => <PyqCard p={p} q={q} lang={lang} link heading="h2" />)}
     {qs.length > mid && <AppBox lang={lang} where="pyq-paper-mid" feature={p.exam === 'mains' ? 'mark' : 'pyq'} compact />}
     {qs.slice(mid).map((q) => <PyqCard p={p} q={q} lang={lang} link heading="h2" />)}
