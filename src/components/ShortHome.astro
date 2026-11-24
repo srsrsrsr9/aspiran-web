@@ -282,9 +282,9 @@ const faq = hi ? [
 
       <!-- 8. Price: ₹3,999 a year, no founding offer (owner, 17 Nov 2026). Paid in the app (Cashfree); UPI over WhatsApp stays as a fallback. -->
       <section class="sh-sec" id="price" aria-labelledby="price-h">
-        <h2 id="price-h">{T('Free to join. Plus if you want more.', 'जुड़ना फ़्री। और चाहिए तो Plus।')}</h2>
+        <h2 id="price-h">{T('Free forever. Plus if you want more.', 'हमेशा फ़्री। और चाहिए तो Plus।')}</h2>
         <div class="sh-grid two">
-          <div class="sh-card"><p class="sh-kick">{T('FREE · NOT A TRIAL', 'फ़्री · ट्रायल नहीं')}</p><p class="sh-price">₹0</p>
+          <div class="sh-card"><p class="sh-kick">{T('FREE · FREE FOREVER', 'फ़्री · हमेशा फ़्री')}</p><p class="sh-price">₹0</p>
             <ul>{(hi ? ['रोज़ का रिव्यू और चाय कार्ड', 'हफ़्ते में 3 उत्तरों की जाँच, महीने में 1 मॉक', 'आपका स्टडी रूम और पॉड', 'रोज़ की शंकाओं के लिए Chotu']
               : ['The daily review and Chai cards', '3 answers marked a week, 1 mock a month', 'Your study room and pod', 'Chotu for everyday doubts']).map((x) => <li>{x}</li>)}</ul>
             <a class="sh-btn ghost" href={app('price')} data-cta="try" data-where="price">{tryLabel}</a></div>
